@@ -1,0 +1,21 @@
+graph TD
+begin((Round 4 Start))-->events(events)
+stop((Round 4 Stop))
+events--Notify-->valid
+valid{Validate Message}
+ignore[Done]
+dup--no-->ignore
+dup--yes-->upd
+check{Is notify.cert.K >= state.Ki}
+check--yes-->us[Si=S, Ci=C, Ki=K]
+upd[Update number of notifications counter for this set]
+upd-->check
+us-->enough
+check--no-->enough
+enough--no-->ignore
+enough{Has f+1 notify on this set?}
+valid--yes-->dup{First time seeing sender?}
+valid--no-->ignore
+enough--yes-->endc((Output=Si, Terminate consensus))
+events--End of Round-->next[Advance K]
+next-->stop

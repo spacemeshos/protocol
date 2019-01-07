@@ -1,0 +1,28 @@
+graph TD
+begin((Round 2 Start))-->lead{Is leader?}
+lead--no-->events
+lead--yes-->type{All ki=-1?}
+type--yes-->union[S=union of f+1 statuses]
+union-->build[SVP=f+1 statuses]
+type--no-->max[S= set with max ki]
+max-->build2[SVP=f+1 statuses + max certificate]
+build2-->send
+build-->send
+send[Send Proposal S, k, SVP]
+send-->events(Events)
+stop((Round 2 Stop))
+events--Proposal-->valid
+valid{Validate Message}
+ignore[Done]
+dup--no-->equi{Equivocation?}
+equi--yes-->con[Mark as conflicting, Ti=nil]
+equi--no-->ignore
+dup--yes-->rank{Lower than current leader?}
+valid--yes-->dup{First time seeing sender?}
+valid--no-->ignore
+rank--yes-->update[Ti=S]
+rank--no-->ignore
+update-->ignore
+con-->ignore
+events--End of Round-->next[Advance K]
+next-->stop

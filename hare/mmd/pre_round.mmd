@@ -1,0 +1,17 @@
+graph TD
+begin((PreRound Start))-->active{Is active?}
+active--yes-->send
+active--no-->events
+send[Send PreRound, S]
+send-->events(Events)
+stop((PreRound Stop))
+events--PreRound-->validate{Validate Message}
+validate--yes-->seen{First time seeing message?}
+validate--no-->done
+seen--yes-->proc[Update provability counter for each value]
+proc-->done
+seen--no-->done
+done[Done]
+events--End of Round-->set[Set K=0, Ki=-1]
+set-->update[Remove non-provable v from Si]
+update-->stop
