@@ -1,0 +1,34 @@
+graph TD
+begin((Validate Message Start))--msg-->syntax
+stop((Validate Message Succeeded))
+ignore((Validate Message Failed))
+syntax{Validate Syntax}
+syntax--yes-->vrole
+type{Check message type}
+type--Commit-->cc{Is Round 3?}
+cc--yes-->vsig
+cc--no-->ignore
+type--Status-->cstatus{Is Round 1?}
+cstatus--no-->ignore
+cstatus--yes-->vsig
+type--PreRound-->vsig
+type--Proposal-->cp{Is Round 2 or Round 3?}
+cp--yes-->ptype
+cp--no-->ignore
+ptype[Is max Ki=-1?]
+ptype--yes-->a{Is S the union of Sj from attached statuses?}
+ptype--no-->typeb[Is S equal to the set with max Ki?]
+typeb--yes-->vsig
+typeb--no-->ignore
+a--no-->ignore
+a--yes-->vsig
+type--Notify-->cert{Validate Certificate}
+cert--no-->ignore
+cert--yes-->vsig
+syntax--no-->ignore
+vsig{Validate Signature}
+vsig--yes-->stop
+vrole{Validate Role}
+vsig--no-->ignore
+vrole--no-->ignore
+vrole--yes-->type

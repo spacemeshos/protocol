@@ -1,0 +1,25 @@
+graph TD
+begin((Round1 Start))-->active{Is active?}
+active--yes-->send[Send Status, Si, K, Ki]
+active--no-->events
+send-->events(Events)
+stop((Round1 Stop))
+events--Status-->ready{Has f+1 status messages?}
+ready--no-->valid{Validate Message}
+ready--yes-->done
+done[Done]
+prove--yes-->proc[Record Status Message]
+proc-->done
+prove--no-->done
+checkk{Is Ki=-1?}
+checkk--yes-->prove
+valid--yes-->seen{First time seeing sender?}
+seen--yes-->checkk
+checkk--no-->vc{Does certificate exist?}
+vc--yes-->proc
+vc--no-->done
+seen--no-->done
+prove{Enough preround to prove the set?}
+valid--no-->done
+events--End of Round-->next[Advance K]
+next-->stop

@@ -1,0 +1,36 @@
+graph TD
+begin((Round 3 Start))-->active{Is Active?}
+active--no-->events
+active--yes-->conf{Is conflicting?}
+conf--yes-->events
+conf--no-->send
+send[Send Commit, S, K]
+send-->events(Events)
+stop((Round 3 Stop))
+events--Proposal, Commit-->valid
+valid{Validate Message}
+ignore[Done]
+dup--yes-->equi{Equivocation?}
+equi--yes-->con[Mark as conflicting]
+equi--no-->ignore
+dup--no-->rank{Lower than current leader?}
+valid--yes, commit-->count{Has f+1 commits?}
+count--yes-->ignore
+count--no-->dup2{First time seeing sender?}
+dup2--yes-->ignore
+dup2--no-->add[Record this commit message]
+add-->ignore
+valid--yes, proposal-->dup{First time seeing sender?}
+valid--no-->ignore
+rank--yes-->con
+con-->ignore
+rank--no-->ignore
+events--End of Round-->hasf{Has f+1 commits?}
+hasf--no-->next
+hasf--yes-->cconf{Is Conflicting?}
+cconf--yes-->next
+cconf--no-->sn
+sn[Commit & Send Notify, Si, K, Ci]
+sn-->next
+next[Advance K]
+next-->stop
