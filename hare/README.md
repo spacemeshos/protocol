@@ -1,7 +1,7 @@
 # The Hare Protocol
 
 ## Description
-The hare protocol is used to achieve consensus on a layer i.e. a set of blocks. The general problem is the [Byzantine agreement problem](https://en.wikipedia.org/wiki/Quantum_Byzantine_agreement). Our problem differs mainly on the fact that we want to achieve consensus on a set of values rather than a single value.
+The hare protocol is used to achieve consensus on a layer i.e. a set of blocks. The general problem is the [Byzantine agreement problem](https://en.wikipedia.org/wiki/Quantum_Byzantine_agreement). Our protocol is based on the [ADDNR18 paper](https://eprint.iacr.org/2018/1028.pdf) and differs mainly on the fact that we want to achieve consensus on a set of values rather than a single value.
 
 It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence,  multiple consensus instances can be run at the same time.
 
