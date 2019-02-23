@@ -17,9 +17,9 @@ It is known in advance when an agreement process should start for each layer. On
 3. **Validity 2** (“no honest witness”): If for no honest party Pi v in Si then v not in S'
 
 **Roles** - During the BA, at each round, a party can be assigned with one of the following roles:
-* Passive - Listens and follows the protocol. This is the default role of a participant meaning every participant is at least passive.
-* Active - Also acts as a speaker and share his knowledge.
-* Leader - a participant who can give a proposition to the network. There is only one leader.
+* `Passive` - Listens and follows the protocol. This is the default role of a participant meaning every participant is at least passive.
+* `Active` - Also acts as a speaker and share his knowledge.
+* `Leader` - a participant who can give a proposition to the network. There is only one leader.
 
 **Virtual Participation** - virtual participation is an optimization made to ease a participant’s role. After a participant terminates, he sends a notify message declaring his commitment to his corresponding set. From here on out, all other participants can refer to his notify message as if it was sent in the current round.
 
