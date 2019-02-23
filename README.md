@@ -2,5 +2,5 @@
 This repo contains the Spacemesh protocol specifications
 
 # Hare Protocol
-- [Spec](/README.md)
+- [Spec](/hare/README.md)
 
