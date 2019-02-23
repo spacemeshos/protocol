@@ -11,6 +11,7 @@ It is known in advance when an agreement process should start for each layer. On
 `f` - the number of active dishonest participants. <br />
 `Pi` - A participant in the consensus. <br />
 `Si` - The current set blocks observed by Pi. <br />
+
 **Byzantine Agreement on Sets** - parties {Pi} are said to achieve byzantine agreement on sets {Si} if three conditions are satisfied:
 1. `Consistency:` Every honest party outputs the same set S’.
 2. `Validity 1` (“all honest witnessed”): If for every honest party Pi v is in Si then v is in S'
