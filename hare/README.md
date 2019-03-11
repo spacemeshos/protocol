@@ -17,15 +17,14 @@ It is known in advance when an agreement process should start for each layer. On
 
 #### Byzantine Agreement on Sets
 
-parties {Pi} are said to achieve byzantine agreement on sets {Si} if three conditions are satisfied:
+Parties {Pi} are said to achieve byzantine agreement on sets {Si} if three conditions are satisfied:
 1. `Consistency`: Every honest party outputs the same set S’
 2. `Validity 1` (“all honest witnessed”): If for every honest party Pi v is in Si then v is in S'
 3. `Validity 2` (“no honest witness”): If for no honest party Pi v in Si then v not in S'
 
 #### Roles
-
 During the BA, at each round, a party can be assigned with one of the following roles:
-* `Passive` - Listens and follows the protocol. This is the default role of a participant meaning every participant is at least passive.
+* `Passive` - Listens and follows the protocol. This is the default role of a participant meaning every protocol participant is at least passive.
 * `Active` - Also acts as a speaker and share his knowledge
 * `Leader` - a participant who can give a proposition to the network. There is only one leader
 
@@ -42,7 +41,7 @@ A proof made by a participant to ensure that a set S satisfies validity 1 and va
 
 ## The Protocol
 
-The protocol begins with a `pre-round`. This round is executed only once and its goal is to remove values which shouldn't be considered at all (according to Validity 2).
+The protocol begins with a `pre-round`. This round is executed only once and its goal is to remove values which shouldn't be considered at all (according to Validity 2)
 - At the beginning of the round each active party sends his set of values
 - At the end of the round, each value that hasn't received f+1 witnesses is removed
 
