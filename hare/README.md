@@ -18,7 +18,7 @@ It is known in advance when an agreement process should start for each layer. On
 #### Byzantine Agreement on Sets
 
 parties {Pi} are said to achieve byzantine agreement on sets {Si} if three conditions are satisfied:
-1. `Consistency:` Every honest party outputs the same set S’
+1. `Consistency`: Every honest party outputs the same set S’
 2. `Validity 1` (“all honest witnessed”): If for every honest party Pi v is in Si then v is in S'
 3. `Validity 2` (“no honest witness”): If for no honest party Pi v in Si then v not in S'
 
