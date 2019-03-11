@@ -6,9 +6,9 @@ The hare protocol is used to achieve consensus on a layer i.e. a set of blocks. 
 It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence,  multiple consensus instances may be running concurrently.  
 
 ## Definitions
-`N` - the number of active participants.
+`N` - The number of active participants.
 
-`f` - the number of active dishonest participants.
+`f` - The number of active dishonest participants.
 
 `Pi` - A participant in the consensus.
 
