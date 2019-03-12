@@ -28,11 +28,15 @@ During the BA, at each round, a party can be assigned with one of the following 
 * `Active` - Also acts as a speaker and share his knowledge
 * `Leader` - a participant who can give a proposition to the network. There is only one leader
 
+<<<<<<< HEAD
 #### Virtual Participation
 Virtual participation is an optimization made to ease a participant’s role. After a participant terminates, he sends a notify message declaring his commitment to his corresponding set. From here on out, all other participants can refer to his notify message as if it was sent in the current round.
 
 #### Certificate
 A proof to witnessing f+1 commits on a set S.
+=======
+**Certificate** - a proof to witnessing f+1 commits on a set S.
+>>>>>>> 209247fe5a6c409d263c35f272a853450573e1e8
 
 #### Safe Value Proof (SVP)
 A proof made by a participant to ensure that a set S satisfies validity 1 and validity 2 in respect to a specific round k. An SVP also includes a certificate with which we can ensure consistency.
