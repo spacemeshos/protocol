@@ -3,7 +3,7 @@
 ## Description
 The hare protocol is used to achieve consensus on a layer i.e. a set of blocks. The general problem is the [Byzantine Agreement Problem](https://en.wikipedia.org/wiki/Quantum_Byzantine_agreement). Our protocol is based on the [ADDNR18 paper](https://eprint.iacr.org/2018/1028.pdf) and differs mainly on the fact that we want to achieve consensus on a set of values rather than a single value.
 
-It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence,  multiple consensus instances may be running concurrently.  
+It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence, multiple consensus instances may be running concurrently.  
 
 ## Definitions
 `N` - The number of active participants.
@@ -18,7 +18,7 @@ It is known in advance when an agreement process should start for each layer. On
 #### Byzantine Agreement on Sets
 
 Parties {Pi} are said to achieve byzantine agreement on sets {Si} if three conditions are satisfied:
-1. `Consistency`: Every honest party outputs the same set S’
+1. `Consistency`: Every honest party outputs the same set S'
 2. `Validity 1` (“all honest witnessed”): If for every honest party Pi v is in Si then v is in S'
 3. `Validity 2` (“no honest witness”): If for no honest party Pi v in Si then v not in S'
 
