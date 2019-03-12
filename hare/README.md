@@ -22,8 +22,6 @@ It is known in advance when an agreement process should start for each layer. On
 * `Active` - Also acts as a speaker and share his knowledge.
 * `Leader` - a participant who can give a proposition to the network. There is only one leader.
 
-**Virtual Participation** - virtual participation is an optimization made to ease a participant’s role. After a participant terminates, he sends a notify message declaring his commitment to his corresponding set. From here on out, all other participants can refer to his notify message as if it was sent in the current round.
-
 **Certificate** - a proof to witnessing f+1 commits on a set S.
 
 **Safe Value Proof** - a proof made by a participant to ensure that a set S satisfies validity 1 and validity 2 in respect to a specific round k. An SVP also includes a certificate with which we can ensure consistency.
