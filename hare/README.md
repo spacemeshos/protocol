@@ -23,7 +23,7 @@ It is known in advance when an agreement process should start for each layer. On
 Parties {Pi} are said to achieve byzantine agreement on sets {Si} if three conditions are satisfied:
 1. `Consistency`: Every honest party outputs the same set S'
 2. `Validity 1` (“all honest witnessed”): If for every honest party Pi value v is in ISi then v is in S'
-3. `Validity 2` (“no honest witness”): If for no honest party Pi value v in ISi then v is not in S'. In other words, only values that are in ISi for f+1 parties should be in S'.
+3. `Validity 2` (“no honest witness”): If for no honest party Pi value v in ISi then v is not in S'. In other words, all values in S' should have had at least one honest witness.
 
 #### Roles
 At each round while the protocol is running, a party can be assigned with one of the following 3 roles:
