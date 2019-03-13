@@ -43,8 +43,8 @@ A proof made by a participant to ensure that a set S satisfies `validity 1` in r
 
 **Pre-Round**
 The protocol begins with one `pre-round`. This round is executed only once and its goal is to remove values which shouldn't be considered at all according to `Validity 2`
-- At the beginning of the pre-round each active party sends his set of values
-- At the end of the pre-round, each value that hasn't received f+1 witnesses is removed
+- At the beginning of the pre-round each active party sends his set of values ISi
+- At the end of the pre-round, each value that hasn't received f+1 witnesses is removed. This ensures that we are left only with values that has at least one honest witness and therefore satisfying `validity 2`
 
 The protocol repeatedly iterates through up to 4 rounds until a consensus is reached.
 
