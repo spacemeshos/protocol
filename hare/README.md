@@ -1,27 +1,29 @@
 # The Hare Protocol
 
 ## Description
-The hare protocol is used to achieve consensus on a layer i.e. a set of values such as block ids.
+The Hare protocol is a consensus protocol that achieves consensus on a set of values for a specific instance id. In our case, we want to achieve consensus on a set of block ids (the set of values) in a specific layer (the instance id).
 
 The general problem is the [Byzantine Agreement Problem](https://en.wikipedia.org/wiki/Quantum_Byzantine_agreement). Our protocol is based on the [ADDNR18 paper](https://eprint.iacr.org/2018/1028.pdf) and differs mainly on the fact that we want to achieve consensus on a set of values rather than a single value.
 
 It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence, multiple consensus instances may be running concurrently.  
 
 ## Definitions
-`N` - The number of active participants.
+`N` - The number of active participants
 
-`f` - The number of active dishonest participants.
+`f` - The number of active dishonest participants
 
-`Pi` - A participant in the consensus.
+`Pi` - A participant in the consensus
 
-`Si` - The current set of values observed by Pi.
+`Si` - The current set of values observed by Pi
+
+`ISi` - The initial set of Pi
 
 #### Byzantine Agreement on Sets
 
 Parties {Pi} are said to achieve byzantine agreement on sets {Si} if three conditions are satisfied:
 1. `Consistency`: Every honest party outputs the same set S'
-2. `Validity 1` (“all honest witnessed”): If for every honest party Pi value v is in Si then v is in S'
-3. `Validity 2` (“no honest witness”): If for no honest party Pi value v in Si then v is not in S'. In other words, only values that are in Si for f+1 parties should be in S'.
+2. `Validity 1` (“all honest witnessed”): If for every honest party Pi value v is in ISi then v is in S'
+3. `Validity 2` (“no honest witness”): If for no honest party Pi value v in ISi then v is not in S'. In other words, only values that are in ISi for f+1 parties should be in S'.
 
 #### Roles
 At each round while the protocol is running, a party can be assigned with one of the following 3 roles:
@@ -33,7 +35,7 @@ At each round while the protocol is running, a party can be assigned with one of
 A proof to witnessing f+1 commits on a set S.
 
 #### Safe Value Proof (SVP)
-A proof made by a participant to ensure that a set S satisfies `validity 1` and `validity 2` in respect to a specific round k. An SVP also includes a certificate with which we can ensure consistency.
+A proof made by a participant to ensure that a set S satisfies `validity 1` in respect to a specific round k. An SVP also includes a certificate with which we can ensure consistency.
 
 ---
 
@@ -59,13 +61,13 @@ Each round longs a constant time. A `Roles Oracle` is used to generate roles in 
 **Round 2**
 - Active participants announce their will to commit to the proposed set T
 - If a participant observes f+1 participants willing to commit to T, he commits to T and constructs the matching certificate (which is the proof that he witnessed f+1 commits to T) and sends a notify message stating that he committed to T
-- If equivocation is detected by a party P, it doesn't commit to T. Equivocation means that the leader sent more than one proposal to the network
+- If equivocation is detected by a party P, it doesn't commit to T. Equivocation means that the leader sent two or more contradicting proposals to the network
 
 **Round 3**
 - Upon receiving a valid notify message the party updates his internal state according to the attached set
 
 **Termination**
-If at any point of the protocol, a party P receives f+1 notify messages on the same set S, it commits to S and terminates
+If at any point of the protocol, a party P receives f+1 notify messages on the same set S, it commits to S and terminates. Note that after an honest party has terminated, the other honest parties are ensured to terminate up to the following round, thanks to the gossip properties.
 
 ![Message Validation](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/msg_validation.svg?sanitize=true)
 ![Round 1](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/round1.svg?sanitize=true)
