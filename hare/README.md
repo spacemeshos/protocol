@@ -50,20 +50,20 @@ The protocol repeatedly iterates through up to 4 rounds until a consensus is rea
 
 Each round longs a constant time. A `Roles Oracle` is used to generate roles in each round.
 
-**Round 0**
+**Status Round**
 - Active participants broadcast their current status to the network (S, k , ki)
 - At the end of this round, a participant can form an SVP based on the statuses he collected during the round
 
-**Round 1**
+**Proposal Round**
 - The leader can now give his proposition set T with the corresponding SVP P to the network
 - Each participant can validate the proposition sent by the leader and consider that set T on the next round
 
-**Round 2**
+**Commit Round**
 - Active participants announce their will to commit to the proposed set T
 - If a participant observes f+1 participants willing to commit to T, he commits to T and constructs the matching certificate (which is the proof that he witnessed f+1 commits to T) and sends a notify message stating that he committed to T
 - If equivocation is detected by a party P, it doesn't commit to T. Equivocation means that the leader sent two or more contradicting proposals to the network
 
-**Round 3**
+**Notify Round**
 - Upon receiving a valid notify message the party updates his internal state according to the attached set
 
 **Termination**
