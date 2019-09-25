@@ -1,7 +1,7 @@
 # The Hare Protocol
 
 ## Description
-The Hare protocol is a consensus protocol that achieves consensus on a set of values for a specific instance id. In our case, we want to achieve consensus on a set of block ids (the set of values) in a specific layer (the instance id).
+The Hare protocol is a consensus protocol that achieves consensus on a set of values. In our case, we want to achieve consensus on a set of block ids (the set of values) in a specific layer (the instance/layer id).
 
 The general problem is the [Byzantine Agreement Problem](https://en.wikipedia.org/wiki/Quantum_Byzantine_agreement). Our protocol is based on the [ADDNR18 paper](https://eprint.iacr.org/2018/1028.pdf) and differs mainly on the fact that we want to achieve consensus on a set of values rather than a single value.
 
