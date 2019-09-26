@@ -5,7 +5,7 @@ The Hare protocol is a consensus protocol that achieves consensus on a set of va
 
 The general problem is the [Byzantine Agreement Problem](https://en.wikipedia.org/wiki/Quantum_Byzantine_agreement). Our protocol is based on the [ADDNR18 paper](https://eprint.iacr.org/2018/1028.pdf) and differs mainly on the fact that we want to achieve consensus on a set of values rather than a single value.
 
-It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence, multiple consensus instances may be running concurrently.  
+It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence, multiple consensus instances may be run concurrently.  
 
 ## Definitions
 `N` - The number of active participants
@@ -24,18 +24,21 @@ Parties {Pi} are said to achieve byzantine agreement on sets {Si} if three condi
 1. `Consistency`: Every honest party outputs the same set S'
 2. `Validity 1` (“all honest witnessed”): If for every honest party Pi value v is in ISi then v is in S'
 3. `Validity 2` (“no honest witness”): If for no honest party Pi value v in ISi then v is not in S'. In other words, all values in S' should have had at least one honest witness.
+4. `Termination` - All honest participants terminate with overwhelming probablity.
 
-#### Roles
-At each round while the protocol is running, a party can be assigned with one of the following 3 roles:
-* `Passive` - Listens and follows the protocol. This is the default role of a participant so every protocol participant is at least passive
-* `Active` - Also acts as a speaker and shares his knowledge
-* `Leader` - A participant who can give a proposition to the network. There is only one leader
+#### Active Participants
+In each round, a new committee is selected randomly by the oracle (which we assume its existance).
+Picking a random committe over having all the nodes participate in the protocol is good for two main reasons:
+1. Less participants means lower communication requirments.
+2. Random election of participants means the participants are not predicted hence less likely to be exposed to DDOS attacks (for example).
+In the proposal round, the expected number of participants is low (1 for example). In all other rounds we expect N (active) participants.
 
-#### Certificate
-A proof to witnessing f+1 commits on a set S.
+#### Commit Certificate - C(S,K)
+A proof that consists of f+1 commit messages on the same set S for the same iteration K.
+f+1 commit messages implies at least one of them is honest and hence the set S is ensured to be valid.
 
 #### Safe Value Proof (SVP)
-A proof made by a participant to ensure that a set S satisfies `validity 1` in respect to a specific round k. An SVP also includes a certificate with which we can ensure consistency.
+A proof made by a participant to ensure that a set S satisfies `validity 1` in respect to a specific round K. An SVP also includes a certificate with which we can ensure consistency.
 
 ---
 
