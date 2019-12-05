@@ -56,11 +56,11 @@ Consensus in the Spacemesh protocol consists of several independent components t
 
 ### Proof of Spacetime
 
-In Spacemesh, a Proof of Spacetime (abbreviated PoST) is how a miner establishes eligibility to produce blocks and participate in consensus. These proofs have two phases: an initial phase, where a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space; and an ongoing phase, where the miner must submit a new proof of ongoing eligibility each epoch. See Mining [LINK] for more information.
+In Spacemesh, a Proof of Spacetime (abbreviated PoST) is how a miner establishes eligibility to produce blocks and participate in consensus. These proofs have two phases: an initial phase, where a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space; and an ongoing phase, where the miner must submit a new proof of ongoing eligibility each epoch. See [Mining](mining/01-overview.md) for more information.
 
 ### Producing blocks
 
-Once a miner has successfully generated and submitted an eligibility proof, the process of actually producing blocks is relatively straightforward: they collect transactions into a local transaction pool, and once per layer, assemble them into blocks and broadcast those blocks to the network. See Mining [LINK] for more information on this process.
+Once a miner has successfully generated and submitted an eligibility proof, the process of actually producing blocks is relatively straightforward: they collect transactions into a local transaction pool, and once per layer, assemble them into blocks and broadcast those blocks to the network. See [Mining](mining/01-overview.md) for more information on this process.
 
 ### Tortoise and Hare
 
@@ -76,9 +76,9 @@ For more information, see Network [LINK].
 
 ## Data Structures
 
-The basic building blocks of the Spacemesh protocol, and the overall, canonical mesh data structure, are transactions and blocks. Transactions are account-based, and contain a sender, a recipient, an amount, a signature, and a few other pieces of data. Blocks collate zero or more transactions into a discrete set, and contain a block height (layer number), a signature of the miner, a proof of eligibility, and a few other pieces of data. See Mining [LINK] for more information.
+The basic building blocks of the Spacemesh protocol, and the overall, canonical mesh data structure, are transactions and blocks. Transactions are account-based, and contain a sender, a recipient, an amount, a signature, and a few other pieces of data. Blocks collate zero or more transactions into a discrete set, and contain a block height (layer number), a signature of the miner, a proof of eligibility, and a few other pieces of data. See [Mining](mining/01-overview.md) for more information.
 
-Other relevant data structures include the various types of proof (PoST, PoET, ATX, NiPoST, etc.) [LINK to Mining], and vote messages exchanged as part of the Hare protocol [LINK to Consensus].
+Other relevant data structures include the various types of proof submitted by miners (PoST, PoET, ATX, NiPoST, etc.), and vote messages exchanged as part of the Hare protocol [LINK to Consensus].
 
 ## Learn More
 
