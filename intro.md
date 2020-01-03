@@ -54,9 +54,9 @@ SVM is the Spacemesh Virtual Machine, a WebAssembly-compatible smart contract en
 
 Consensus in the Spacemesh protocol consists of several independent components that work together to allow each network node to independently arrive at the same canonical view of blocks and transactions (given the same or similar information). What follows is a very brief overview; see Consensus [LINK] for more information.
 
-### Proof of Spacetime
+### Proof of Space-time
 
-In Spacemesh, a Proof of Spacetime (abbreviated PoST) is how a miner establishes eligibility to produce blocks and participate in consensus. These proofs have two phases: an initial phase, where a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space; and an ongoing phase, where the miner must submit a new proof of ongoing eligibility each epoch. See [Mining](mining/01-overview.md) for more information.
+In Spacemesh, a Proof of Space-time (abbreviated PoST) is how a miner establishes eligibility to produce blocks and participate in consensus. These proofs have two phases: an initial phase, where a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space; and an ongoing phase, where the miner must submit a new proof of ongoing eligibility each epoch. See [Mining](mining/01-overview.md) for more information.
 
 ### Producing blocks
 
