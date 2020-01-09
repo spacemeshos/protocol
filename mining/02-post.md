@@ -25,6 +25,7 @@ Unlike existing Proof of Space constructions, the computational difficulty of th
 To allow public verifiability, and to ensure that the data generated in the initialization phase is cheaper to store than to regenerate, generating this data must entail Proof of Work. To avoid the prover having to send all of the data to the verifier, the prover doesn’t construct one large proof, but rather a table containing many entries, where each entry is a PoW that can be independently verified.
 
 
+<a name="phases"></a>
 ### Phases
 
 
@@ -33,7 +34,7 @@ To allow public verifiability, and to ensure that the data generated in the init
 
 **The execution phase can be repeated multiple times** without rerunning the initialization phase. This point is critical, since the initialization phase requires work, while the execution phase is energy efficient (i.e., it requires relatively few computational steps). Thus, although using PoST to generate a single proof does not give any advantage over PoW, using it to generate many such proofs allows the work required during the initialization phase to be amortized over all of the proofs, which makes the construction energy efficient.
 
-
+<a name="proving"></a>
 ### Proving
 
 Proving occurs at the end of the initialization phase (using an empty challenge), and on every subsequent iteration of the execution phase (as a response to a received challenge). This makes proving interactive between the prover and a verifier, except during the initialization phase, where the challenge is empty and, thus, non-interactive.
