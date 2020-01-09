@@ -1,4 +1,4 @@
-## Mining - Proof of Space-time
+# Mining - Proof of Space-time
 
 Proof of Space-Time (PoST) is a new cryptographic primitive, designed to replace Proof of Work (PoW) as a proof-of-resource-consumption scheme, and so as a Sybil-resistance mechanism for permissionless cryptocurrencies. It was introduced in 2016 by [Tal Moran](https://talmoran.net/) and [Ilan Orlov](https://www.cs.bgu.ac.il/~ilanorv/) in a paper titled [_Simple Proofs of Space-Time and Rational Proofs of Storage_](https://eprint.iacr.org/2016/035.pdf).
 
