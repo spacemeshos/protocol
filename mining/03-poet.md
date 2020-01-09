@@ -1,6 +1,6 @@
 # Mining - Proof of Elapsed Time
 
-Proof of Elapsed Time, or PoET, is a cryptographic approach to proving that a piece of information existed and was known to a prover before a specific point in objective time: in other words, that _a specific amount of time has elapsed_ since the prover committed to knowing that information. In the context of Spacemesh, PoET is used to introduce the concept of _time_ to the eligibility proofs submitted by miners, in effect asserting not only that they generated a set of data (the initialization phase of PoST), but that they still have access to that data after some time has elapsed (the execution phase)—hence, proofs of space_-time._
+Proof of Elapsed Time, or PoET, is a cryptographic approach to proving that a piece of information existed and was known to a prover before a specific point in objective time: in other words, that _a specific amount of time has elapsed_ since the prover committed to knowing that information. In the context of Spacemesh, PoET is used to introduce the concept of _time_ to the eligibility proofs submitted by miners, in effect asserting not only that they generated a set of data (the initialization phase of PoST), but that they still have access to that data after some time has elapsed (the execution phase)—hence, proofs of _space-time._
 
 A naive cryptographic approach to proving that a digital asset was created before a certain time in the past is proof of work, i.e., to use computational effort spent as a proxy for elapsed time. But while proof of work attests to a certain amount of computational work having been performed, it does not strictly correspond to elapsed clock time, since the work may be parallelized. Thus in order to prove elapsed time we must use a proof of work construction that requires inherently sequential work so that parallelization could not reduce the duration taken to complete the work (while still being bound to a single-core CPU speed, which can vary, but has a practical limit). This sort of construction is sometimes referred to as Proof of Sequential Work (PoSW), which can be used as a proxy for Proof of Elapsed Time (PoET).
 
@@ -15,11 +15,9 @@ A much simpler and more efficient construction was introduced in 2018 by Bram Co
 
 Unlike the PoST proof construction, PoET proof construction occurs in a single phase. At the very highest level of abstraction, it involves the first party, the prover, running an agreed-upon, arbitrary piece of data (known as the “statement”) through an agreed-upon computation (the PoSW algorithm) for an agreed-upon period of time (_t,_ which is actually measured in repetitions of the algorithm as a proxy for elapsed wall time). The prover then generates a proof based on the results and publishes it for anyone to independently verify. The basic protocol, which is interactive, explains these steps in more detail. Enabling independent, public, non-interactive verification of these proofs, as with PoST, involves the use of Fiat-Shamir; this is also explained below.
 
-
+<a name="algorithm"></a>
 ### Basic (interactive) protocol
 
-
-<a name="algorithm"></a>
 1. Both parties, prover and verifier, agree on set of shared security parameters, including the designated period of time, _t,_ the number of layers in the graph, and the number of leaves to be included in a proof
 2. Verifier sends prover a statement
 3. Prover runs the PoSW algorithm for _t_ time using the provided statement as input, generates a graph, calculates and sends a commitment to that graph (i.e., the Merkle root) to verifier and stores the graph
