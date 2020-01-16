@@ -18,21 +18,19 @@ Unlike the PoST proof construction, PoET proof construction occurs in a single p
 <a name="algorithm"></a>
 ### Basic (interactive) protocol
 
-1. Both parties, prover and verifier, agree on set of shared security parameters, including the designated period of time, _t,_ the number of layers in the graph, and the number of leaves to be included in a proof
+1. Both parties, prover and verifier, agree on set of shared security parameters, including the designated period of time, _t,_ and the number of leaves to be included in a proof
 2. Verifier sends prover a statement
-3. Prover runs the PoSW algorithm for _t_ time using the provided statement as input, generates a graph, calculates and sends a commitment to that graph (i.e., the Merkle root) to verifier and stores the graph
-4. Verifier sends prover a random challenge (i..e, a random set of leaf indices in the graph)
+3. Prover runs the PoSW algorithm for time _t_, using the provided statement as input, to generate a graph, then calculates and sends a commitment to that graph (i.e., the Merkle root) to verifier and stores the graph
+4. Verifier sends prover a random challenge (i.e., a random set of leaf indices in the graph)
 5. Prover returns a proof (i.e., the labels and Merkle paths proving that the committed-to Merkle root contains each of the indicated leaves) to verifier
 6. Verifier verifies the proof using the commitment and _t_. If accepted, verifier is convinced that _t_ time has passed since the statement was learned by prover.
 
 
 ### Non-interactive protocol
 
-
-
-1. All parties, provers and anyone who will independently verify generated proofs, agree on set of shared security parameters, including the designated period of time, _t,_ the number of layers in the graph, and the number of leaves to be included in a proof
-2. Prover generates a statement (or receives it from a third party), runs the PoSW algorithm for _t_ time using the statement as input, generates a graph, calculates a commitment to that graph (Merkle root), derives the challenge from the commitment (using the [Fiat-Shamir heuristic](https://en.wikipedia.org/wiki/Fiat%E2%80%93Shamir_heuristic)), generates a proof (a set of labels and Merkle paths corresponding to the derived challenge). Sends statement, Merkle root, and proof to verifier. (Note that, in the non-interactive case, there’s no need to store the graph any longer.)
-3. Verifier derives the challenge from the Merkle root (using the Fiat-Shamir heuristic), verifies the proof. If accepted, verifier is convinced that _n_ time has passed since statement was learned by the prover.
+1. All parties, including anyone who will independently verify generated proofs, agree on set of shared security parameters, including the designated period of time, _t,_ the number of layers in the graph, and the number of leaves to be included in a proof
+2. Prover generates a statement (or receives it from a third party), runs the PoSW algorithm for _t_ time using the statement as input, generates a graph, calculates a commitment to that graph (Merkle root), derives the challenge from the commitment (using the [Fiat-Shamir heuristic](https://en.wikipedia.org/wiki/Fiat%E2%80%93Shamir_heuristic)), generates a proof (a set of labels and Merkle paths corresponding to the derived challenge). Publishes statement, Merkle root, and proof.
+3. Verifier derives the challenge from the Merkle root (using the Fiat-Shamir heuristic), verifies the proof. If accepted, verifier is convinced that _t_ time has passed since statement was learned by the prover. (See the next section for more information on how this happens.)
 
 
 ### Verification of non-interactive proof
