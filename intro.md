@@ -8,6 +8,12 @@ Spacemesh is a fair, race-free, permissionless blockchain protocol currently imp
 
 Spacemesh research and development is led by a team of full-time contributors employed by a for-profit, venture-backed company. However, Spacemesh is also an active open source project and a community of dedicated researchers, developers, and other contributors around the world. Learn more about the Spacemesh protocol at the [project homepage](https://spacemesh.io/), and about the project and its goals in the [manifesto](https://spacemesh.io/spacemesh-manifesto/).
 
+### Spacemesh basics
+
+In Spacemesh, we divide time into fixed-length units we call _layers,_ which are further grouped together into longer intervals called _epochs._ Layers are similar to Bitcoin's average ten minute block time, with a couple of important differences. For one thing, unlike in Proof of Work-based blockchains like Bitcoin and Ethereum where block time is the product of a Poisson process and thus random, layers in Spacemesh occur at precisely fixed intervals of time. This is due to the deterministic nature of the Spacemesh protocol. For another thing, in Spacemesh, many blocks are produced in each layer rather than only a single block.
+
+Read on to learn more about the details of the Spacemesh protocol. You may also find this high-level [protocol overview](https://spacemesh.io/protocol/) helpful.
+
 ### Why race-free?
 
 The Spacemesh protocol guarantees that each Smesher that follows the rules of the protocol is eligible to produce multiple blocks during each epoch. Note also that Smeshing is entirely permissionless: in other words, _anyone who runs the Spacemesh software and follows the rules of the protocol is guaranteed to be rewarded with Smesh coins at each epoch._ This is in contrast to both Proof of Work-based protocols, such as Bitcoin, where rewards are probabilistic and only professional miners and mining pools stand a realistic chance of earning them; as well as to Proof of Stake-based protocols, where one must hold a substantial amount of the token before they are eligible to participate and earn rewards.
@@ -28,7 +34,9 @@ Note that, unlike full node implementations for certain other blockchain protoco
 
 ### PoET server
 
-PoET stands for “Proof of Elapsed Time.” It’s a core part of the Spacemesh consensus protocol, where it’s used to prove that a miner has allocated a chunk of hard drive space for some period of time. PoET is implemented as a web service, separate from go-spacemesh, that anyone can run and offer as a service to Smeshers. Many Smeshers can share a single PoET server, and one Smesher may opt to utilize multiple PoET servers for redundancy. Go-spacemesh [includes code](https://github.com/spacemeshos/go-spacemesh/blob/develop/activation/poet.go) to communicate with a PoET server.
+PoET stands for “Proof of Elapsed Time.” It’s a core part of the Spacemesh consensus protocol, where it’s used to prove that a miner has allocated a chunk of hard drive space to the protocol _for some period of time._ PoST, [described below](#post), is used to prove that _space_ has been allocated; PoET is responsible for the _time_ component of space-time.
+
+PoET is implemented as a web service, separate from go-spacemesh, that anyone can run and offer as a service to Smeshers. Many Smeshers can share a single PoET server, and one Smesher may opt to utilize multiple PoET servers for redundancy. Go-spacemesh [includes code](https://github.com/spacemeshos/go-spacemesh/blob/develop/activation/poet.go) to communicate with a PoET server.
 
 For more information see [PoET](mining/03-poet.md) and the [PoET codebase](https://github.com/spacemeshos/poet).
 
@@ -52,17 +60,24 @@ SVM is the Spacemesh Virtual Machine, a WebAssembly-compatible smart contract en
 
 ## Mining
 
+<a name="post"></a>
 ### Proof of Space-time
 
-In Spacemesh, a Proof of Space-time (abbreviated PoST) is how a miner establishes eligibility to produce blocks and participate in consensus. These proofs have two phases: an initial phase, where a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space; and an ongoing phase, where the miner must submit a new proof of ongoing eligibility each epoch. See [Mining](mining/01-overview.md) for more information.
+In Spacemesh, a Proof of Space-time (abbreviated PoST) is how a miner establishes eligibility to produce blocks and participate in consensus. These proofs have two phases. In the initial phase, known as the _initialization phase,_ a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space. The space is filled with cryptographic junk such that for the duration that this space is committed to Spacemesh it cannot be used for any other purpose. This hard drive space is the _space_ component of the _space-time_ resource that underlies a Proof of Space-time.
+
+In the ongoing phase, known as the _execution phase,_ the miner must submit a new proof of ongoing eligibility each epoch. 
+
+See [Mining](mining/01-overview.md) for more information on how these proofs are generated and utilized.
 
 ### Producing blocks
 
-Once a miner has successfully generated and submitted an eligibility proof, the process of actually producing blocks is relatively straightforward: they collect transactions into a local transaction pool, and once per layer, assemble them into blocks and broadcast those blocks to the network. See [Mining](mining/01-overview.md) for more information on this process.
+Once a miner has successfully generated and submitted an eligibility proof, the process of actually producing blocks is relatively straightforward. The miner can calculate which layers in a given epoch they are eligible to produce blocks. (The number of layers during which they are eligible, and thus, the number of blocks they produce in each epoch, will vary depending upon the total number of miners, but the epoch size is set sufficiently large that, unless the number of miners becomes enormous, each miner will be eligible to produce multiple blocks per epoch.)
+
+Miners collect transactions into a local transaction pool, and once per eligible layer they assemble them into blocks and broadcast those blocks to the network. See [Mining](mining/01-overview.md) for more information on this process.
 
 ## Consensus
 
-Consensus in the Spacemesh protocol consists of several independent components that work together to allow each network node to independently arrive at the same canonical view of blocks and transactions (given the same or similar information). What follows is a very brief overview; see Consensus [LINK forthcoming] for more information.
+Consensus in the Spacemesh protocol consists of several independent components that work together to allow each network node to independently arrive at the same canonical view of blocks and transactions in a [Byzantine Fault Tolerant-fashion](https://en.wikipedia.org/wiki/Byzantine_fault), i.e., even if those nodes haven't seen precisely the same information at precisely the same time. What follows is a very brief overview; see Consensus [LINK forthcoming] for more information.
 
 ### Tortoise and Hare
 
@@ -80,7 +95,7 @@ For more information, see Network [LINK forthcoming].
 
 The basic building blocks of the Spacemesh protocol, and the overall, canonical mesh data structure, are transactions and blocks. Transactions are account-based, and contain a sender, a recipient, an amount, a signature, and a few other pieces of data. Blocks collate zero or more transactions into a discrete set, and contain a block height (layer number), a signature of the miner, a proof of eligibility, and a few other pieces of data. See [Mining](mining/01-overview.md) for more information.
 
-Other relevant data structures include the various types of proof submitted by miners (PoST, PoET, ATX, NiPoST, etc.), and vote messages exchanged as part of the Hare protocol [LINK forthcoming].
+Other relevant data structures include the various types of proof produced and submitted by miners and other services ([PoET](mining/03-poet.md), [ATX](mining/05-atx.md)), and vote messages exchanged as part of the Hare protocol [LINK forthcoming].
 
 ## Learn More
 
