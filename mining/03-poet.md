@@ -31,13 +31,13 @@ Unlike the PoST proof construction, PoET proof construction occurs in a single p
 ### Non-interactive protocol
 
 1. All parties, including anyone who will independently verify generated proofs, agree on set of shared security parameters, including the designated period of time, _t,_ the number of layers in the graph, and the number of leaves to be included in a proof
-2. Prover generates a statement (or receives it from a third party), runs the PoSW algorithm for _t_ time using the statement as input, generates a graph, calculates a commitment to that graph (Merkle root), derives the challenge from the commitment (using the [Fiat-Shamir heuristic](https://en.wikipedia.org/wiki/Fiat%E2%80%93Shamir_heuristic)), generates a proof (a set of labels and Merkle paths corresponding to the derived challenge). Publishes statement, Merkle root, and proof.
+2. Prover receives a statement, runs the PoSW algorithm for _t_ time using the statement as input, generates a graph, calculates a commitment to that graph (Merkle root), derives the challenge from the commitment (using the [Fiat-Shamir heuristic](https://en.wikipedia.org/wiki/Fiat%E2%80%93Shamir_heuristic)), generates a proof (a set of labels and Merkle paths corresponding to the derived challenge). Publishes statement, Merkle root, and proof.
 3. Verifier derives the challenge from the Merkle root (using the Fiat-Shamir heuristic), verifies the proof. If accepted, verifier is convinced that _t_ time has passed since statement was learned by the prover. (See the next section for more information on how this happens.)
 
 
 ### Verification of non-interactive proof
 
-The verifier first uses Fiat-Shamir to derive the deterministic challenge based on the Merkle root that the prover committed to (as in PoST), i.e., a random set of leaf indices. She then verifies that the proof contains the correct number of Merkle paths and that the set of Merkle paths matches the committed-to Merkle root. Finally, she independently runs the PoSW algorithm (using the shared parameter _t_) to calculate the expected value of each of the leaves and makes sure that they match the values contained in the proof.
+The verifier first uses Fiat-Shamir to derive the deterministic challenge based on the Merkle root that the prover committed to (as in PoST), i.e., a random set of leaf indices. She then verifies that the proof contains the correct number of Merkle paths and that the set of Merkle paths matches the committed-to Merkle root. Finally, she independently runs the PoSW algorithm (using the shared parameter _t_) to recompute the labels for the chosen leaves to make sure that they match the values contained in the proof.
 
 
 ### Further details
