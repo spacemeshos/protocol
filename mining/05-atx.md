@@ -1,6 +1,8 @@
 # Mining - Activation Transaction
 
-Miners become eligible to mine in Spacemesh by publishing an Activation Transaction (ATX). Each ATX is a publicly verifiable, self-contained proof that the miner committed some space-time resources to the protocol. This document describes how the theory described in the previous documents (PoST, PoET, NIPoST) is put into practice in the production Spacemesh protocol. In particular, it explains how the NIPoST (which itself contains the PoST and PoET) is wrapped, with accompanying metadata, into an ATX and used in the Spacemesh protocol.
+Miners become eligible to mine in Spacemesh by publishing an Activation Transaction (ATX). Each ATX is a publicly verifiable, self-contained proof that the miner committed some space-time resources to the protocol.
+
+The previous documents in this section describe the _theory_ behind a set of independent protocols (PoST, PoET, NIPoST) that form the foundation of the Spacemesh mining construction. With ths background in place, we are now ready to see how these building block fit together _in practice_ to enable the Spacemesh mining construction in the production network. In particular, we'll see how the NIPoST (which itself contains the PoST and PoET) is wrapped, with accompanying metadata, into an ATX and used in the Spacemesh protocol.
 
 
 ## Epochs and eligibility
@@ -16,24 +18,9 @@ An epoch is long enough that each active miner should be able to generate at lea
 
 ## Construction
 
-Unlike the [PoST](02-post.md) and [PoET](03-poet.md) constructions, an ATX is not itself a proof and as such it does not require any additional commitment of resources or complex computation. Instead, like [NIPoST](04-nipost.md), it’s a data structure that wraps the ATX along with relevant metadata. An ATX is a “freestanding” transaction—it does not have to be included in a block to be valid, but can just be gossiped to the network.
+Unlike the [PoST](02-post.md) and [PoET](03-poet.md) constructions, an ATX is not itself a proof and as such it does not require any additional commitment of resources or complex computation. Instead, like [NIPoST](04-nipost.md), it’s a data structure that wraps the ATX along with relevant metadata. An ATX is a “freestanding” transaction: it does not have to be included in a block to be valid, but can just be gossiped to the network directly.
 
-In addition to the full NIPoST attested to by the ATX, the ATX also contains fields such as the ID of the previous ATX from the same miner, the time when the eligibility for this ATX starts and ends, and the miner’s signature. See [some other doc] for an elaboration of the full contents of the ATX.
-
-Each ATX contains the following components:
-
-
-1. **Node ID**: a tuple (_vkid, vrf_id_), where vk_id is a verification key for a signature scheme and vrf_id is the verification key for a VRF. 
-2. **Sequence number** _s_: a sequence number (ATXs for a given Node ID must be published in sequence). 
-3. **Previous ATX**: the ID of the ATX with the same Node ID and sequence number _s_− 1. (if _s_= 0, then this field is empty). 
-4. **Layer Index** _i_: the index of the layer at which this ATX becomes valid. 
-5. **Positioning ATX**: the ID of an ATX (not necessarily with the same Node ID) with a layer index _i_−∆epoch. Miners should always choose the ATX with the highest end-tick at layer _i_−∆epoch.
-6. **Start tick** t: The “sequential work tick” at which this ATX starts. This is equal to the end tick of t
-7. **End tick** t′: the sequential work tick at which this ATX ends.
-8. **NIPoST**: a NIPoST proof using the Node ID as the ID and a hash of all the previous fields as the challenge. The NIPoST duration must be t′ − t.
-9. **Active set size** d: the number of “active” ATXs seen by the node creating this ATX at the time it is published (note that d is not an input to the NIPoST).
-10. **View pointers**: pointers (IDs) of blocks whose combined visible mesh (see section 4.5) includes d active ATXs. (This will usually be a single block, but can include explicit pointers to ATXs not in any block.)
-11. **Signature**: A signature of the ATX ID (the hash of the ATX excluding the signature) using the private key corresponding to vkid.
+In addition to the full NIPoST attested to by the ATX, the ATX also contains fields such as the ID of the previous ATX from the same miner, the time when the eligibility for this ATX starts and ends, and the miner’s signature. See [the full protocol specifications](https://spacemesh.io/spacemesh-protocol-v1-0/) for an elaboration of the full contents of the ATX.
 
 
 ## Validity
