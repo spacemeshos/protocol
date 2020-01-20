@@ -1,6 +1,6 @@
 # Mining - Proof of Elapsed Time
 
-Proof of Elapsed Time, or PoET, is a cryptographic primitive used to prove that a specific amount of real (clock) time has elapsed. Elapsed time is measured by iterating a sequential work cycle that takes a set amount of time to execute. The algorithm provides a proof that it has worked sequentially for a predetermined number of cycles, and thus proves that the period of time determined by its parameters has elapsed during its entire execution. By committing to knowledge of a piece of information as input to the proof-generation algorithm, a prover can assert cryptographically that they had knowledge of that information as of a given point in time.
+Proof of Elapsed Time, or PoET, is a cryptographic primitive used to prove that a specific amount of real (clock) time has elapsed. Elapsed time is measured by iterating a sequential work cycle that takes a set amount of time to execute. The algorithm provides a proof that it has worked sequentially for a predetermined number of cycles, and thus proves that the period of time determined by its parameters has elapsed during its entire execution. By committing to knowledge of some information (known as a "statement") as input to the proof-generation algorithm, a prover can assert cryptographically that they had knowledge of that information as of a given point in time.
 
 In the context of Spacemesh, PoET is used to introduce the concept of _time_ to the eligibility proofs submitted by miners, in effect asserting not only that they generated a set of data (the initialization phase of PoST), but that they still have access to that data after some time has elapsed (the execution phase)—hence, proofs of _space-time._
 
@@ -15,34 +15,28 @@ A much simpler and more efficient construction was introduced in 2018 by Bram Co
 
 ## Construction
 
-Unlike the PoST proof construction, PoET proof construction occurs in a single phase. At the very highest level of abstraction, it involves the first party, the prover, running an agreed-upon, arbitrary piece of data (known as the “statement”) through an agreed-upon computation (the PoSW algorithm) for an agreed-upon period of time (_t,_ which is actually measured in repetitions of the algorithm as a proxy for elapsed wall time). The prover then generates a proof based on the results and publishes it for anyone to independently verify. The basic protocol, which is interactive, explains these steps in more detail. Enabling independent, public, non-interactive verification of these proofs, as with PoST, involves the use of Fiat-Shamir; this is also explained below.
+Unlike the PoST construction, PoET construction occurs in a single phase. At the very highest level of abstraction, it involves the first party, the prover, running an arbitrary, agreed-upon piece of information (known as the “statement”) through an agreed-upon hash function for an agreed-upon period of time (_t,_ which in practice specfies the depth of the graph that's generated, where a larger graph results in more repetitions of the hash function, as a proxy for elapsed wall time). The prover then generates a proof based on the results and publishes it for anyone to independently verify. As with PoST, and as described further in [CP18](https://eprint.iacr.org/2018/183), PoST is made non-interactive, enabling independent verification of the proof, via the use of Fiat-Shamir. Read on to better understand the protocol.
+
 
 <a name="algorithm"></a>
-### Basic (interactive) protocol
-
-1. Both parties, prover and verifier, agree on set of shared security parameters, including the designated period of time, _t,_ and the number of leaves to be included in a proof
-2. Verifier sends prover a statement
-3. Prover runs the PoSW algorithm for time _t_, using the provided statement as input, to generate a graph, then calculates and sends a commitment to that graph (i.e., the Merkle root) to verifier and stores the graph
-4. Verifier sends prover a random challenge (i.e., a random set of leaf indices in the graph)
-5. Prover returns a proof (i.e., the labels and Merkle paths proving that the committed-to Merkle root contains each of the indicated leaves) to verifier
-6. Verifier verifies the proof using the commitment and _t_. If accepted, verifier is convinced that _t_ time has passed since the statement was learned by prover.
-
-
 ### Non-interactive protocol
 
-1. All parties, including anyone who will independently verify generated proofs, agree on set of shared security parameters, including the designated period of time, _t,_ the number of layers in the graph, and the number of leaves to be included in a proof
-2. Prover receives a statement, runs the PoSW algorithm for _t_ time using the statement as input, generates a graph, calculates a commitment to that graph (Merkle root), derives the challenge from the commitment (using the [Fiat-Shamir heuristic](https://en.wikipedia.org/wiki/Fiat%E2%80%93Shamir_heuristic)), generates a proof (a set of labels and Merkle paths corresponding to the derived challenge). Publishes statement, Merkle root, and proof.
-3. Verifier derives the challenge from the Merkle root (using the Fiat-Shamir heuristic), verifies the proof. If accepted, verifier is convinced that _t_ time has passed since statement was learned by the prover. (See the next section for more information on how this happens.)
-
-
-### Verification of non-interactive proof
-
-The verifier first uses Fiat-Shamir to derive the deterministic challenge based on the Merkle root that the prover committed to (as in PoST), i.e., a random set of leaf indices. She then verifies that the proof contains the correct number of Merkle paths and that the set of Merkle paths matches the committed-to Merkle root. Finally, she independently runs the PoSW algorithm (using the shared parameter _t_) to recompute the labels for the chosen leaves to make sure that they match the values contained in the proof.
+1. All parties, including anyone who will independently verify generated proofs, agree on set of shared parameters, including the designated period of time, _t_ (i.e., the depth of the graph), and the number of leaves to be included in a proof
+2. Prover receives a statement, then using the statement as input runs the hash function for _t_ time, i.e., generates a graph of a specified depth, calculates a commitment to that graph (Merkle root), derives the challenge from the commitment (using the [Fiat-Shamir heuristic](https://en.wikipedia.org/wiki/Fiat%E2%80%93Shamir_heuristic)), generates a proof (a set of labels and Merkle paths corresponding to the derived challenge). Publishes statement, Merkle root, and proof.
+3. Verifier independently derives the challenge from the Merkle root (using the Fiat-Shamir heuristic), verifies the proof. If accepted, verifier is convinced that _t_ time has passed since statement was learned by the prover. (See the next section for more information on how this happens.)
 
 
 ### Further details
 
-The algorithm described above still leaves out some important details for the sake of readability and clarity. For instance, in order to construct the graph (a directed acyclic graph, or DAG), the label of each leaf node is the hash of the concatenation of the list of its left siblings on the path to the root node (this is what makes the work _sequential_), salted with the statement (this is how the prover proves knowledge of the statement before beginning the algorithm). The label of each intermediate node is the hash of the concatenation of its children (left and then right), salted with the statement. For more details on the algorithm, see the [CP18](https://eprint.iacr.org/2018/183) paper and the open source [implementation](https://github.com/spacemeshos/poet).
+The algorithm described above still leaves out some important details for the sake of readability and clarity, including the details of how verification works, as well as further details about how the graph is constructed in a _sequential_ fashion.
+
+#### Verification
+
+The verifier first uses Fiat-Shamir to derive the deterministic challenge based on the Merkle root that the prover committed to (as in PoST), i.e., a random set of leaf indices. She then verifies that the proof contains the correct number of Merkle paths and that the set of Merkle paths matches the committed-to Merkle root. Finally, she independently runs the hash function to recompute the labels for the chosen leaves to make sure that they match the values contained in the proof.
+
+#### Sequential graph construction
+
+In order to construct the graph (a directed acyclic graph, or DAG), the label of each leaf node is the hash of the concatenation of the list of its left siblings on the path to the root node (this is what makes the work _sequential_), salted with the statement (this is how the prover proves knowledge of the statement before beginning the algorithm). The label of each intermediate node is the hash of the concatenation of its children (left and then right), salted with the statement. For more details on the algorithm, see the [CP18](https://eprint.iacr.org/2018/183) paper and the open source [implementation](https://github.com/spacemeshos/poet).
 
 ![Visualization of PoET graph construction](../assets/poet-dag.png "Visualization of PoET graph construction")
 
@@ -64,5 +58,5 @@ Later, in addition to the non-interactive proof whose input is the Merkle root o
 
 ## Chaining PoST and PoET
 
-The last section, [Proof of Space-time](02-post.md), explained how a prover can assert in a deterministic, independently verifiable, non-interactive fashion that they generated and still have access to a particular dataset derived from a known seed, based on their unique ID. This section explains how a prover can assert, in the same fashion, that a specific amount of objective time (measured using repetitions of an agreed-upon algorithm as a proxy for time) has passed since they had knowledge of a particular piece of information. The next section, [Non-interactive Proof of Space-time](04-nipst.md), ties these two ideas together and explains how PoST and PoET proofs can be chained to assert _ongoing_ commitment to the dataset for an arbitrarily long period of time.
+The last section, [Proof of Space-time](02-post.md), explained how a prover can assert in a deterministic, independently verifiable, non-interactive fashion that they generated and still have access to a particular dataset derived from a known seed, based on their unique ID. This section explains how a prover can assert, in the same fashion, that a specific amount of objective time (measured using repetitions of an agreed-upon algorithm as a proxy for time) has passed since they had knowledge of a statement. The next section, [Non-interactive Proof of Space-time](04-nipst.md), ties these two ideas together and explains how PoST and PoET proofs can be chained to assert _ongoing_ commitment to the dataset for an arbitrarily long period of time.
 
