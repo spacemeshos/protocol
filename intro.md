@@ -63,9 +63,11 @@ SVM is the Spacemesh Virtual Machine, a WebAssembly-compatible smart contract en
 <a name="post"></a>
 ### Proof of Space-time
 
-In Spacemesh, a Proof of Space-time (abbreviated PoST) is how a miner establishes eligibility to produce blocks and participate in consensus. These proofs have two phases. In the initial phase, known as the _initialization phase,_ a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space. The space is filled with cryptographic junk such that for the duration that this space is committed to Spacemesh it cannot be used for any other purpose. This hard drive space is the _space_ component of the _space-time_ resource that underlies a Proof of Space-time.
+In Spacemesh, a miner establishes eligibility to produce blocks and participate in consensus by publishing an Activation Transaction (ATX), which contains (among other things) a Proof of Space-time.
 
-In the ongoing phase, known as the _execution phase,_ the miner must submit a new proof of ongoing eligibility each epoch. 
+These proofs have two phases. In the initial phase, known as the _initialization phase,_ a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space. The space is filled with cryptographic junk such that for the duration that this space is committed to Spacemesh it cannot be used for any other purpose. This hard drive space is the _space_ component of the _space-time_ resource that underlies a Proof of Space-time.
+
+In the ongoing phase, known as the _execution phase,_ the miner must submit a new ATX containing a proof of ongoing eligibility each epoch.
 
 See [Mining](mining/01-overview.md) for more information on how these proofs are generated and utilized.
 
