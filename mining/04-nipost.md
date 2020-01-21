@@ -1,4 +1,4 @@
-## Mining - Non-interactive Proof of Space-time
+# Mining - Non-interactive Proof of Space-time
 
 Non-interactive Proof of Space-time (NIPoST) is an algorithm that can be used to construct a self-contained [Proof of Space-time (PoST)](02-post.md) that is fully deterministic, non-interactive, and publicly-verifiable. In essence, it involves chaining together a series of Proofs of Space-time (PoST) and Proofs of Elapsed Time (PoET) in such a fashion that a verifier can independently verify that the prover had access to a certain dataset for an arbitrarily long period of time (subject to the rationality argument presented in [PoST](02-post.md), i.e., that in theory the prover could’ve chosen instead to regenerate the dataset every time a proof was generated, but that to do so would be expensive and would not afford any advantage). In this respect NIPoST may be thought of as the _glue_ that chains multiple, sequential proofs together, or alternatively as a _second order_ or _meta-proof_ which wraps or contains, as constituent parts, a Proof of Elapsed Time and multiple Proofs of Space-time.
 
