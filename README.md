@@ -1,5 +1,5 @@
 # Protocol
-This repo contains the Spacemesh protocol specifications
+This repo contains the Spacemesh protocol specifications and related documentation. Start with the [Introduction](intro.md).
 
 # Hare Protocol
 - [Spec](/hare/README.md)
