@@ -1,5 +1,4 @@
-## Consensus in Spacemesh
-
+# Consensus in Spacemesh
 
 ## Overview
 
