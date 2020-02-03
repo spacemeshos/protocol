@@ -49,41 +49,43 @@ In contrast to PoW-based chains, Spacemesh employs a set of consensus mechanisms
 
 ### The Tortoise and the Hare
 
-Spacemesh employs two consensus mechanisms in parallel which together allow each node to determine the canonical set of blocks at each layer. The Tortoise and the Hare refer to the two independent, complementary consensus mechanisms that take as input a given node’s view of all of the blocks it has seen as of a given layer and output a set of blocks deemed canonical by the protocol at that layer, i.e., a canonical mesh. The Tortoise is a slow, vote-based mechanism that requires each node to count the votes for and against each block in more recent, valid blocks, eventually arriving at a consistent view of consensus. However, it cannot run on the most recent layers since there are not yet any newer blocks voting on these blocks. This is where the Hare comes in. It is a permissionless Byzantine agreement protocol that runs on a random subset of nodes at every layer, producing a tentative, fast consensus on the set of canonical blocks that form that layer, thus bootstrapping the Tortoise mechanism by allowing each node to quickly determine which recent blocks it should vote for.
+Spacemesh employs two consensus mechanisms in parallel which together allow each node to determine the canonical set of blocks at each layer. The Tortoise and the Hare refer to the two independent, complementary consensus mechanisms that take as input a given node’s view of all of the blocks it has seen as of a given layer and output a set of blocks deemed canonical by the protocol at that layer, i.e., a canonical mesh. The Tortoise is a slow, vote-based mechanism that requires each node to count the votes for and against each previous block when producing a new block, tallying these votes to eventually achieve consensus. However, it cannot run on the most recent layers since there are not yet any newer blocks voting on these blocks. This is where the Hare comes in. It is a permissionless Byzantine agreement protocol that runs on a random subset of nodes at every layer, producing a tentative, fast consensus on the set of canonical blocks that form that layer, thus bootstrapping the Tortoise mechanism by allowing each node to quickly determine which recent blocks it should vote for.
 
 
 ### Mesh Structure
 
-There are many canonical blocks in every layer, and many canonical transactions in every block. Each block includes a view that lists other blocks considered canonical (i.e, visible and valid) by the node that produced the block at the time the block was produced. As such, the overall structure of the mesh is a [directed acyclic graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph). There is furthermore a strict topological ordering to the blocks in a given layer, and to the transactions in each block. Thus, conceptually, the entire mesh structure could be unwound into a chain. This strict ordering is necessary to determine transaction ordering, i.e., to turn the _mesh_ into a ledger. Blocks are ordered first by layer, then by block ID within a given layer. Transactions are ordered by block (i.e., the block in which they first appear), then by index within a block. If the same transaction appears in multiple blocks, it is counted only the first time it appears.
+There are many canonical blocks in every layer, and many canonical transactions in every block. Each block includes a view that lists other blocks considered canonical (i.e, visible and valid) by the node that produced the block at the time the block was produced. As such, the overall structure of the mesh is a [directed acyclic graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph). There is furthermore a strict topological ordering to the blocks in a given layer, and to the transactions in each block. The contextually valid blocks in the mesh (which are used to form the ledger) thus could form a chain. This strict ordering is necessary to determine transaction ordering, i.e., to turn the _mesh_ into a ledger. Blocks are ordered first by layer, then by block ID within a given layer. Transactions are ordered by block (i.e., the block in which they first appear), then by index within a block. If the same transaction appears in multiple blocks, it is counted only the first time it appears.
 
 
 ### Block Validity
 
-There are two sets of validity rules for a proposed block: _syntactic validity_ and _contextual validity_. A block is syntactically valid if it follows the rules of the protocol, is correctly constructed, and contains no invalid transactions. A syntactically valid block is also contextually valid if all of the prior blocks that it refers to are valid, available blocks.
+There are two sets of validity rules for a proposed block: _syntactic validity_ and _contextual validity_. A block is syntactically valid if it follows the rules of the protocol, is correctly constructed, and contains no invalid transactions. A syntactically valid block is also said to be contextually valid once the Tortoise declares it as such. This happens while the block receives enough votes in favor (in fact, when the difference between votes for and against passes a threshold).
 
 Why is there a need for two types of validity? Why not, for instance, allow all syntactically valid blocks to be contextually valid? The answer is that, due to the [race free nature](../intro.md#why-race-free) of the Spacemesh protocol, a miner may choose to publish a block later than they should (e.g., they were eligible to produce a block in layer 200, but they decide to actually publish the block in, say, layer 205). Since the published block is _syntactically valid,_ if the block were valid in the eyes of the protocol and of other nodes, it would cause a change to history and to the global network state, as new miners that join the network, for example, don't know when the block was actually published. We need to make sure that such bloocks do not become part of the canonical ledger history: hence, even a _syntactically valid_ block may be deemed _contextually invalid_ if it wasn't published at the right time.
+
+Syntactically valid blocks form the mesh while contextually valid blocks form the ledger--or, put another way, the contextual validity of the blocks in the mesh (or lack thereof) is used to construct the ledger.
 
 ## Tortoise
 
 
 ### Overview
 
-The Tortoise protocol is the mechanism by which the Spacemesh network achieves final, eventual consensus on the set of blocks and transactions that form the canonical mesh. It’s a relatively slow, vote-based mechanism that tallies votes for and against each valid block in a majority-rules fashion. For this reason, it cannot be run on a recently-produced layer of blocks, since not enough votes have yet been collected that refer to the new layer. For this reason, the output of the Hare consensus mechanism is used to bootstrap the Tortoise. See the Hare section, below, for information on how tentative consensus is achieved on recent layers.
+The Tortoise protocol is the mechanism by which the Spacemesh network achieves final, eventual consensus on the set of blocks and transactions that form the canonical ledger. It’s a relatively slow, vote-based mechanism that tallies votes for and against each (syntactically valid) block in a majority-rules fashion. For this reason, it cannot be run on a recently-produced layer of blocks, since not enough votes have yet been collected that refer to the new layer. Therefore the output of the Hare consensus mechanism is used to bootstrap the Tortoise. See the Hare section, below, for information on how tentative consensus is achieved on recent layers.
 
 
 ### Voting
 
-Each time a miner produces a new block [LINK forthcoming], they include in that block a “view” field that lists one or more valid previous blocks. Each time a valid new block links to a given older block, the vote tally for that older block increases by one. Any block generated _after_ a given, older block that _doesn’t_ vote for that block is _counted as a vote against the block._ Votes are weighted proportional to the amount of spacetime resources it represents: e.g., votes cast by a miner that has committed 200gb will count twice as much as votes cast by a miner that has committed 100gb to the protocol.
+Each time a miner produces a new block, they include in that block a “votes” field that lists one or more (syntactically valid) previous blocks that the miner also considers contextually valid at the time the block is produced. Each time a new block links to a given older block, the vote tally for that older block increases by one. Any block generated _after_ a given, older block that _doesn’t_ vote for that block is _counted as a vote against the block._ A vote is weighted proportional to the amount of space-time resources it represents: e.g., votes cast by a miner that has committed 200gb will count twice as much as votes cast by a miner that has committed 100gb to the protocol.
 
 
 ### Tallying votes
 
-The Tortoise protocol consists of a recursive algorithm that tallies all votes for and against each valid block, in a majority-wins fashion: any block with a net tally greater than zero becomes part of the canonical mesh. This tally algorithm may be run multiple times for a given layer, until there is a clear majority voting in favor of a particular view of the blocks in this layer, i.e., a majority so overwhelmingly large that it cannot be reversed. At this point, the layer is finalized and set as the “best canonical layer.” This process repeats itself every time new votes are received.
+The Tortoise protocol consists of a recursive algorithm that tallies all votes for and against each block, in a majority-wins fashion: any block with a net tally greater than a threshold becomes part of the canonical ledger. This tally algorithm may be run multiple times for a given layer, until there is a clear majority voting in favor of a particular view of the blocks in this layer, i.e., a majority so overwhelmingly large that it cannot be reversed. At this point, the layer is finalized and set as the “best canonical layer.” This process repeats itself every time new votes are received.
 
 
 ### Self-healing
 
-The Tortoise protocol as described is a fast and secure consensus protocol. However, it is fragile in the sense that its security depends upon assumptions about the protocol holding all the way from genesis. Over a long enough period of time, the likelihood of some low probability event occurring at some point increases, and such an event might, in theory, cause the protocol to fail at a given layer. In order to recover from such a failure, Spacemesh includes a feature known as self-healing.
+The Tortoise protocol as described is a fast and secure consensus protocol. However, it is fragile in the sense that its security depends upon assumptions about the protocol holding all the way from genesis. Over a long enough period of time, the likelihood of some event occurring that causes the protocol to fail approaches one. In order to recover from such a failure, Spacemesh includes a feature known as self-healing.
 
 Self-healing works by having all honest nodes agree, at every layer, on a random coin toss. When the margin of votes cast for and against a given block is very narrow, honest nodes will rely on the outcome of the coin toss to decide whether or not to vote for the block in question. This allows all nodes to reconverge on the same consensus over time.
 
@@ -109,8 +111,6 @@ As the node proposes blocks in the future, it factors in this information by inc
 
 The goal of the Hare protocol is to achieve consensus on a set of blocks to be included in a given layer. The protocol is based on [ADDNR18](https://eprint.iacr.org/2018/1028.pdf) with the difference that we want to achieve consensus on a set of values rather than a single bit value. The protocol takes place over four rounds, which are preceded by a pre-round, where each participant shares their current view of valid blocks. After this, a leader, with the power to make a proposal, is randomly elected, and the following four rounds occur:
 
-
-
 1. Status round: each participant broadcasts a status message reporting its current accepted set.
 2. Proposal round: the leader broadcasts a proposal to the group. Each participant that receives and accepts this proposal broadcasts a message to this effect.
 3. Commit round: each participant reviews the proposal and signals its willingness to commit to it to the group. By the end of this round, each participant that received a valid proposal from the leader (with no conflicting proposal) _and_ a sufficient number of commit messages from other participants creates a “commit certificate” including all of this information.
@@ -120,8 +120,6 @@ The goal of the Hare protocol is to achieve consensus on a set of blocks to be i
 ### Validity rules
 
 Consensus can be said to be achieved when the following three conditions are satisfied:
-
-
 
 1. When the consensus mechanism terminates, every honest participant outputs the same set of canonical blocks.
 2. If every honest party observed a given, valid block, then that block is included in the output set. Put another way, the output set contains the intersection of the valid blocks reported by all honest parties.
