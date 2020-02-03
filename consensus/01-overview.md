@@ -8,9 +8,9 @@ With respect to the rest of the blockchain client architecture, consensus can be
 
 The consensus mechanism is one of the primary differences between Spacemesh and other contemporary blockchain platforms. Unlike most other blockchains, Spacemesh employs two distinct consensus mechanisms, which work in concert to achieve final consensus on the canonical structure of the mesh. It is the way these mechanisms work that give Spacemesh its eponymous mesh-like data structure.
 
-Note that it’s important not to conflate consensus with mining. Indeed, there is some conceptual overlap between the two so the distinction can be a bit blurry. Mining is _the process by which a node establishes eligibility to produce blocks, and subsequently produces blocks deemed valid by the network._ Secondarily, it is also the mechanism by which the network’s native token is distributed. Consensus, by contrast, is _the process by which _all nodes_ come to consensus on the canonical set of blocks and transactions that form the mesh._
+Note that it’s important not to conflate consensus with mining. Indeed, there is some conceptual overlap between the two so the distinction can be a bit blurry. Mining is _the process by which a node establishes eligibility to produce blocks, and subsequently produces blocks deemed valid by the network._ (Secondarily, it is also the mechanism by which the network’s native token is distributed.) Consensus, by contrast, is _the process by which_ all nodes _come to consensus on the canonical set of blocks and transactions that form the mesh._
 
-There is a circular dependency between consensus and mining. Through mining, nodes create and submit proofs that they are eligible to propose blocks and participate in mining (in Spacemesh terminology, this is called an [ATX](../mining/05-atx.md)). These form one input to the consensus engine: only blocks produced by an eligible miner, in an eligible slot, are valid and should be deemed canonical.
+There is a circular dependency between consensus and mining. Through mining, nodes create and submit proofs that they are eligible to propose blocks and participate in mining (in Spacemesh terminology, this is called an [Activation Transaction (ATX)](../mining/05-atx.md)). These form one input to the consensus engine: only blocks produced by an eligible miner, in an eligible slot, are valid and should be deemed canonical.
 
 The output of the consensus engine is also an input to the mining process. The consensus engine tells a node which blocks it should vote for in a newly proposed block: only blocks that are visible and valid as of the time when it creates the block.
 
@@ -21,23 +21,19 @@ You can read much more about the mining process [here](../mining/01-overview.md)
 
 Blockchain consensus and block production, in general (not in Spacemesh specifically), work in the following way:
 
-
-
 1. Eligibility: There is a mechanism by which candidate block producers, i.e., miners, assert deterministically and verifiably to the network that they are eligible to produce blocks. This serves as the network’s Sybil resistance mechanism, which prevents the network from being overrun by a large number of candidate producers controlled by a single entity. To achieve strong Sybil resistance, there must be a cost associated both with establishing eligibility, and with maintaining ongoing eligibility.
 2. Leader election: There is a mechanism by which the protocol selects one or more eligible candidate block producers to produce one or more blocks at a given block height.
 3. Block production: Block producers elected by the protocol produce blocks at a given block height, according to the rules of the protocol, and distribute those blocks to the network.
 4. Fork choice rule: There is a mechanism by which any node in the network, based only upon their view of the network at any given point in time, and all block data they’ve received up to that point, can construct for themselves a canonical view of the blockchain data structure that is shared by other nodes with the same or similar views of the network at the same time. In concrete terms, a node must be able to decide on its own which set of blocks represent the canonical “longest chain,” and which transactions are included in that chain, in which order.
 
 
-### Proof of Work-based protocols
+### Proof-of-Work-based protocols
 
-For point of comparison, and since proof of work is relatively well understood and relatively easy to reason about, following is an abridged explanation of the mechanisms that Proof of Work-based chains, such as Bitcoin and Ethereum, use to address each of these phases.
-
-
+For point of comparison, and since proof of work is relatively well understood and relatively easy to reason about, following is an abridged explanation of the mechanisms that Proof-of-Work-based chains, such as Bitcoin and Ethereum, use to address each of these phases.
 
 1. Eligibility: All nodes are eligible to produce blocks at any block height, subject to the rules of the protocol, including the current PoW difficulty level and their ability to produce valid blocks accepted by the rest of the network. The cost of establishing and maintaining eligibility is the cost of the electricity that must be spent to participate in PoW mining. (Miners that don’t meet this threshold and thus fail to ever produce a valid block are effectively “invisible” from the perspective of mining.)
-2. Leader election: The first node to successfully produce an eligible block at a given block height is the implicit leader, but only gains the ability to produce that single block.
-3. Block production: The leader may produce any block they wish as long as that block follows the rules of the protocol. For instance, it must refer to the previous block and must not contain any invalid transactions. In most cases, the leader will choose to produce a block that contains as many high-fee transactions as possible to maximize revenue, but note that even empty blocks are valid according to protocol rules.
+2. Leader election: Leadership is implicitly associated with being the first node to successfully produce, and distribute, a valid block at a given block height. (Note that, in proof-of-work-based protocols, technically speaking block production happens _before_ leader election, since we only know if a block producer is eligible after they've successfully produced a block.)
+3. Block production: Each leader candidate may produce any block they wish as long as that block follows the rules of the protocol. For instance, it must refer to the previous block and must not contain any invalid transactions. In most cases, block producers will choose to produce a block that contains as many high-fee transactions as possible to maximize revenue, but note that even empty blocks are valid according to protocol rules.
 4. Fork choice rule: The chain containing the most accumulated proof of work, measured as cumulative block difficulties up to the chain tip, is considered the current canonical chain. Note that this means finality in PoW is always probabilistic as there may always be another chain with greater total work than the current chain.
 
 
@@ -45,12 +41,10 @@ For point of comparison, and since proof of work is relatively well understood a
 
 In contrast to PoW-based chains, Spacemesh employs a set of consensus mechanisms collectively referred to as [Proof of Space-time (PoST)](../mining/02-post.md). Here’s how each mechanism functions to achieve consensus, at a high level.
 
-
-
-1. Eligibility: Just as in PoW, all nodes are eligible to produce blocks in a permissionless fashion. Unlike PoW, however, instead of establishing eligibility by participating in PoW mining and burning electricity, PoST miners instead establish and maintain eligibility by allocating hard drive space and using that space to generate proofs of spacetime on an ongoing basis. A candidate miner allocates free hard drive space, produces an eligibility proof, submits it to the network, then waits until the following epoch to begin producing blocks (and collecting block rewards). See [Mining](../mining/01-overview.md) for details on how this process works.
-2. Leader election: The protocol uses a random beacon to sample a set of miners eligible to produce blocks at each block height (called a “layer” in Spacemesh terminology, as each layer contains many blocks). Note that, unlike in PoW, _multiple_ miners are eligible to produce blocks at each layer.
-3. Block production: Each miner eligible to produce a block in a given layer may optionally do so (but is not punished if it chooses not to). As in Bitcoin, the miner may include any set of valid transactions they like in that block, and an empty block is valid according to the protocol. Unlike Bitcoin, and in order to ensure the broadest possible set of transactions included at each layer, miners are incentivized to include transactions that no other miner has included in their block.
-4. Fork choice rule: Because there are multiple blocks in each layer, and there is no difficulty-based PoW mining, one cannot simply select the chain with the greatest accumulated work. As a result, the fork choice rule is one of the most complex and unique parts of the Spacemesh protocol, and it’s explained in more detail in the following section.
+1. Eligibility: Just as in PoW, all nodes are eligible to produce blocks in a permissionless fashion. In Spacemesh, however, instead of allocating CPU power, and by extension electricity, miners allocate hard disk space for a specified period of time. This allocation prevents Sybil attacks as explained above. To gain eligibility to produce blocks, a miner needs to send a _proof of space-time_ that asserts that the space-time resource was indeed allocated to the network. Then, once a new [epoch](../intro.md#spacemesh-basics) starts they become active and are eligible to produce several blocks in that epoch. See [Mining](../mining/01-overview.md) for details on how this process works.
+2. Leader election: The protocol uses a [Verifiable Random Function (VRF)](https://en.wikipedia.org/wiki/Verifiable_random_function) to sample a set of miners eligible to produce blocks at each block height (the set of blocks at a given height is called a [layer](../intro.md#spacemesh-basics) in Spacemesh terminology). Note that, unlike in PoW, _multiple_ miners are eligible to produce blocks at each layer.
+3. Block production: Each miner eligible to produce a block in a given layer may optionally do so (but is not punished if it chooses not to). As in Bitcoin, the miner may include any set of valid transactions they like in that block, and an empty block is valid according to the protocol.
+4. Fork choice rule: There are no forks in Spacemesh by design. The following section explains how and why this is the case.
 
 
 ### The Tortoise and the Hare
@@ -65,8 +59,9 @@ There are many canonical blocks in every layer, and many canonical transactions 
 
 ### Block Validity
 
-There are two sets of validity rules for a proposed block: _syntactic validity_ and _contextual validity_. A block is syntactically valid if it follows the rules of the protocol, is correctly constructed, and contains no invalid transactions. A syntactically valid block is also contextually valid if all of the prior blocks that it refers to are valid, available blocks. See Blocks [LINK forthcoming] for more information.
+There are two sets of validity rules for a proposed block: _syntactic validity_ and _contextual validity_. A block is syntactically valid if it follows the rules of the protocol, is correctly constructed, and contains no invalid transactions. A syntactically valid block is also contextually valid if all of the prior blocks that it refers to are valid, available blocks.
 
+Why is there a need for two types of validity? Why not, for instance, allow all syntactically valid blocks to be contextually valid? The answer is that, due to the [race free nature](../intro.md#why-race-free) of the Spacemesh protocol, a miner may choose to publish a block later than they should (e.g., they were eligible to produce a block in layer 200, but they decide to actually publish the block in, say, layer 205). Since the published block is _syntactically valid,_ if the block were valid in the eyes of the protocol and of other nodes, it would cause a change to history and to the global network state, as new miners that join the network, for example, don't know when the block was actually published. We need to make sure that such bloocks do not become part of the canonical ledger history: hence, even a _syntactically valid_ block may be deemed _contextually invalid_ if it wasn't published at the right time.
 
 ## Tortoise
 
