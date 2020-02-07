@@ -65,6 +65,7 @@ There are many canonical blocks in every layer, and many canonical transactions 
 See [Transaction ordering](../transactions/01-overview.md#ordering) for more information.
 
 
+<a name="validity"></a>
 ### Block Validity
 
 There are two sets of validity rules for a proposed block: _syntactic validity_ and _contextual validity_. A block is syntactically valid if it follows the rules of the protocol, is correctly constructed, and contains no invalid transactions. A syntactically valid block is also said to be contextually valid once the Tortoise declares it as such. This happens while the block receives enough votes in favor (in fact, when the difference between votes for and against passes a threshold).
