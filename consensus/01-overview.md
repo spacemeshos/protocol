@@ -62,6 +62,8 @@ In order to facilitate this, we run a permissionless Byzantine agreement protoco
 
 There are many canonical blocks in every layer, and many canonical transactions in every block. Each block includes a view that lists other blocks considered canonical (i.e, visible and fully valid) by the node that produced the block at the time the block was produced. As such, the overall structure of the mesh is a [directed acyclic graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph). There is furthermore a strict topological ordering to the blocks in a given layer, and to the transactions in each block. The contextually valid blocks in the mesh (which are used to form the ledger) thus could form a chain. This strict ordering is necessary to determine transaction ordering, i.e., to turn the _mesh_ into a ledger. Blocks are ordered first by layer, then by block ID within a given layer. Transactions are ordered by block (i.e., the block in which they first appear), then by index within a block. If the same transaction appears in multiple blocks, it is counted only the first time it appears.
 
+See [Transaction ordering](../transactions/01-overview.md#ordering) for more information.
+
 
 ### Block Validity
 
