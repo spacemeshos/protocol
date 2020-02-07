@@ -7,6 +7,8 @@ In Spacemesh, a transaction is an order to transfer funds from one account to an
 
 ## Account model
 
+Spacemesh uses the account model for storing value. This means that users are encouraged to reuse accounts for multiple transactions, similar to a bank account, rather than generate a new address for every transaction (as in the UTXO model). When multiple transactions increase the balance of an account, the funds from different transactions become fungible and indistinguishable from one another.
+
 An account in Spacemesh is a mapping from a wallet address to a balance of Smesh tokens. Note that there is not a one-to-one mapping between _users_ and _addresses,_ as one user may control many addresses (or, less often but also possibly, one address could be controlled by many users).
 
 Even though a transaction is signed, so that the protocol can verify that it came from the sender, without additional protections, transactions are still susceptible to a [replay attack](https://en.wikipedia.org/wiki/Replay_attack): if Alice sends funds to Bob, Bob could resend the same transaction (that Alice already signed) to the network to steal additional funds from Alice. In order to prevent replay attacks, each account also stores a transaction counter, also known as a "nonce." Each transaction must declare a nonce, and a transaction is only valid if it has a nonce that matches the current value of the account counter.
@@ -70,5 +72,11 @@ When a transaction is applied to the global state, it is passed through the foll
 After each pass over the list of transactions, another pass is performed on the remaining (unapplied) transactions, in the same order, until no transaction from the list can be applied.
 
 ## Mempool
+
+Miners receive incoming, unprocessed transactions via the [gossip network](../p2p/01-overview.md) and locally over GRPC. When a miner receives a transaction, it checks that it's syntactically valid and that it hasn't already seen the transaction before (i.e., those that it's not already in the mempool, or in the mesh as part of at least one block). After that, it saves the transaction into its mempool. Each miner maintains its own mempool.
+
+Miners are expected to include transactions in blocks that are predicted to be valid when they get applied to the global state, with a high likelihood.
+
+Gossip network participants are expected to gossip _all syntactically valid_ transactions to the network, regardless of contextual validity.
 
 ## Fees and mining rewards
