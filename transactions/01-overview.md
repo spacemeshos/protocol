@@ -80,3 +80,19 @@ Miners are expected to include transactions in blocks that are predicted to be v
 Gossip network participants are expected to gossip _all syntactically valid_ transactions to the network, regardless of contextual validity.
 
 ## Fees and mining rewards
+
+As in Bitcoin and other blockchain platforms, Spacemesh transactions pay fees to miners to incentivize them to include the transaction in a block. However, fees and mining rewards work a bit differently in Spacemesh.
+
+### Mining rewards
+
+Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](../intro.md#spacemesh-basics). An epoch consists of a fixed number of layers.
+
+Every five minutes, the Spacemesh protocol distributes 50 Smesh (SMH) to all miners who contributed at least one block to the mesh over the prior five minute period. The amount of the reward paid to each miner depends on the number of miners who contributed blocks, and the number of blocks contributed. A miner that contributes more blocks receives more reward.
+
+### Rewards adjustment
+
+As an incentive to miners to submit blocks with many transactions, the reward for a block with less than 15 transactions is reduced by 10%. This amount is distributed as a bonus evenly to all miners who submitted at least 15 transactions in a block.
+
+### Transaction fees
+
+Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled, per layer, and evenly distributed to all miners who submitted at least one block in the layer.
