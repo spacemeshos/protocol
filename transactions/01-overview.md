@@ -37,13 +37,37 @@ Technically, any message that is 88 bytes long can be interpreted as a syntactic
 
 ## Applying transactions
 
+Transactions are applied, one by one, to the global state. Valid transactions cause the state to be updated. Of course, since Spacemesh defines a canonical ledger, the order in which transactions are applied is very important.
+
+<a name="ordering"></a>
 ### Transaction ordering
 
+Transaction order in Spacemesh is defined in the following way:
+
+1. Blocks in layer _n_ come before those in layer _n+1_
+1. The IDs of all [contextually valid](../consensus/01-overview.md#validity) blocks in layer _n_ are listed in ascending order
+1. These block IDs are concatenated and hashed
+1. The hash sum is used as the seed for a [Mersenne Twister](https://en.wikipedia.org/wiki/Mersenne_Twister) (a type of pseudorandom number generator)
+1. A [Fisher-Yates shuffle](https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle) is performed on the list of block IDs using the output of the Mersenne Twister
+1. Transactions from the ordered blocks are then applied, in the order they appear in each block, ignoring duplicates (only the first appearance of a transaction determines its ordering)
 
 ### Contextual validity
 
+A transaction is deemed contextually valid, and is applied to the global state, if the following conditions apply:
+
+1. The origin account (derived from the signature) exists
+1. The nonce on the account matches the transaction nonce
+1. The account balance is greater than or equal to the transaction amount fee
 
 ### Global state
+
+When a transaction is applied to the global state, it is passed through the following state transition function:
+
+1. The origin account balance is decremented by the transaction amount + fee
+1. The recipient account balance is incremented by the transaction amount
+1. The origin account nonce is incremented by one
+
+After each pass over the list of transactions, another pass is performed on the remaining (unapplied) transactions, in the same order, until no transaction from the list can be applied.
 
 ## Mempool
 
