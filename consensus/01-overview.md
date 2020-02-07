@@ -106,14 +106,17 @@ The Tortoise protocol is complex and the full details of the protocol are beyond
 
 ### Overview
 
-The Hare protocol is run once per layer. Its purpose is to allow each node to quickly determine the set of contextually valid blocks in the layer. It has several rounds, and at the beginning of each round, a node draws a role that tells it whether it's _active_ (i.e., participating) or _passive_ (i.e., just observing) in this round.
+The Hare protocol is run once per layer. Its purpose is to allow each node to quickly determine the set of contextually valid blocks in the layer.
 
-In contrast to the Tortoise protocol, the Hare protocol can achieve consensus rapidly on the network’s shared view of the current data set, i.e., on which recently-proposed blocks should be considered contextually valid and become candidates for finalization by the Tortoise. It does not rely on votes included in blocks, as the Tortoise does. In this way, the Hare protocol is used to bootstrap the consensus of the slower, eventual Tortoise mechanism by allowing nodes to rapidly decide which existing blocks they should vote for as they produce new blocks. It’s a BFT-compatible algorithm that involves participation by a randomly-selected subset of the current set of valid block producers [EXPAND: selected how? The role distribution oracle], and achieves consensus in four rounds.
+In contrast to the Tortoise protocol, the Hare protocol can achieve consensus rapidly on the network’s shared view of the current data set, i.e., on which recently-proposed blocks should be considered contextually valid and become candidates for finalization by the Tortoise. It does not rely on votes included in blocks, as the Tortoise does. In this way, the Hare protocol is used to bootstrap the consensus of the slower, eventual Tortoise mechanism by allowing nodes to rapidly decide which existing blocks they should vote for as they produce new blocks. It’s a BFT-compatible algorithm that involves participation by a randomly-selected subset of the current set of valid block producers, and achieves consensus in four rounds.
 
-Each node internally runs the Hare protocol every time the end of a round is reached. It passes in all of the blocks it received in time, draws a role from the role distribution oracle, and then participates by following the protocol. At the end of four rounds, the protocol outputs a set of blocks that should tentatively (i.e., until the Tortoise confirms them) be considered canonical for the layer in question.
+Each node internally runs the Hare protocol at the end of each layer. It passes in all of the blocks it received in time, randomly draws a role, and then participates by following the protocol. At the end of four rounds, the Hare outputs a set of blocks that should tentatively (i.e., until the Tortoise confirms them) be considered canonical for the layer in question.
 
 As the node proposes blocks in the future, it factors in this information by including votes for blocks confirmed by the Hare, thus bootstrapping Tortoise consensus with the output of the Hare.
 
+### Roles
+
+At the beginning of each round, a miner draws a role that tells it whether it's _active_ (i.e., participating) or _passive_ (i.e., just observing) in this round. In order to draw a role, each miner uses a [Verifiable Random Function (VRF)](https://en.wikipedia.org/wiki/Verifiable_random_function) and if the output passes some threshold (which depends on the number of total active miners) then it is active; otherwise the miner is passive for that round.
 
 ### Rounds
 
@@ -134,7 +137,7 @@ Consensus can be said to be achieved when the following three conditions are sat
 2. If every honest party observed a given, valid block, then that block is included in the output set. Put another way, the output set contains the intersection of the valid blocks reported by all honest parties.
 3. If no honest party observed a given block (or every honest party deemed it invalid), then that block is not included in the output set. Put another way, every block that makes it into the output set must have had at least one honest witness.
 
-The intuition here may not be immediately obvious, but if you think about it, you’ll see why these validity rules are sufficient for ensuring consensus. Rule #2 states that the output set contains the intersection of all of the valid blocks observed and submitted by all of the honest miners. This does not by itself rule out the possibility that the output set also contains some dishonestly generated blocks. However, rule #3 ensures that every block in the output set was observed by at least one honest miner. Together, these two validity rules ensure that _the set of blocks output by the Hare consensus mechanism is exactly equal to the set of valid blocks observed and submitted by all honest miners,_ no more and no less.
+The intuition here may not be immediately obvious, but if you think about it, you’ll see why these validity rules are sufficient for ensuring consensus. Rule #2 states that the output set contains the intersection of all of the valid blocks observed and submitted by all of the honest miners. This does not by itself rule out the possibility that the output set also contains some dishonestly generated blocks. However, rule #3 ensures that every block in the output set was observed by at least one honest miner. (Note that the validity rules say nothing about blocks observed and submitted by _some_ but not _all_ honest miners: they may or may not be included, which is fine.) Together, these two validity rules ensure that _the set of blocks output by the Hare consensus mechanism is exactly equal to the set of blocks observed and submitted by the honest miners,_ no more and no less.
 
 
 ### Details
