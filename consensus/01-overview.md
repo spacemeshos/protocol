@@ -12,9 +12,18 @@ Note that it’s important not to conflate consensus with mining. Indeed, there 
 
 There is a circular dependency between consensus and mining. Through mining, nodes create and submit proofs that they are eligible to propose blocks and participate in mining (in Spacemesh terminology, this is called an [Activation Transaction (ATX)](../mining/05-atx.md)). These are an input to the consensus engine: only blocks produced by an eligible miner, in an eligible slot, are syntactically valid and may be deemed canonical.
 
-The output of the consensus engine is also an input to the mining process. The consensus engine tells a node which blocks it should vote for in a newly proposed block: i.e., only those blocks that are visible and valid (syntactically and contextually) as of the time when it creates the block.
+The output of the consensus engine is also an input to the mining process. The consensus engine tells a node which blocks it should vote for in a newly proposed block: i.e., only those blocks that are visible and valid as of the time when it creates the block.
 
 You can read much more about the mining process [here](../mining/01-overview.md).
+
+<a name="validity"></a>
+### Block Validity in Spacemesh
+
+There are two sets of validity rules for a proposed block: _syntactic validity_ and _contextual validity_. A block is syntactically valid if it follows the rules of the protocol, is correctly constructed, and contains no invalid transactions. A syntactically valid block is also said to be contextually valid once the Tortoise declares it as such. This happens while the block receives enough votes in favor (in fact, when the difference between votes for and against passes a threshold).
+
+Why is there a need for two types of validity? Why not, for instance, allow all syntactically valid blocks to be contextually valid? The answer is that, due to the [race free nature](../intro.md#why-race-free) of the Spacemesh protocol, a miner may choose to publish a block later than they should (e.g., they were eligible to produce a block in layer 200, but they decide to actually publish the block in, say, layer 205). Since the published block is _syntactically valid,_ if the block were valid in the eyes of the protocol and of other nodes, it would cause a change to history and to the global network state, as new miners that join the network, for example, don't know when the block was actually published. We need to make sure that such blocks do not become part of the canonical ledger history: hence, even a _syntactically valid_ block may be deemed _contextually invalid_ if it wasn't published at the right time. Syntactically valid blocks form the mesh while contextually valid blocks form the ledger--or, put another way, the contextual validity of the blocks in the mesh (or lack thereof) is used to construct the ledger.
+
+The purpose of the two consensus protocols, described below, is to determine which syntactically valid blocks are _also contextually valid._ For this reason, the rest of this document is unconcerned with syntactic validity. For the purposes of the rest of this document, "valid" should be taken to mean "contextually valid." By the same token, "blocks" refers to syntactically valid blocks.
 
 
 ### Phases
@@ -60,31 +69,21 @@ In order to facilitate this, we run a permissionless Byzantine agreement protoco
 
 ### Mesh Structure
 
-There are many blocks in every layer, and many transactions in every block. Each block includes a view that lists other blocks that are visible and both syntactically and contextually valid according to the node that produced the block at the time the block was produced. As such, the overall structure of the mesh is a [directed acyclic graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph). There is furthermore a strict topological ordering to the blocks in a given layer, and to the transactions in each block. The contextually valid blocks in the mesh (which are used to form the ledger) thus could form a chain. This strict ordering is necessary to determine transaction ordering, i.e., to turn the _mesh_ into a ledger. Blocks are ordered first by layer, then by block ID within a given layer. Transactions are ordered by block (i.e., the block in which they first appear), then by index within a block. If the same transaction appears in multiple blocks, it is counted only the first time it appears.
+There are many blocks in every layer, and many transactions in every block. Each block includes a view that lists other blocks that are visible and valid according to the node that produced the block at the time the block was produced. As such, the overall structure of the mesh is a [directed acyclic graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph). There is furthermore a strict topological ordering to the blocks in a given layer, and to the transactions in each block. The valid blocks in the mesh (which are used to form the ledger) thus could form a chain. This strict ordering is necessary to determine transaction ordering, i.e., to turn the _mesh_ into a ledger. Blocks are ordered first by layer, then by block ID within a given layer. Transactions are ordered by block (i.e., the block in which they first appear), then by index within a block. If the same transaction appears in multiple blocks, it is counted only the first time it appears.
 
 See [Transaction ordering](../transactions/01-overview.md#ordering) for more information.
-
-
-<a name="validity"></a>
-### Block Validity
-
-There are two sets of validity rules for a proposed block: _syntactic validity_ and _contextual validity_. A block is syntactically valid if it follows the rules of the protocol, is correctly constructed, and contains no invalid transactions. A syntactically valid block is also said to be contextually valid once the Tortoise declares it as such. This happens while the block receives enough votes in favor (in fact, when the difference between votes for and against passes a threshold).
-
-Why is there a need for two types of validity? Why not, for instance, allow all syntactically valid blocks to be contextually valid? The answer is that, due to the [race free nature](../intro.md#why-race-free) of the Spacemesh protocol, a miner may choose to publish a block later than they should (e.g., they were eligible to produce a block in layer 200, but they decide to actually publish the block in, say, layer 205). Since the published block is _syntactically valid,_ if the block were valid in the eyes of the protocol and of other nodes, it would cause a change to history and to the global network state, as new miners that join the network, for example, don't know when the block was actually published. We need to make sure that such blocks do not become part of the canonical ledger history: hence, even a _syntactically valid_ block may be deemed _contextually invalid_ if it wasn't published at the right time.
-
-Syntactically valid blocks form the mesh while contextually valid blocks form the ledger--or, put another way, the contextual validity of the blocks in the mesh (or lack thereof) is used to construct the ledger.
 
 ## Tortoise
 
 
 ### Overview
 
-The Tortoise protocol is the mechanism by which the Spacemesh network achieves final, eventual consensus on the set of blocks and transactions that form the canonical ledger. It’s a relatively slow, vote-based mechanism that tallies votes for and against each (syntactically valid) block in majority-rule fashion. For this reason, it cannot be run on a recently-produced layer of blocks, since not enough votes have yet been collected that refer to the new layer. Therefore the output of the Hare consensus mechanism is used to bootstrap the Tortoise. See the Hare section, below, for information on how tentative consensus is achieved on recent layers.
+The Tortoise protocol is the mechanism by which the Spacemesh network achieves final, eventual consensus on the set of blocks and transactions that form the canonical ledger. It’s a relatively slow, vote-based mechanism that tallies votes for and against each block in majority-rule fashion. For this reason, it cannot be run on a recently-produced layer of blocks, since not enough votes have yet been collected that refer to the new layer. Therefore the output of the Hare consensus mechanism is used to bootstrap the Tortoise. See the Hare section, below, for information on how tentative consensus is achieved on recent layers.
 
 
 ### Voting
 
-Each time a miner produces a new block, they include in that block a “votes” field that lists one or more (syntactically valid) previous blocks that the miner also considers contextually valid at the time the block is produced. Each time a new block links to a given older block, the vote tally for that older block increases by one. Any block generated _after_ a given, older block that _doesn’t_ vote for that block is _counted as a vote against the block._ A vote is weighted proportional to the amount of space-time resources it represents: e.g., votes cast by a miner that has committed 200gb will count twice as much as votes cast by a miner that has committed 100gb to the protocol.
+Each time a miner produces a new block, they include in that block a “votes” field that lists one or more previous blocks that the miner also considers valid at the time the block is produced. Each time a new block links to a given older block, the vote tally for that older block increases by one. Any block generated _after_ a given, older block that _doesn’t_ vote for that block is _counted as a vote against the block._ A vote is weighted proportional to the amount of space-time resources it represents: e.g., votes cast by a miner that has committed 200gb will count twice as much as votes cast by a miner that has committed 100gb to the protocol.
 
 
 ### Tallying votes
@@ -111,7 +110,7 @@ The Tortoise protocol is complex and the full details of the protocol are beyond
 
 The Hare protocol is run once per layer. Its purpose is to allow each node to quickly determine the set of blocks in the layer to be voted for by _all honest miners._
 
-In contrast to the Tortoise protocol, the Hare protocol can achieve consensus rapidly on the network’s shared view of the current data set, i.e., on which recently-proposed blocks should be considered contextually valid and become candidates for finalization by the Tortoise. It does not rely on votes included in blocks, as the Tortoise does. In this way, the Hare protocol is used to bootstrap the consensus of the slower, eventual Tortoise mechanism by allowing nodes to rapidly decide which existing blocks they should vote for as they produce new blocks. It’s a BFT-compatible algorithm that involves participation by a randomly-selected subset of the current set of valid block producers, and achieves consensus in four rounds.
+In contrast to the Tortoise protocol, the Hare protocol can achieve consensus rapidly on the network’s shared view of the current data set, i.e., on which recently-proposed blocks should be considered valid and become candidates for finalization by the Tortoise. It does not rely on votes included in blocks, as the Tortoise does. In this way, the Hare protocol is used to bootstrap the consensus of the slower, eventual Tortoise mechanism by allowing nodes to rapidly decide which existing blocks they should vote for as they produce new blocks. It’s a BFT-compatible algorithm that involves participation by a randomly-selected subset of the current set of eligible block producers, and achieves consensus in four rounds.
 
 Each node internally runs the Hare protocol at the end of each layer. It passes in all of the blocks it received in time, randomly draws a role, and then participates by following the protocol. At the end of four rounds, the Hare outputs a set of blocks that should tentatively (i.e., until the Tortoise confirms them) be considered canonical for the layer in question.
 
@@ -127,9 +126,9 @@ In round two (proposal round), a leader (with the ability to broadcast a proposa
 
 ### Rounds
 
-The goal of the Hare protocol is to achieve consensus among all honest miners about which blocks to vote for (i.e., the set of contextually valid blocks) in each layer. The protocol is based on [ADDNR18](https://eprint.iacr.org/2018/1028.pdf) with the difference that we want to achieve consensus on a set of values rather than a single bit value. The protocol takes place over four rounds, which are preceded by a pre-round:
+The goal of the Hare protocol is to achieve consensus among all honest miners about which blocks to vote for (i.e., the set of valid blocks) in each layer. The protocol is based on [ADDNR18](https://eprint.iacr.org/2018/1028.pdf) with the difference that we want to achieve consensus on a set of values rather than a single bit value. The protocol takes place over four rounds, which are preceded by a pre-round:
 
-0. Pre-round: each active participant shares their current view of blocks that are both contextually and syntactically valid. At the end of the round, each then factors in the views shared by other participants and updates their view by removing blocks that didn't receive enough support from other participants.
+0. Pre-round: each active participant shares their current view of blocks that are valid. At the end of the round, each then factors in the views shared by other participants and updates their view by removing blocks that didn't receive enough support from other participants.
 1. Status round: each active participant broadcasts a status message reporting its updated view.
 2. Proposal round: each active participant broadcasts a proposal to the group, based on the results of the previous round. One of these participants will be randomly chosen the leader. Each active participant that receives this proposal from the leader, and accepts it, broadcasts a message to this effect.
 3. Commit round: each active participant reviews the proposal and signals its willingness to commit to it to the group. By the end of this round, each participant that received a valid proposal from the leader (with no conflicting proposal) _and_ a sufficient number of commit messages from other participants creates a “commit certificate” including all of this information.
