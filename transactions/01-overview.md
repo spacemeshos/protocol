@@ -15,9 +15,9 @@ Even though a transaction is signed, so that the protocol can verify that it cam
 
 ### Address format and signature scheme
 
-Spacemesh uses the standard ED25519 curve to generate keypairs. A private key is 32 bytes of random data. The public key is derived from the private key using ECDSA derivation. The Spacemesh address is the 20-byte prefix of the hash of the public key. In other words, the wallet address may be expressed as:
+Spacemesh uses the standard `curve25519` to generate keypairs. A private key is 32 bytes of random data. The public key is derived from the private key using [public key extraction](https://stackoverflow.com/questions/12480776/how-do-i-obtain-the-public-key-from-an-ecdsa-private-key-in-openssl). The Spacemesh address is the 20-byte prefix of the public key. In other words, the wallet address may be expressed as:
 
-`address = Bytes[0..159](HASH(ECDSAPUBKEY(privkey)))`
+`address = Bytes[0..19](ECDSAPUBKEY(private_key))`
 
 ## Transaction structure
 
@@ -29,7 +29,7 @@ The actual transaction data structure in Spacemesh contains the following:
 - Nonce (8 bytes)
 - Signature (32 bytes)
 
-The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature using ECDSA derivation.
+The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature (as described in the previous section).
 
 The total size of a transaction is 76 bytes.
 
@@ -63,36 +63,39 @@ A transaction is deemed contextually valid, and is applied to the global state, 
 
 ### Global state
 
-When a transaction is applied to the global state, it is passed through the following state transition function:
+The transactions in a given layer are applied to global state, [in order](#ordering), when that layer is [finalized](../consensus/01-overview.md). The entire process of applying the transactions for a given layer is performed as a single, atomic database transaction. Transactions are applied by being passed through the following state transition function:
 
 1. The origin account balance is decremented by the transaction amount + fee
 1. The recipient account balance is incremented by the transaction amount
 1. The origin account nonce is incremented by one
 
-After each pass over the list of transactions, another pass is performed on the remaining (unapplied) transactions, in the same order, until no transaction from the list can be applied.
+After each pass over the list of transactions, another pass is performed on the remaining (unapplied) transactions, in the same order, until no transaction from the list can be applied. The worst case performance is `O(N^2)`, and the expected (i.e., non-malevolent) case is `O(N)`, where `N` is the number of transactions in the layer. (In fact, it's `O(N*M)` where `M` is the length of the longest chain of intra-layer dependencies. However, `M` is expected to be very small since a wallet should not create transactions that depend upon other transactions in the same layer.)
+
+Fees are distributed to the miner at the same time, but using a different mechanism.
+
 
 ## Mempool
 
 Miners receive incoming, unprocessed transactions via the [gossip network](../p2p/01-overview.md) and locally over GRPC. When a miner receives a transaction, it checks that it's syntactically valid and that it hasn't already seen the transaction before (i.e., those that it's not already in the mempool, or in the mesh as part of at least one block). After that, it saves the transaction into its mempool. Each miner maintains its own mempool.
 
-Miners are expected to include transactions in blocks that are predicted to be valid when they get applied to the global state, with a high likelihood.
-
-Gossip network participants are expected to gossip _all syntactically valid_ transactions to the network, regardless of contextual validity.
+Gossip network participants are expected to gossip _all syntactically valid_ transactions to the network.
 
 ## Fees and mining rewards
 
-As in Bitcoin and other blockchain platforms, Spacemesh transactions pay fees to miners to incentivize them to include the transaction in a block. However, fees and mining rewards work a bit differently in Spacemesh.
+As in Bitcoin and other blockchain platforms, a Spacemesh transaction pays a fee to incentivize a miner to include the transaction in a block. However, fees and mining rewards work a bit differently in Spacemesh.
 
 ### Mining rewards
 
-Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](../intro.md#spacemesh-basics). An epoch consists of a fixed number of layers.
+Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](../intro.md#spacemesh-basics). An epoch consists of a fixed number of layers. Each layer is five minutes long.
 
-Every five minutes, the Spacemesh protocol distributes 50 Smesh (SMH) to all miners who contributed at least one block to the mesh over the prior five minute period. The amount of the reward paid to each miner depends on the number of miners who contributed blocks, and the number of blocks contributed. A miner that contributes more blocks receives more reward.
-
-### Rewards adjustment
-
-As an incentive to miners to submit blocks with many transactions, the reward for a block with less than 15 transactions is reduced by 10%. This amount is distributed as a bonus evenly to all miners who submitted at least 15 transactions in a block.
+Every five minutes, the Spacemesh protocol distributes 50 Smesh (SMH) (subject to the Smesh minting schedule) to the miners who contributed blocks to the previous layer. The amount of the reward paid to each miner depends on the number of blocks contributed by that miner, and on the total number of blocks contributed in that layer. A miner that contributes more blocks receives more reward.
 
 ### Transaction fees
 
-Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled, per layer, and evenly distributed to all miners who submitted at least one block in the layer.
+Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled, per layer, and evenly distributed to all miners who contributed blocks to the layer, proportional to how many blocks they contributed.
+
+### Block weights
+
+At present, both block rewards and fees are divided equally among all the blocks in a layer: in other words, a miner that contributed four blocks (and was eligible to contribute at least four blocks) would receive precisely twice the reward and twice the fees for that layer as a miner who contributed (and was eligible to contribute) two.
+
+However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](../mining/05-atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share.)
