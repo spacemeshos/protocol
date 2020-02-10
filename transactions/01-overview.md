@@ -23,7 +23,7 @@ Spacemesh uses the standard ED25519 curve to generate keypairs. A private key is
 
 The actual transaction data structure in Spacemesh contains the following:
 
-- Recipient's address (32 bytes)
+- Recipient's address (20 bytes)
 - Amount to transfer (8 bytes)
 - Amount of the fee to be paid (to the miner) (8 bytes)
 - Nonce (8 bytes)
