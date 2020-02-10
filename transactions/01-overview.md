@@ -59,7 +59,7 @@ A transaction is deemed contextually valid, and is applied to the global state, 
 
 1. The origin account (derived from the signature) exists
 1. The nonce on the account matches the transaction nonce
-1. The account balance is greater than or equal to the transaction amount fee
+1. The account balance is greater than or equal to the transaction amount + fee
 
 ### Global state
 
