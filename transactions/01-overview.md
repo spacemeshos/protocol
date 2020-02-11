@@ -15,7 +15,7 @@ Even though a transaction is signed, so that the protocol can verify that it cam
 
 ### Address format and signature scheme
 
-Spacemesh uses the standard `curve25519` to generate keypairs. A private key is 32 bytes of random data. The public key is derived from the private key using [public key extraction](https://crypto.stackexchange.com/questions/18105/how-does-recovering-the-public-key-from-an-ecdsa-signature-work/18106) (note that Ethereum [does something similar](https://medium.com/@piyopiyo/how-to-get-senders-ethereum-address-and-public-key-from-signed-transaction-44abe17a1791)). The Spacemesh address is the 20-byte suffix of the public key. In other words, the wallet address may be expressed as:
+Spacemesh uses the standard `curve25519` to generate keypairs. A private key is 32 bytes of random data. The public key is derived from the private key using ED25519 [public key extraction](https://bitcoin.stackexchange.com/questions/42437/how-to-generate-ed25519-public-key-from-private-key-using-libsodium) (note that Ethereum [does something similar](https://medium.com/@piyopiyo/how-to-get-senders-ethereum-address-and-public-key-from-signed-transaction-44abe17a1791)). The Spacemesh address is the 20-byte suffix of the public key. In other words, the wallet address may be expressed as:
 
 `address = Bytes[12..31](ECDSAPUBKEY(private_key))`
 
@@ -29,7 +29,7 @@ The actual transaction data structure in Spacemesh contains the following:
 - Nonce (8 bytes)
 - Signature (32 bytes)
 
-The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature (as described in the previous section).
+The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature (using ED25519 public key extraction, as described in the previous section).
 
 The total size of a transaction is 76 bytes.
 
@@ -92,10 +92,10 @@ Every five minutes, the Spacemesh protocol distributes 50 Smesh (SMH) (subject t
 
 ### Transaction fees
 
-Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled, per layer, and evenly distributed to all miners who contributed blocks to the layer, proportional to how many blocks they contributed.
+Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled per layer and evenly distributed to all miners who contributed blocks to the layer, proportional to how many blocks they contributed.
 
 ### Block weights
 
-At present, both block rewards and fees are divided equally among all the blocks in a layer: in other words, a miner that contributed four blocks (and was eligible to contribute at least four blocks) would receive precisely twice the reward and twice the fees for that layer as a miner who contributed (and was eligible to contribute) two.
+At present, both block rewards and fees are divided equally among all the published, [contextually valid](../consensus/01-overview.md) blocks in a layer: in other words, a miner that contributed four blocks (and was eligible to contribute at least four blocks) would receive precisely twice the reward and twice the fees for that layer as a miner who contributed (and was eligible to contribute) two.
 
-However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](../mining/05-atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share.)
+However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](../mining/05-atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share. The rest will be distributed among all published blocks along with the rest of the pool.)
