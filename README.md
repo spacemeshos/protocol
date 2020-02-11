@@ -1,12 +1,35 @@
 # Spacemesh Protocol
 
-This repository contains the Spacemesh protocol specifications and related documentation.
-
 ## Introduction
 
-This document and the documents it links to collectively present an overview of the Spacemesh protocol and its constituent components. It is intended for a technical audience, with an eye towards making the protocol and client architecture accessible to those who wish to read, use, and contribute to the development of the Spacemesh protocol via its various client implementations. (See [Learn More](#learn-more), below, for links to many other resources on Spacemesh, both technical and non-technical.)
+This document and the documents it links to collectively present an overview of the Spacemesh protocol in its entirety, and its constituent components.
 
-## Contents
+See [What is Spacemesh?](#what-is-spacemesh), below, for more information on the project.
+
+See [Learn More](#learn-more), below, for links to many other resources on Spacemesh, both technical and non-technical.
+
+## Intended audience
+
+These documents are intended for a developer audience, with an eye towards making the protocol and client architecture accessible to those who wish to read, use, and contribute to the development of the Spacemesh protocol via its various client implementations. Where necessary, technical details of the protocol have been simplified or omitted entirely in favor of readability and legibility to a developer audience (where this has happened, there is typically a note with a link for further reading).
+
+Those looking for a more formal, research-oriented presentation of the Spacemesh protocol, including formal security proofs, should refer to the [Protocol whitepaper](https://spacemesh.io/spacemesh-protocol-v1-0/).
+
+## Repository Contents
+
+The remainder of this document contains a high-level overview of the Spacemesh protocol, and how all of the pieces fit together. You may also wish to dive deeper into the various components of the protocol:
+
+- [Mining](mining/01-overview.md)
+  - [Proof of Space-time (PoST)](mining/02-post.md)
+  - [Proof of Elapsed Time (PoET)](mining/03-poet.md)
+  - [Non-interactive Proof of Space-time (NIPoST)](mining/04-nipost.md)
+  - [Activation Transactions (ATX)](mining/05-atx.md)
+- [Consensus](consensus/01-overview.md)
+  - [Tortoise](consensus/01-overview.md#tortoise)
+  - [Hare](consensus/01-overview.md#hare)
+- Transactions (coming soon)
+- Sync (coming soon)
+- P2P Networking (coming soon)
+- Data structures (coming soon)
 
 ### Hare Protocol
 - [Spec](/hare/README.md)
