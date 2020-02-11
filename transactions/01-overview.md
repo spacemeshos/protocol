@@ -17,7 +17,7 @@ Even though a transaction is signed, so that the protocol can verify that it cam
 
 Spacemesh uses the standard `curve25519` to generate keypairs. A private key is 32 bytes of random data. The public key is derived from the private key using [public key extraction](https://crypto.stackexchange.com/questions/18105/how-does-recovering-the-public-key-from-an-ecdsa-signature-work/18106) (note that Ethereum [does something similar](https://medium.com/@piyopiyo/how-to-get-senders-ethereum-address-and-public-key-from-signed-transaction-44abe17a1791)). The Spacemesh address is the 20-byte prefix of the public key. In other words, the wallet address may be expressed as:
 
-`address = Bytes[0..19](ECDSAPUBKEY(private_key))`
+`address = Bytes[12..31](ECDSAPUBKEY(private_key))`
 
 ## Transaction structure
 
