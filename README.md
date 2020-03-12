@@ -38,9 +38,9 @@ The remainder of this document contains a high-level overview of the Spacemesh p
 
 ## What is Spacemesh?
 
-Spacemesh is a fair, race-free, permissionless blockchain protocol currently implemented in the open source [go-spacemesh codebase](https://github.com/spacemeshos/go-spacemesh). The protocol implements a decentralized ledger (a DAG structure, known as the _mesh_) with a native cryptocurrency (Smesh) that anyone is free to transact. What’s more, the protocol is designed in such a way that anyone with free hard drive space and a stable Internet connection can mine from home (by running the [Spacemesh App](https://github.com/spacemeshos/smapp)) and earn guaranteed rewards in the form of Smesh coin, a process known as Smeshing in [Spacemesh terminology](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md).
+Spacemesh is a fair, race-free, permissionless blockchain protocol currently implemented in the open source [go-spacemesh codebase](https://github.com/spacemeshos/go-spacemesh). The protocol implements a decentralized ledger (a DAG structure, known as the _mesh_) with a native cryptocurrency (Smesh, also known as SMH) that anyone is free to mine and transact. What’s more, the protocol is designed in such a way that anyone with free hard drive space and a stable Internet connection can mine from home (by running the [Spacemesh App](https://github.com/spacemeshos/smapp)) and earn guaranteed rewards in the form of SMH coin, a process known as Smeshing in [Spacemesh terminology](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md).
 
-Spacemesh research and development is led by a team of full-time contributors employed by a for-profit, venture-backed company. However, Spacemesh is also an active open source project and a community of dedicated researchers, developers, and other contributors around the world. Learn more about the Spacemesh protocol at the [project homepage](https://spacemesh.io/), and about the project and its goals in the [manifesto](https://spacemesh.io/spacemesh-manifesto/).
+Spacemesh research and development is led by a team of full-time contributors employed by the [Spacemesh development company](https://spacemesh.io/faq/#governance). However, Spacemesh is also an active open source project and a community of dedicated researchers, developers, and other contributors around the world. Learn more about the Spacemesh protocol at the [project homepage](https://spacemesh.io/), and about the project and its goals in the [manifesto](https://spacemesh.io/spacemesh-manifesto/).
 
 ### Spacemesh basics
 
@@ -52,7 +52,7 @@ Read on to learn more about the details of the Spacemesh protocol. You may also 
 
 The Spacemesh protocol guarantees that each Smesher that follows the rules of the protocol is eligible to produce multiple blocks during each epoch. Note also that Smeshing is entirely permissionless: in other words, _anyone who runs the Spacemesh software and follows the rules of the protocol is guaranteed to be rewarded with Smesh coins at each epoch._ This is in contrast to both Proof of Work-based protocols, such as Bitcoin, where rewards are probabilistic and only professional miners and mining pools stand a realistic chance of earning them; as well as to Proof of Stake-based protocols, where one must hold a substantial amount of the token before they are eligible to participate and earn rewards.
 
-Spacemesh is able to achieve this nice property due to certain unique characteristics of its [consensus mechanism](https://spacemesh.io/protocol/) (see also [Consensus](consensus/01-overview.md) in these docs): in particular, the fact that it’s race-free, i.e., it does not require Smeshers to compete to produce blocks in a given layer, but rather allows many blocks to be produced at each layer. This results in a DAG data structure rather than a chain. See [The race to race-free (or why we chose mesh over chain)](https://spacemesh.io/race-freeness/) for more information on this design choice.
+Spacemesh is able to achieve this nice property due to certain unique characteristics of its [consensus mechanism](https://spacemesh.io/protocol/) (see also [Consensus](consensus/01-overview.md)): in particular, the fact that it’s race-free, i.e., it does not require Smeshers to compete to produce blocks in a given layer, but rather allows many blocks to be produced at each layer. This results in a DAG data structure rather than a chain. See [The race to race-free (or why we chose mesh over chain)](https://spacemesh.io/race-freeness/) for more information on this design choice.
 
 ## Core Infrastructure
 
@@ -76,7 +76,7 @@ For more information see [PoET](mining/03-poet.md) and the [PoET codebase](https
 
 ### Spacemesh App
 
-The Spacemesh App is a GUI-based desktop application built for Windows, Mac, and OS X that has two main functions: it acts as a wallet, allowing a user to hold and transact [Smesh tokens](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md#smesh-smh), and it allows a user to mine (known as [Smeshing](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md#smesher)) by allocating a certain amount of hard drive space, constructing and submitting eligibility proofs, producing blocks, and collecting rewards.
+The Spacemesh App is a GUI-based desktop application built for Windows, Mac, and OS X that has two main functions: it acts as a wallet, allowing a user to hold and transact [Smesh coin](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md#smesh-smh), and it allows a user to mine (known as [Smeshing](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md#smesher)) by allocating a certain amount of hard drive space, constructing and submitting eligibility proofs, producing blocks, and collecting rewards.
 
 The App runs an instance of the go-spacemesh full node under the hood. For more information see the [Spacemesh App codebase](https://github.com/spacemeshos/smapp).
 
@@ -97,7 +97,7 @@ SVM is the Spacemesh Virtual Machine, a WebAssembly-compatible smart contract en
 <a name="post"></a>
 ### Proof of Space-time
 
-In Spacemesh, a miner establishes eligibility to produce blocks and participate in [consensus](consensus/01-overview.md) by publishing an Activation Transaction (ATX), which contains (among other things) a Proof of Space-time.
+In Spacemesh, a miner establishes eligibility to produce blocks and participate in [consensus](consensus/01-overview.md) by publishing an [Activation Transaction (ATX)](mining/05-atx.md), which contains (among other things) a [Proof of Space-time](mining/02-post.md).
 
 These proofs have two phases. In the initial phase, known as the _initialization phase,_ a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space. The space is filled with cryptographic junk such that for the duration that this space is committed to Spacemesh it cannot be used for any other purpose. This hard drive space is the _space_ component of the _space-time_ resource that underlies a Proof of Space-time.
 
