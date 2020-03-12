@@ -131,7 +131,7 @@ For more information, see Network [LINK forthcoming].
 
 The basic building blocks of the Spacemesh protocol, and the overall, canonical mesh data structure, are transactions and blocks. Transactions are account-based, and contain a sender, a recipient, an amount, a signature, and a few other pieces of data. Blocks collate zero or more transactions into a discrete set, and contain a block height (layer number), a signature of the miner, a proof of eligibility, and a few other pieces of data. See [Mining](mining/01-overview.md) for more information.
 
-Other relevant data structures include the various types of proof produced and submitted by miners and other services ([PoET](mining/03-poet.md), [ATX](mining/05-atx.md)), and vote messages exchanged as part of the Hare protocol [LINK forthcoming].
+Other relevant data structures include the various types of proof produced and submitted by miners and other services ([PoET](mining/03-poet.md), [ATX](mining/05-atx.md)), and vote messages exchanged as part of the [Hare protocol](consensus/01-overview.md#hare).
 
 ## Learn More
 
