@@ -15,7 +15,7 @@ Even though a transaction is signed, so that the protocol can verify that it cam
 
 ### Address format and signature scheme
 
-Spacemesh uses the standard `curve25519` to generate keypairs. A private key is 32 bytes of random data. The public key is derived from the private key using ED25519 [public key extraction](https://bitcoin.stackexchange.com/questions/42437/how-to-generate-ed25519-public-key-from-private-key-using-libsodium) (note that Ethereum [does something similar](https://medium.com/@piyopiyo/how-to-get-senders-ethereum-address-and-public-key-from-signed-transaction-44abe17a1791)). The Spacemesh address is the 20-byte suffix of the public key. In other words, the wallet address may be expressed as:
+Spacemesh uses the standard `curve25519` to generate keypairs. A private key is 32 bytes of random data, and the public key is derived from the private key. The Spacemesh address is the 20-byte suffix of the public key. In other words, the wallet address may be expressed as:
 
 `address = Bytes[12..31](ECDSAPUBKEY(private_key))`
 
@@ -29,7 +29,7 @@ The actual transaction data structure in Spacemesh contains the following:
 - Nonce (8 bytes)
 - Signature (32 bytes)
 
-The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature (using ED25519 public key extraction, as described in the previous section).
+The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature (using [public key extraction](https://crypto.stackexchange.com/questions/18105/how-does-recovering-the-public-key-from-an-ecdsa-signature-work/18106)).
 
 The total size of a transaction is 76 bytes.
 
