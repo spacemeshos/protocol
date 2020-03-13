@@ -29,7 +29,7 @@ The actual transaction data structure in Spacemesh contains the following:
 - Nonce (8 bytes)
 - Signature (32 bytes)
 
-The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature (using [public key extraction](https://crypto.stackexchange.com/questions/18105/how-does-recovering-the-public-key-from-an-ecdsa-signature-work/18106)).
+The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature (using [public key extraction](https://crypto.stackexchange.com/questions/18105/how-does-recovering-the-public-key-from-an-ecdsa-signature-work/18106) applied to ed25519).
 
 The total size of a transaction is 76 bytes.
 
