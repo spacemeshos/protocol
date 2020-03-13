@@ -17,7 +17,7 @@ Even though a transaction is signed, so that the protocol can verify that it cam
 
 Spacemesh uses the standard `curve25519` to generate keypairs. A private key is 32 bytes of random data, and the public key is derived from the private key. The Spacemesh address is the 20-byte suffix of the public key. In other words, the wallet address may be expressed as:
 
-`address = Bytes[12..31](ECDSAPUBKEY(private_key))`
+`address = Bytes[12..31](public_key)`
 
 ## Transaction structure
 
