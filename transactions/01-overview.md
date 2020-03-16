@@ -11,11 +11,11 @@ Spacemesh uses the account model for storing value. This means that users are en
 
 An account in Spacemesh is a mapping from a wallet address to a balance of Smesh tokens. Note that there is not a one-to-one mapping between _users_ and _addresses,_ as one user may control many addresses (or, less often but also possibly, one address could be controlled by many users).
 
-Even though a transaction is signed, so that the protocol can verify that it came from the sender, without additional protections, transactions are still susceptible to a [replay attack](https://en.wikipedia.org/wiki/Replay_attack): if Alice sends funds to Bob, Bob could resend the same transaction (that Alice already signed) to the network to steal additional funds from Alice. In order to prevent replay attacks, each account also stores a transaction counter, also known as a "nonce." Each transaction must declare a nonce, and a transaction is only valid if it has a nonce that matches the current value of the account counter.
+Even though a transaction is signed, so that the protocol can verify that it came from the sender, without additional protections, transactions are still susceptible to a [replay attack](https://en.wikipedia.org/wiki/Replay_attack): if Alice sends funds to Bob, Bob could resend the same transaction (that Alice already signed) to the network to steal additional funds from Alice. In order to prevent replay attacks, each account also stores a transaction counter (some other platforms such as Ethereum call this a "nonce"). Each transaction must declare a nonce, and a transaction is only valid if it has a nonce that matches the current value of the account counter.
 
 ### Address format and signature scheme
 
-Spacemesh uses the standard `curve25519` to generate keypairs. A private key is 32 bytes of random data, and the public key is derived from the private key. The Spacemesh address is the 20-byte suffix of the public key. In other words, the wallet address may be expressed as:
+Spacemesh uses the standard `curve25519` to generate keypairs. A private key is a random 32 byte number, and the public key is generated from the private key. The Spacemesh address is the 20-byte suffix of the public key. In other words, the wallet address may be expressed as:
 
 `address = Bytes[12..31](public_key)`
 
@@ -26,20 +26,20 @@ The actual transaction data structure in Spacemesh contains the following:
 - Recipient's address (20 bytes)
 - Amount to transfer (8 bytes)
 - Amount of the fee to be paid (to the miner) (8 bytes)
-- Nonce (8 bytes)
+- Transaction counter (8 bytes)
 - Signature (32 bytes)
 
-The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _implicitly derived_ from this signature (using [public key extraction](https://crypto.stackexchange.com/questions/18105/how-does-recovering-the-public-key-from-an-ecdsa-signature-work/18106) applied to ed25519).
+The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _derived_ from this signature (using [public key extraction](https://crypto.stackexchange.com/questions/18105/how-does-recovering-the-public-key-from-an-ecdsa-signature-work/18106) applied to the EdDSA signature scheme).
 
 The total size of a transaction is 76 bytes.
 
 ### Syntactic validity
 
-Technically, any message that is 76 bytes long can be interpreted as a syntactically valid transaction. However, the transaction isn't _contextually valid_, and thus won't be applied to the global state, unless certain conditions are met (see next section).
+Technically, any message that is 76 bytes long can be interpreted as a syntactically valid transaction. However, the transaction isn't _contextually valid,_ and thus won't be applied to the global state, unless certain conditions are met (see next section).
 
 ## Applying transactions
 
-Transactions are applied, one by one, to the global state. Valid transactions cause the state to be updated. Of course, since Spacemesh defines a canonical ledger, the order in which transactions are applied is very important.
+Transactions are applied one by one in the order they appear in blocks (see next section) to the global state. Valid transactions cause the state to be updated. Of course, since Spacemesh defines a canonical ledger, the order in which transactions are applied is very important.
 
 <a name="ordering"></a>
 ### Transaction ordering
@@ -57,6 +57,7 @@ Transaction order in Spacemesh is defined in the following way:
 
 A transaction is deemed contextually valid, and is applied to the global state, if the following conditions apply:
 
+1. The transaction appears in a [contextually valid block](../consensus/01-overview.md#block-validity-in-spacemesh)
 1. The origin account (derived from the signature) exists
 1. The nonce on the account matches the transaction nonce
 1. The account balance is greater than or equal to the transaction amount + fee
@@ -76,7 +77,7 @@ Fees are distributed to the miner at the same time, but using an independent sta
 
 ## Mempool
 
-Miners receive incoming, unprocessed transactions via the [gossip network](../p2p/01-overview.md) and locally over GRPC. When a miner receives a transaction, it checks that it's syntactically valid and that it hasn't already seen the transaction before (i.e., those that it's not already in the mempool, or in the mesh as part of at least one block). After that, it saves the transaction into its mempool. Each miner maintains its own mempool.
+Miners receive incoming, unprocessed transactions via the [gossip network](../p2p/01-overview.md) and locally over GRPC. When a miner receives a transaction, it checks that it's syntactically valid and that it hasn't already seen the transaction before (i.e., those that are not already in the mempool, or in the mesh as part of at least one block). After that, it saves the transaction into its mempool. Each miner maintains its own mempool.
 
 Gossip network participants are expected to gossip _all syntactically valid_ transactions to the network.
 
@@ -86,16 +87,16 @@ As in Bitcoin and other blockchain platforms, a Spacemesh transaction pays a fee
 
 ### Mining rewards
 
-Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](../README.md#spacemesh-basics). An epoch consists of a fixed number of layers. Each layer is five minutes long.
+Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](../README.md#spacemesh-basics). An epoch consists of a fixed number of layers. Each layer is five minutes long and contains a set of blocks.
 
 Every five minutes, the Spacemesh protocol distributes 50 Smesh (SMH) (subject to the Smesh minting schedule) to the miners who contributed blocks to the previous layer. The amount of the reward paid to each miner depends on the number of blocks contributed by that miner, and on the total number of blocks contributed in that layer. A miner that contributes more blocks receives more reward.
 
 ### Transaction fees
 
-Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled per layer and evenly distributed to all miners who contributed blocks to the layer, proportional to how many blocks they contributed.
+Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled per layer and evenly distributed to all miners who contributed blocks to the layer, proportional to how many (contextually valid) blocks they contributed.
 
 ### Block weights
 
 At present, both block rewards and fees are divided equally among all the published, [contextually valid](../consensus/01-overview.md) blocks in a layer: in other words, a miner that contributed four blocks (and was eligible to contribute at least four blocks) would receive precisely twice the reward and twice the fees for that layer as a miner who contributed (and was eligible to contribute) two.
 
-However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](../mining/05-atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share. The rest will be distributed among all published blocks along with the rest of the pool.)
+However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](../mining/05-atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each contextually valid block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share. The rest will be distributed among all published blocks along with the rest of the pool.)
