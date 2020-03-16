@@ -1,7 +1,7 @@
 # Transactions
 ## Overview
 
-The transaction is one of the most basic data structures used in Spacemesh and in many other blockchain protocols. In Spacemesh, there are three types of transactions: a simple coin transfer, an activation transaction (ATX), and a smart contract call. Activation transactions are described [in the mining docs](../mining/05-atx.md). Smart contract transactions are part of the experimental [Spacemesh Virtual Machine (SVM)](https://github.com/spacemeshos/svm) project, which is not in production yet. Throughout the rest of this document, the term "transaction" refers to a coin transfer.
+The transaction is one of the most basic data structures used in Spacemesh and in many other blockchain protocols. In Spacemesh, there are three types of transactions: a simple coin transfer, an activation transaction (ATX), and a smart contract call. Activation transactions are a special type of transaction used as part of the mining process. They are [described in the mining docs](../mining/05-atx.md). Smart contract transactions are part of the experimental [Spacemesh Virtual Machine (SVM)](https://github.com/spacemeshos/svm) project, which is not in production yet. Throughout the rest of this document, the term "transaction" refers to a coin transfer.
 
 In Spacemesh, a transaction is an order to transfer funds from one account to another. The transaction specifies the amount to be transferred, the sender's wallet address, the recipient's wallet address, and the fee to be paid to the miner that mines the transaction. The transaction is signed using the private key of the sender, which is how the protocol knows that the transaction is legitimate (i.e., that it originated with the holder of the sender's private key).
 
