@@ -76,4 +76,6 @@ The entire PoST construction, from the Partial-Hash IPoW for generating the data
 
 ## What about time?
 
-As presented above, the PoST construction allows a prover to assert, deterministically and verifiably in a non-interactive fashion, that they have generated and have access to a particular dataset derived from a known seed based on their unique ID. Where does the “time” component derive from? In other words, how does the prover assert, in the same fashion, that they not only performed the initial generation of this dataset, but that they still have access to this data over time? The next section, [Proof of Elapsed Time](03-poet.md), expands upon the explanation above and explains in detail how this part works.
+As presented above, the PoST construction allows a prover to assert, deterministically and verifiably in a non-interactive fashion, that they have generated and have access to a particular dataset derived from a known seed based on their unique ID. Where does the “time” component derive from? In other words, how does the prover assert, in the same fashion, that they not only performed the initial generation of this dataset, but that they still have access to this data over time?
+
+The next section, [Proof of Elapsed Time](03-poet.md), expands upon the explanation above and explains in detail how this part works.
