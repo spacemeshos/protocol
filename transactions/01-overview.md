@@ -11,7 +11,7 @@ Spacemesh uses the account model for storing value. This means that users are en
 
 An account in Spacemesh is a mapping from a wallet address to a balance of Smesh tokens. Note that there is not a one-to-one mapping between _users_ and _addresses,_ as one user may control many addresses (or, less often but also possibly, one address could be controlled by many users).
 
-Even though a transaction is signed, so that the protocol can verify that it came from the sender, without additional protections, transactions are still susceptible to a [replay attack](https://en.wikipedia.org/wiki/Replay_attack): if Alice sends funds to Bob, Bob could resend the same transaction (that Alice already signed) to the network to steal additional funds from Alice. In order to prevent replay attacks, each account also stores a transaction counter (some other platforms such as Ethereum call this a "nonce"). Each transaction must declare a nonce, and a transaction is only valid if it has a nonce that matches the current value of the account counter.
+Even though a transaction is signed, so that the protocol can verify that it came from the sender, without additional protections, transactions are still susceptible to a [replay attack](https://en.wikipedia.org/wiki/Replay_attack): if Alice sends funds to Bob, Bob could resend the same transaction (that Alice already signed) to the network to steal additional funds from Alice. In order to prevent replay attacks, each account also stores a transaction counter (some other platforms such as Ethereum call this a "nonce"). Each transaction must declare a counter, and a transaction is only valid if it has a counter that matches the current value of the account counter.
 
 ### Address format and signature scheme
 
@@ -59,7 +59,7 @@ A transaction is deemed contextually valid, and is applied to the global state, 
 
 1. The transaction appears in a [contextually valid block](../consensus/01-overview.md#block-validity-in-spacemesh)
 1. The origin account (derived from the signature) exists
-1. The nonce on the account matches the transaction nonce
+1. The counter on the account matches the transaction counter
 1. The account balance is greater than or equal to the transaction amount + fee
 
 ### Global state
@@ -68,7 +68,7 @@ The transactions in a given layer are applied to global state, [in order](#order
 
 1. The origin account balance is decremented by the transaction amount + fee
 1. The recipient account balance is incremented by the transaction amount
-1. The origin account nonce is incremented by one
+1. The origin account transaction counter is incremented by one
 
 After each pass over the list of transactions, another pass is performed on the remaining (unapplied) transactions, in the same order, until no transaction from the list can be applied. The worst case performance is `O(N^2)`, and the expected (i.e., non-malevolent) case is `O(N)`, where `N` is the number of transactions in the layer. (In fact, it's `O(N*M)` where `M` is the length of the longest chain of intra-layer dependencies. However, `M` is expected to be very small since a wallet should not create transactions that depend upon other transactions in the same layer.)
 
