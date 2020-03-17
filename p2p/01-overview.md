@@ -20,7 +20,7 @@ Each peer must discover and connect to one or more peers in order to pass messag
 <a name="discovery"></a>
 ### Bootstrap and Peer Discovery
 
-Nodes need a mechanism, called discovery, that allows them to find and connect to peers. In order for a new node to discover peers and join the network, it needs to know the address of at least one other node (called a bootstrap node) at system startup. The new node queries the bootstrap node for a list of other nodes to connect to. After connecting to a peer as a bootstrap node, additional discovery takes place, where the newly added peers are queried for additional nodes as well. Each node maintains a local list of peers that it has learned of, known as an "address book": after the node is restarted, or if it loses its network connection, it can refer to its address book to find peers to connect to, thus bypassing the bootstrap phase.
+Nodes need a mechanism, called discovery, that allows them to find and connect to peers. In order for a new node to discover peers and join the network, it needs to know the address of at least one other node (called a bootstrap node) at system startup. The new node queries the bootstrap node for a list of other nodes to connect to. After connecting to a bootstrap node, additional discovery takes place, where the newly added peers are queried for additional nodes as well. Each node maintains a local list of peers that it has learned of, known as an "address book": after the node is restarted, or if it loses a peer connection, it can refer to its address book to find peers to connect to, thus bypassing the bootstrap phase. Note that, in order to prevent an [eclipse attack](https://www.radixdlt.com/post/what-is-an-eclipse-attack/), it's important that a node regularly perform peer discovery with nodes that it's not currently connected to.
 
 ### Message Broadcast
 
@@ -48,15 +48,19 @@ Spacemesh [multiplexes](https://en.wikipedia.org/wiki/Multiplexing) messages fro
 
 Each message is signed using the sender's public key. In addition to the message data itself (the payload), it includes a protocol, a client version, a timestamp, the public key of the message originator, a network ID, whether the message is a request or a response, the request ID, and the type of message in the specified protocol. All messages are serialized on the wire using [the XDR standard](https://en.wikipedia.org/wiki/External_Data_Representation).
 
+The sub-protocol that generated the message then sends it to the P2P stack. It can either broadcast the message to all peers over the gossip network, or it can send the message to one specific peer. Most sub-protocols only broadcast messages, but the `sync` sub-protocol sends messages to specific peers: for example, to respond to an incoming request for a specific block from a specific peer.
+
 ### Peer Discovery
 
 As [described above](#discovery), there are two methods by which peers may discover other peers, bootstrap and additional discovery.
 
 The following flow describes how a node requests a list of peers from another node:
-1. Initiator must first send ping message, to verify that node is alive. The ping contains the node ID (public key), the sender's IP and port.
-1. The recipient responds to the ping with a pong message, of the same format as the ping, to validate this information. (This prevents reflective DoS attacks.)
+1. The initiator must first send ping message, to verify that node is alive. The ping contains the node ID (public key), the sender's IP and port.
+1. The recipient responds to the ping with a pong message, of the same format as the ping, to validate this information. (In other words, the recipient ensures the intiator is indeed listening at the IP and port they advertised. This prevents reflective DoS attacks.)
 1. The initiator then sends a `getAddresses` message, requesting a list of peers.
 1. The recipient responds with a list of additional peers: their node IDs, IP addresses, and ports.
+
+Each node maintains an "address book" of known nodes. When it first starts up, or after a peer connection has been lost, it randomly chooses a peer from this address book to dial and attempt to initiate a new session with. This randomness is important to help prevent an eclipse attack. Actually, it doesn't choose completely randomly: a peer is less likely to attempt to reconnect to a node that it failed to connect to before.
 
 ### Session Initiation
 
