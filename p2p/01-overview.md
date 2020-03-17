@@ -34,11 +34,11 @@ To prevent fraud and to prevent one node from performing malicious activities wh
 
 ## P2P in Spacemesh
 
-The Spacemesh network is an unstructured peer-to-peer network. Each peer both connects to other peers and also accepts connections from peers. Each peer is identified by the peer's unique public key. This public key is used both to encrypt data in transit between peers, and for [peer authentication](#authentication). Note that this public key is not used outside of the P2P stack.
+The Spacemesh network is an unstructured peer-to-peer network. Each peer both connects to other peers and also accepts incoming connections from peers. Each peer is identified by the peer's unique public key. This public key is used both to encrypt data in transit between peers, and for [peer authentication](#authentication). Note that this public key is not used outside of the P2P stack.
 
 ### Developing a custom P2P stack
 
-Early on in the architecture process, we evaluated existing P2P stacks including the Ethereum stack and [libp2p](https://github.com/libp2p). We decided that these existing stacks were too tightly coupled to the protocols: for instance, the Ethereum P2P stack requires that all data be sent using a custom encoding called RDP, and libp2p necessitates use of Kademlia DHT, which is useful for file sharing but is not required by Spacemesh. We therefore decided to implement our own lightweight P2P stack. For more information on this decision process, see [The search for the perfect p2p library](https://medium.com/spacemesh/perfect-p2p-library-c559d1ca57dc) (but note that some of the information, such as the discussion of the DHT, is outdated).
+Early on in the architecture process, we evaluated existing P2P stacks including the Ethereum stack and [libp2p](https://github.com/libp2p). We decided that these existing stacks were too tightly coupled to the respective protocols: for instance, the Ethereum P2P stack requires that all data be sent using a custom encoding called RDP, and libp2p necessitates use of Kademlia DHT, which is useful for file sharing but is not required by Spacemesh. We therefore decided to implement our own lightweight P2P stack. For more information on this decision process, see [The search for the perfect p2p library](https://medium.com/spacemesh/perfect-p2p-library-c559d1ca57dc) (but note that some of the information, such as the discussion of the DHT, is outdated).
 
 ### Protocols, multiplex, and gossip
 
@@ -46,24 +46,24 @@ Spacemesh [multiplexes](https://en.wikipedia.org/wiki/Multiplexing) messages fro
 
 ### Messages
 
-Each message is signed using the sender's public key. In addition to the message data itself (the payload), it includes a protocol, a client version, a timestamp, the public key of the message originator, a network ID, whether the message is a request or a response, the request ID, and the type of message in the specified protocol. All messages are serialized using [the XDR standard](https://en.wikipedia.org/wiki/External_Data_Representation).
+Each message is signed using the sender's public key. In addition to the message data itself (the payload), it includes a protocol, a client version, a timestamp, the public key of the message originator, a network ID, whether the message is a request or a response, the request ID, and the type of message in the specified protocol. All messages are serialized on the wire using [the XDR standard](https://en.wikipedia.org/wiki/External_Data_Representation).
 
 ### Peer Discovery
 
-There are two methods by which peers may discover other peers, bootstrap and additional discovery (as [described above](#discovery)).
+As [described above](#discovery), there are two methods by which peers may discover other peers, bootstrap and additional discovery.
 
-The following flow describes how a node requests other peers from another node:
+The following flow describes how a node requests a list of peers from another node:
 1. Initiator must first send ping message, to verify that node is alive. The ping contains the node ID (public key), the sender's IP and port.
-1. The recipient responds to the ping with a pong message, of the same format as the ping.
-1. The initiator then sends a `getAddresses` message, requesting information for additional peers.
-1. The recipient responds with a list of additional peers: ther node IDs, IP addresses, and ports.
+1. The recipient responds to the ping with a pong message, of the same format as the ping, to validate this information. (This prevents reflective DoS attacks.)
+1. The initiator then sends a `getAddresses` message, requesting a list of peers.
+1. The recipient responds with a list of additional peers: their node IDs, IP addresses, and ports.
 
 ### Session Initiation
 
-At the beginning of each session initiation between two nodes, a secure P2P session needs to be established (using a TCP socket). To establish the session the initiator node first sends a handshake message containing its client version and the network ID it's trying to connect to. It then encrypts the message using a [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) shared secret key constructed using the initiator's private key and the recipient's public key. It sends the message, and its public key, to the recipient.
+When two nodes connect for the first time, a secure P2P session needs to be established (using a TCP socket). To establish the session the initiator node first generates a handshake message containing its client version and the network ID it's trying to connect to. It then encrypts the message using a [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) shared secret key constructed using its own private key and the recipient's public key. It sends the message, and its public key, to the recipient.
 
 The recipient reconstucts the shared secret key, using its private key and the initator's public key, uses it to decrypt the handshake message, and checks the initiator's client version and network ID. If everything checks out, it responds to the handshake message and a session is established; if not, the TCP connection is closed and no further information is exchanged.
 
 ### Gossip
 
-In a blockchain protocol like Spacemesh, many types of data, including transactions and blocks, must traverse the network and reach every node. The broadcast protocol that's used to achieve this is called the gossip protocol. Gossip allows each node to broadcast a message to the entire network, and also to receive, and forward on other gossip messages it receives.
+In a blockchain protocol like Spacemesh, many types of data, including transactions and blocks, must traverse the network and reach every node. The broadcast protocol that's used to achieve this is called the gossip protocol. Gossip allows each node to broadcast a message to the entire network, and also to forward on other gossip messages it receives.
