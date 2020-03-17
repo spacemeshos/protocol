@@ -39,7 +39,7 @@ Technically, any message that is 76 bytes long can be interpreted as a syntactic
 
 ## Applying transactions
 
-Transactions are applied one by one in the order they appear in blocks (see next section) to the global state. Valid transactions cause the state to be updated. Of course, since Spacemesh defines a canonical ledger, the order in which transactions are applied is very important.
+Transactions are applied one by one, in the order in which they appear in blocks, to the global state. Valid transactions cause the state to be updated. Of course, since Spacemesh defines a canonical ledger, the order in which transactions are applied is very important.
 
 <a name="ordering"></a>
 ### Transaction ordering
