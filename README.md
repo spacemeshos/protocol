@@ -44,7 +44,7 @@ Spacemesh research and development is led by a team of full-time contributors em
 
 ### Spacemesh basics
 
-In Spacemesh, we divide time into fixed-length units we call _layers,_ which are further grouped together into longer intervals called _epochs._ Layers are similar to Bitcoin's average ten minute block time, with a couple of important differences. For one thing, unlike in Proof of Work-based blockchains like Bitcoin and Ethereum where block time is the product of a Poisson process and thus random, layers in Spacemesh occur at precisely fixed intervals of time. This is due to the deterministic nature of the Spacemesh protocol. For another thing, in Spacemesh, many blocks are produced in each layer rather than only a single block.
+In Spacemesh, we divide time into fixed-length units we call _layers,_ which are further grouped together into longer intervals called _epochs._ Layers are similar to Bitcoin's average ten minute block time, with a couple of important differences. For one thing, unlike in Proof of Work-based blockchains like Bitcoin and Ethereum where block time is the product of a Poisson process and thus random, layers in Spacemesh occur at precisely fixed intervals of time. This is due to the deterministic nature of the Spacemesh protocol. For another thing, in Spacemesh, many blocks are produced in each layer rather than only a single block. (Formally, a layer in Spacemesh is defined as a set of blocks produced during a fixed time interval, i.e., the layer is the blocks, not the time interval.)
 
 Read on to learn more about the details of the Spacemesh protocol. You may also find this high-level [protocol overview](https://spacemesh.io/protocol/) helpful.
 
