@@ -38,9 +38,12 @@ Because of the self-healing mechanism (described above), Spacemesh would functio
 1. **Efficiency:** the self-healing protocol is less efficient (measured in the number of messages passed) than the Hare.
 1. **Robustness:** while self-healing requires > 2/3 honest majority, the Hare requires only a simple honest majority, and depending on the size of the committee it can theoretically tolerate up to 2/3 malicious participants.
 
-### Compared to other BFT protocols
+### Compared to HotStuff and Tendermint
 
-- The difference between Hare and [HotStuff](https://arxiv.org/pdf/1803.05069.pdf) is that HotStuff requires a known set of participants (i.e., it does not support player replaceability), cannot be made permissionless, doesn't scale to thousands of participants, and does not easily convert to set agreement (i.e., agreement on a set of valus rather than on a single bit value). The requirement to have a known set of participants opens a DoS attack vector on known future participants.
+- [HotStuff](https://arxiv.org/pdf/1803.05069.pdf) requires a known set of participants (i.e., it does not support player replaceability), cannot be made permissionless, doesn't scale to thousands of participants, and does not easily convert to set agreement (i.e., agreement on a set of valus rather than on a single bit value). The requirement to have a known set of participants opens a DoS attack vector on known future participants.
+- HotStuff and Tendermint both require a 2/3 honest majority, whereas the Hare requires only a simple honest majority
+- HotStuff and Tendermint make different assumptions about network synchrony: they both assume a _partially-synchronous network_ (i.e., there exists a "global stabilization time" after which all messages may be assumed to have been delivered, but you don't know exactly when this time is). Hare, on the other hand, assumes a _fully-synchronous network,_ i.e., that all messages are delivered within a known period of time (which is specified as a protocol parameter, and affects layer time). As a result, HotStuff and Tendermint can make progress faster than Hare, but at the cost of having a lower corruption threshold.
+- HotStuff and Tendermint achieve a form of consensus known as _state machine replication:_ this is a classical form of PBFT consensus where participants in the protocol agree upon an ordered sequence of transactions. The Hare protocol plays a different role in the Spacemesh protocol, and thus its goal is not to achieve state machine replication. Rather, every time the Hare runs, its goal is to run for a finite number of rounds and achieve a "one-time agreement" (on the set of valid blocks in the current layer).
 
 ## VRF beacon
 
