@@ -77,7 +77,7 @@ Fees are distributed to the miner at the same time, but using an independent sta
 
 ## Mempool
 
-Miners receive incoming, unprocessed transactions via the [gossip network](../p2p/01-overview.md) and locally over GRPC. When a miner receives a transaction, it checks that it's syntactically valid and that it hasn't already seen the transaction before (i.e., those that are not already in the mempool, or in the mesh as part of at least one block). After that, it saves the transaction into its mempool. Each miner maintains its own mempool.
+Miners receive incoming, unprocessed transactions via the [gossip network](../p2p/01-overview.md) and locally over GRPC. When a miner receives a transaction, it checks that the transaction is syntactically valid and that it hasn't already seen the transaction before (i.e., it's not already in the mempool, nor in the mesh as part of at least one block). After that, it saves the transaction into its mempool. Each miner maintains its own mempool.
 
 Gossip network participants are expected to gossip _all syntactically valid_ transactions to the network.
 
