@@ -35,7 +35,7 @@ The total size of a transaction is 108 bytes.
 
 ### Syntactic validity
 
-Technically, any message that is 108 bytes long can be interpreted as a syntactically valid transaction. However, the transaction isn't _contextually valid,_ and thus won't be applied to the global state, unless certain conditions are met (see [next section](#contextual-validity)).
+Technically, any message that is 108 bytes long can be interpreted as a syntactically valid transaction. However, the transaction won't ultimately be applied to the global state unless [certain conditions](#contextual-validity) are met later.
 
 ## Mining transactions
 
