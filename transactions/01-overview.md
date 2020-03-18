@@ -27,15 +27,15 @@ The actual transaction data structure in Spacemesh contains the following:
 - Amount to transfer (8 bytes)
 - Amount of the fee to be paid (to the miner) (8 bytes)
 - Transaction counter (8 bytes)
-- Signature (32 bytes)
+- Signature (64 bytes)
 
 The transaction is signed using the private key corresponding to the sender's account. Note that the sender's address is not _explicitly_ included in the transaction. This is because it can be _derived_ from this signature (using [public key extraction](https://crypto.stackexchange.com/questions/18105/how-does-recovering-the-public-key-from-an-ecdsa-signature-work/18106) applied to the EdDSA signature scheme).
 
-The total size of a transaction is 76 bytes.
+The total size of a transaction is 108 bytes.
 
 ### Syntactic validity
 
-Technically, any message that is 76 bytes long can be interpreted as a syntactically valid transaction. However, the transaction isn't _contextually valid,_ and thus won't be applied to the global state, unless certain conditions are met (see [next section](#contextual-validity)).
+Technically, any message that is 108 bytes long can be interpreted as a syntactically valid transaction. However, the transaction isn't _contextually valid,_ and thus won't be applied to the global state, unless certain conditions are met (see [next section](#contextual-validity)).
 
 ## Mining transactions
 
