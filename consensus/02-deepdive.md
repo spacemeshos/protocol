@@ -32,18 +32,20 @@ The Hare is a BFT-compatible algorithm and is based on [ADDNR18](https://eprint.
 
 ### What does it give us?
 
-Because of the self-healing mechanism (described above), Spacemesh would function without the Hare. This is because self-healing guarantees that Spacemesh nodes will eventually converge and reach consensus from any starting condition, even without the initial, bootstrapped agreement that the Hare gives us. However, we would lose three things without the Hare
+Because of the self-healing mechanism (described above), Spacemesh would function without the Hare. This is because self-healing guarantees that Spacemesh nodes will eventually converge and reach consensus from any starting condition, even without the initial, bootstrapped agreement that the Hare gives us. However, we would lose three things without the Hare:
 
 1. **Time:** self-healing takes time.
-1. **Efficiency:** the self-healing protocol is less efficient (measured in the number of messages passed) than the Hare.
-1. **Robustness:** while self-healing requires > 2/3 honest majority, the Hare requires only a simple honest majority, and depending on the size of the committee it can theoretically tolerate up to 2/3 malicious participants.
+1. **Efficiency:** the self-healing protocol is less efficient (measured in terms of communication complexity: the number of messages passed) than the Hare. We have tuned the Hare to have the lowest possible communication complexity.
+1. **Robustness:** while self-healing requires > 2/3 honest majority, the Hare requires only a simple honest majority, and depending on the size of the committee it can theoretically tolerate up to 2/3 malicious participants. This is because it takes advantage of strong synchrony assumptions.
+
+The Hare is designed to support up to approx. 800 participants.
 
 ### Compared to HotStuff and Tendermint
 
 - [HotStuff](https://arxiv.org/pdf/1803.05069.pdf) requires a known set of participants (i.e., it does not support player replaceability), cannot be made permissionless, doesn't scale to thousands of participants, and does not easily convert to set agreement (i.e., agreement on a set of valus rather than on a single bit value). The requirement to have a known set of participants opens a DoS attack vector on known future participants.
 - HotStuff and Tendermint both require a 2/3 honest majority, whereas the Hare requires only a simple honest majority
 - HotStuff and Tendermint make different assumptions about network synchrony: they both assume a _partially-synchronous network_ (i.e., there exists a "global stabilization time" after which all messages may be assumed to have been delivered, but you don't know exactly when this time is). Hare, on the other hand, assumes a _fully-synchronous network,_ i.e., that all messages are delivered within a known period of time (which is specified as a protocol parameter, and affects layer time). As a result, HotStuff and Tendermint can make progress faster than Hare, but at the cost of having a lower corruption threshold.
-- HotStuff and Tendermint achieve a form of consensus known as _state machine replication:_ this is a classical form of PBFT consensus where participants in the protocol agree upon an ordered sequence of transactions. The Hare protocol plays a different role in the Spacemesh protocol, and thus its goal is not to achieve state machine replication. Rather, every time the Hare runs, its goal is to run for a finite number of rounds and achieve a "one-time agreement" (on the set of valid blocks in the current layer).
+- HotStuff and Tendermint achieve a form of consensus known as _state machine replication_ (SMR): this is a classical form of PBFT consensus where participants in the protocol agree upon an ordered sequence of transactions. The Hare protocol plays a different role in the Spacemesh protocol, and thus its goal is not to achieve SMR-style consensus. Rather, every time the Hare runs, its goal is to run for a finite number of rounds and achieve a "one-time agreement" (on the set of valid blocks in the current layer), then terminate. Terminating an SMR-style consensus protocol is more difficult since it's unclear how to ensure that all participants have achieved precisely the same state--indeed, these protocols are designed to run through an indefinite number of rounds.
 
 ## VRF beacon
 
