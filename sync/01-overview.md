@@ -47,3 +47,7 @@ There are two notions of sync in Spacemesh: weakly and fully synced.
 A node begins listening to gossip messages once it's weakly synced (in order to prevent a DoS attack). Other subprotocols, however, require the node to be fully synced: the Hare, block generation, and ATX generation are all paused until a node is fully synced.
 
 A node can only participate in the Hare consensus mechanism once it is fully synced.
+
+## Sync and the Tortoise
+
+Sync is what triggers the Tortoise protocol to run on a new layer. Once a node has synced enough new layers and blocks that vote for or against the blocks in a given layer, it triggers the Tortoise to process those votes.
