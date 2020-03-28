@@ -46,10 +46,12 @@ Miners receive incoming, unprocessed transactions via the [gossip network](../p2
 The node next performs the following basic checks on the transaction:
 
 - Is it syntactically valid? (i.e., the right length)
-- Does the sender account exist, and contain a nonzero balance?
+- Does the sender account exist, and contain a sufficient balance (>= the amount + fee)?
 - Is the transaction counter correct?
 
 If these are all true, then the node saves the transaction into its mempool (each miner maintains its own mempool) and gossips it to the network. If not, then the transaction is rejected, is not added to the mempool, and is not gossiped.
+
+Note that the node considers other _pending outgoing transactions_ when performing this check. In other words, if Alice sends three transactions in a row, and none of them have been confirmed yet, they are only considered valid and added to the mempool if they have sequential transaction counters that start at the current counter value, and if none of the transactions "overdrafts" the account (including both the transaction amount and the fee). In particular, note that this calculation _does not consider pending incoming transactions._
 
 ### Assembling blocks
 
