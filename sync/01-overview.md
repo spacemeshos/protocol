@@ -26,11 +26,24 @@ Once this initial sync process completes, the node switches into a mode known as
 
 ## Data availability
 
+In Spacemesh, data structures contain pointers to other data structures. For example, blocks point to previous blocks, and to ATXs. This is to save space in the mesh: it doesn't make sense for every block to contain a copy of all of the other blocks it points to, or to contain the ATX it points to, since many blocks may point to the same one! However, this presents a challenge of data availability: given a piece of data, such as a block, how do we ensure that all of the data that it relies on is available?
 
-## Layers and ticks
+In short, any data structure is considered invalid in Spacemesh if any of the data it relies on are unavailable (i.e., if none of a node's peers have the missing data). Miners should never mine, or gossip, a block with invalid pointers.
+
+## Layers, the clock, and sync
+
+The syncer polls against the clock and the database to figure out the most recent layer a node should know about, and the most recent layer it actually knows about. Based on this information, it can re-enter syncing mode if the node falls out of sync.
 
 ## Weakly vs. fully synced
 
+There are two notions of sync in Spacemesh: weakly and fully synced.
+
+**Weakly synced** means that a node knows about the most recent layer in the mesh (which it can calculate using the clock). However, a node that is weakly synced has no way of knowing whether it's seen all of the blocks for this layer.
+
+**Fully synced** means that a node knows about all past blocks, up to and including the present layer. It achieves this by listening, via gossip, for all of the blocks in the current layer. Since blocks vote recursively on valid past blocks (see [Tortoise](../consensus/01-overview.md#tortoise)), it knows that once it's seen all of the blocks in the current layer and recursively fetched the blocks they rely on, it is fully synced.
+
 ## Synchronization status and participation in consensus
+
+A node begins listening to gossip messages once it's weakly synced (in order to prevent a DoS attack). Other subprotocols, however, require the node to be fully synced: the Hare, block generation, and ATX generation are all paused until a node is fully synced.
 
 A node can only participate in the Hare consensus mechanism once it is fully synced.
