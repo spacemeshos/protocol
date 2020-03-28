@@ -14,11 +14,15 @@ The [gossip protocol](../p2p/01-overview.md#gossip) is the primary way that data
 
 ### Direct request
 
-When the node learns of a new block via a gossip message from one of its peers, the first thing it does is to attempt to find all of the other blocks that that block refers to. It checks its local database, but if it cannot find a referenced block, then it sends a request to its peers for the missing data. If a peer has the data in question, it responds with the data.
+When the node learns of a new block via a gossip message from one of its peers, the first thing it does is to attempt to find all of the other pieces of data that the block points to. A block is deemed syntactically invalid if it points to something, such as another block or an ATX, that's unavailable. The node checks its local database, but if it cannot find the data, then it sends a request to its peers for the missing data. If a peer has the data in question, it responds with the data.
+
+It continues to attempt to resolve dependencies as they arise: for example, if new block A points to a new block B, and new block B points to a new ATX Q, the node will attempt to fetch A, B, and Q, and it will not be able to determine the syntactic validity of A until it has fetched all of the other data that A depends on. This includes other blocks, transactions, and ATXs (as well as the data that they in turn rely on!). 
 
 ## Initial sync
 
-When a node first joins the network, of course it knows nothing about the current state of the network. It completes a [bootstrap and peer discovery](../p2p/01-overview.md#bootstrap-and-peer-discovery) process to find peers to pair and exchange data with, and those peers begin to send it new gossip messages.
+When a node first joins the network, of course it knows nothing about the current state of the network. It completes a [bootstrap and peer discovery](../p2p/01-overview.md#bootstrap-and-peer-discovery) process to find peers to pair and exchange data with. It next checks whether it's in sync with the network: i.e., whether the latest layer that it knows about (the genesis layer, the only layer a new node knows about) is the latest known layer in existence. It will discover newer layers from its peers, thus beginning the sync process. There is no explicit "initial sync"; rather, the sync happens implicitly, via the direct request method described above, as the node receives new data—new blocks and layers—from its peers, and subsequently requests the data that they rely on.
+
+Once this initial sync process completes, the node switches into a mode known as "weakly synced" and begins to listen to gossip messages to be notified about new data.
 
 ## Data availability
 
