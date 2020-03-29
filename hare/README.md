@@ -7,6 +7,8 @@ The general problem is the [Byzantine Agreement Problem](https://en.wikipedia.or
 
 It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence, multiple consensus instances may be run concurrently.  
 
+On this page we will discuss the core protocol concepts and clarify it. Please note we do not intend to talk about the implementation itself, we might mention practicale ways that overlap with it.
+
 ## Definitions
 `N` - The number of active participants
 
@@ -71,6 +73,34 @@ Each round longs a constant time. A `Roles Oracle` is used to generate roles in 
 
 **Termination**
 If at any point of the protocol, a party P receives f+1 notify messages on the same set S, it commits to S and terminates. Note that after an honest party has terminated, the other honest parties are ensured to terminate up to the following round, thanks to the gossip properties.
+
+## Eligibility Oracle
+
+Eligibility to participate in a round (being active) is determined by the oracle mechanism.
+The oracle is required to provide three main properties:
+A. Eligibility is under consensus - meaning all honest participant who receive a message will either classify it as active or as passive.
+B. The eligibility can be calculated in advance only up to some configurable limit of time before it can be used to participate.
+C. Eligibility is detrmined for each round in a layer separately and at random.
+
+### Proof & Validation
+The Threshold
+Thresholding a random input can be used to determine eligibility. I.e. we can set the threshold a participant should pass in order to participate. For example, we can set a threshold of X participants over the space of a 32 bit uint which is simply X/2^32. Randomly picking numbers in [0,2^32-1] will result in an expected number of X participants passing the threshold and hence X actives.
+
+**Proof**
+A paritipant who wants to prove eligibility attaches the signature of the VRF message.
+The VRF message is the tuple {agreed value, Layer, Round}. Signing the layer and the round is what ensures property C.
+The value is provided by the Hare Beacon. It aims to ensure that the value is under consensus. I.e. all partipants will use the same value (hence complying with property A). The value, for example, can be taken from some point in the past of the mesh which complies with property B.
+The reason we use a VRF signature is that we want to make sure the signing process is not grindable. This is ensured by the property of VRF messages where each output has a single source.
+
+**Validation**
+In order to validate the vrf message the receiver should:
+1. Reconstruct the matching VRF message and check the signature against that message.
+2. Validate the the hash of signature of the VRF message passes the treshold.
+
+**Leadership**
+The leader eligibility is derived by the same process described above. The only difference is that the expected number of actives is set to 1. Since eligibility is random, it is possible that more than one leader will exist in the same (proposal) round. To handle this, we agree on a way to order the signatures in order to decide who is the real accepted leader. For example, this can be done by comparing bytes and accepting lowest ranked leader. 
+
+## Message Validation & Processing Flow
 
 ![Message Validation](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/msg_validation.svg?sanitize=true)
 ![Round 1](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/round1.svg?sanitize=true)
