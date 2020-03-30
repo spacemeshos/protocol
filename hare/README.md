@@ -40,7 +40,10 @@ A proof that consists of f+1 commit messages on the same set S for the same iter
 f+1 commit messages implies at least one of them is honest and hence the set S is ensured to be valid.
 
 #### Safe Value Proof (SVP)
-A proof made by a participant to ensure that a set S satisfies `validity 1` in respect to a specific round K. An SVP also includes a certificate with which we can ensure consistency.
+The SVP is used to prove a proposal sent by the leader.
+There are two types of SVP proofs, both consist of f+1 status messages:
+Type A - assumes that no honest participant has commited to a set yet. In that case, any proposal is valid and we validate it by cheking the validity of the status messages which are provable by the pre-round messages.
+Type B - assumes an honest has already commited. From this moment, we know there is a certificate (the Commit Certificate) we should consider. We must Validate the certificate and check that the certificate is at least not older than the last certificate we know of.
 
 ---
 
