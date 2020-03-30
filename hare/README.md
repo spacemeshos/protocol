@@ -102,6 +102,16 @@ The leader eligibility is derived by the same process described above. The only 
 
 ## Message Validation & Processing Flow
 
+### Contextual Validity
+A message M(TYPE, K) where K is the round counter (K%4 is the round K/4 is the iteration) is said to be contextually valid iff the reciever received the message on round K%4 of iteration K/4.
+For example, a message of type status round should arrive during the status round and in addition if K=8 then the receiver should be in the second iteration.
+A message that arrives at the correct iteration but one round before the correct round is considered early.
+A late message is a contextually invalid message.
+
+
+### Syntactic Validity
+Syntax validity assures the stracture of the message is correct. For example if it is a proposal message then it should include an SVP.
+
 ![Message Validation](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/msg_validation.svg?sanitize=true)
 ![Round 1](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/round1.svg?sanitize=true)
 ![Round 2](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/round2.svg?sanitize=true)
