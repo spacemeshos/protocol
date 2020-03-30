@@ -1,15 +1,17 @@
 # Peer-to-Peer Networking
 ## Overview
 
-The Spacemesh protocol leads to the construction of a global, distributed ledger. As such, each Spacemesh node must receive, validate, and store all transactions created by all other Spacemesh nodes. Also, nodes [participate in consensus](../consensus/01-overview.md) and listen to [PoET server](../mining/03-poet.md) results. This requires the nodes to have a communication infrastructure to transport messages across the network. For this, Spacemesh nodes use a proprietary peer-to-peer (P2P) protocol. Using P2P technology allows nodes to efficiently transmit messages without the need for a centralized message server.
+The Spacemesh protocol leads to the construction of a global, distributed ledger. As such, each Spacemesh node must receive, validate, and store all transactions created by all other Spacemesh nodes. Also, nodes [participate in consensus](../consensus/01-overview.md) and listen to [PoET server](../mining/03-poet.md) results. This requires the nodes to have a communication infrastructure to transport messages across the network. For this, Spacemesh nodes use a custom-built peer-to-peer (P2P) protocol. Using P2P technology allows nodes to efficiently transmit messages without the need for a centralized message server.
+
 
 ## What is P2P?
 
-[Peer-to-peer](https://en.wikipedia.org/wiki/Peer-to-peer) is a distributed application architecture that allows sharing of data and resources among nodes, called peers, that are similarly privileged (i.e., no single server or master node has any special capabilities). The P2P architecture also distributes workloads by partitioning the network into smaller subnetworks where each node can has access to and coommunicates with a small number of nodes in the same subnetwork.
+[Peer-to-peer](https://en.wikipedia.org/wiki/Peer-to-peer) is a distributed application architecture that allows sharing of data and resources among nodes, called peers, that are similarly privileged (i.e., no single server or master node has any special capabilities). The P2P architecture also distributes workloads by partitioning the network into smaller subnetworks where each node has access to and communicates with a small number of nodes in the same subnetwork.
 
-Historically, peer to peer technology has mainly been used for file sharing, as popularized by [Napster](https://en.wikipedia.org/wiki/Napster) and, more recently, [BitTorrent](https://en.wikipedia.org/wiki/BitTorrent). Other usage cases have emerged, including distributed file systems and of course blockchain technology.
+Historically, peer to peer technology has mainly been used for file sharing, as popularized by [Napster](https://en.wikipedia.org/wiki/Napster), VoIP services like Skype and, more recently, [BitTorrent](https://en.wikipedia.org/wiki/BitTorrent). Other usage cases have emerged, including distributed file systems and of course blockchain technology.
 
 P2P is the perfect architecture for blockchain since it provides a means to connect to a network without relying upon a centralized server, enabling some of the core properties of blockchain including permissionlessness and censorship resistance.
+
 
 ## Building Blocks
 
@@ -24,12 +26,12 @@ Nodes need a mechanism, called discovery, that allows them to find and connect t
 
 ### Message Broadcast
 
-Nodes also need a way to send messages to other nodes—sometimes to a specific peer, sometimes to broadcast a message to the entire network—and a way to receive incoming messages from the network. A messaging protocol must be established that allows messages to traverse the network and reach all nodes, or one specific node.
+Nodes also need a way to exchange messages with other nodes. This usually involves broadcasting a message to every node in the network, and, in turn, receiving such broadcast messages, a subprotocol called [gossip](#gossip). However, it is also useful to be able to exchange messages with a specific peer (usually, only one that the node is directly connected to, i.e., a "neighbor"). Therefore we need a messaging protocol that allows messages to traverse the network and reach all nodes, or one specific "neighbor" node.
 
 <a name="authentication"></a>
 ### Peer Authentication
 
-To prevent fraud and to prevent one node from performing malicious activities while masquerading as another node, a peer authentication system must also be established. Similar to the mechanism that's used in cryptocurrency wallets, these systems are usually based on public-private keypairs. Each peer generates a keypair and advertises its public key (which may or may not be distinct from the keypair used in the wallet), which can be used to encrypt messages intended for it. The keys can also be used to sign messages to prove that they originated from the holder of the private key.
+To prevent fraud and to prevent one node from performing malicious activities while masquerading as another node, we also require a peer authentication system. Similar to the mechanism that's used in cryptocurrency wallets, these systems are usually based on public-private keypairs. Each peer generates a keypair and advertises its public key (which may or may not be distinct from the keypair used in the wallet), which can be used to encrypt messages intended for it. The keys can also be used to sign messages to prove that they originated from the holder of the private key.
 
 
 ## P2P in Spacemesh
@@ -42,7 +44,23 @@ Early on in the architecture process, we evaluated existing P2P stacks including
 
 ### Protocols, multiplex, and gossip
 
-Spacemesh [multiplexes](https://en.wikipedia.org/wiki/Multiplexing) messages from many sub-protocols (e.g., `discovery`, `hare`, `sync`) over each peer connection. Each individual protocol must register an incoming message handler with the P2P stack. When a protocol receives and validates a message, it may report back to the P2P stack that the message is valid, which allows the message to continue to propagate throughout the P2P network to the node's peers. In this way, the P2P stack is agnostic to the format and contents of messages belonging to individual sub-protocols.
+Spacemesh [multiplexes](https://en.wikipedia.org/wiki/Multiplexing) messages from many sub-protocols (`gossip`, `discovery`, `hare`, `sync`) over each peer connection. The P2P stack is agnostic to the format and contents of messages belonging to individual sub-protocols.
+
+#### Discovery
+
+The discovery subprotocol is used to [discover new peers](#discovery) to connect to. It's implemented directly on top of the P2P layer.
+
+#### Gossip
+
+In a blockchain protocol like Spacemesh, many types of data, including transactions and blocks, must traverse the network and reach every node. The broadcast protocol that's used to achieve this is called the gossip protocol. Gossip allows each node to broadcast a message to the entire network, and also to forward on other gossip messages it receives. Gossip is implemented on top of the P2P layer.
+
+Each individual protocol must register an incoming message handler with the P2P stack. When a protocol receives and validates a gossip message, it may report back to the P2P stack that the message is valid, which allows the message to continue to propagate throughout the P2P network to the node's peers. This helps prevent DoS attacks by ensuring that bad data (blocks, transactions, etc.) don't traverse the network since honest nodes will never gossip them.
+
+The Hare subprotocol is implemented on top of the Gossip subprotocol.
+
+#### Sync
+
+Unlike gossip, the sync subprotocol is used to exchange specific pieces of data with specific peers. For instance, when a new node comes online, it calculates the current layer based on the current time, asks its peers for the list of blocks for the current layer, then recursively fetches all of the data that those blocks point to. The Sync subprotocol is also implemented directly on top of the P2P layer. For more information, see [Sync](../sync/01-overview.md).
 
 ### Messages
 
@@ -67,7 +85,3 @@ Each node maintains an "address book" of known nodes. When it first starts up, o
 When two nodes connect for the first time, a secure P2P session needs to be established (using a TCP socket). To establish the session the initiator node first generates a handshake message containing its client version and the network ID it's trying to connect to. It then encrypts the message using a [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) shared secret key constructed using its own private key and the recipient's public key. It sends the message, and its public key, to the recipient.
 
 The recipient reconstucts the shared secret key, using its private key and the initator's public key, uses it to decrypt the handshake message, and checks the initiator's client version and network ID. If everything checks out, it responds to the handshake message and a session is established; if not, the TCP connection is closed and no further information is exchanged.
-
-### Gossip
-
-In a blockchain protocol like Spacemesh, many types of data, including transactions and blocks, must traverse the network and reach every node. The broadcast protocol that's used to achieve this is called the gossip protocol. Gossip allows each node to broadcast a message to the entire network, and also to forward on other gossip messages it receives.
