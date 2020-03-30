@@ -17,3 +17,7 @@ A block contains a set of transactions. It may be syntactically or contextually 
 ## Transaction
 
 ## ATX
+
+## P2P Messages
+
+Each message is signed using the sender's public key. In addition to the message data itself (the payload), it includes a protocol, a client version, a timestamp, the public key of the message originator, a network ID, whether the message is a request or a response, the request ID, and the type of message in the specified protocol. All messages are serialized on the wire using [the XDR standard](https://en.wikipedia.org/wiki/External_Data_Representation).
