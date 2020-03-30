@@ -36,11 +36,17 @@ To prevent fraud and to prevent one node from performing malicious activities wh
 
 ## P2P in Spacemesh
 
-The Spacemesh network is an unstructured peer-to-peer network. Each peer both connects to other peers and also accepts incoming connections from peers. Each peer is identified by the peer's unique public key. This public key is used both to encrypt data in transit between peers, and for [peer authentication](#authentication). Note that this public key is not used outside of the P2P stack.
+The Spacemesh network is an unstructured peer-to-peer network. Each peer both connects to other peers and also accepts incoming connections from peers.
 
-### Developing a custom P2P stack
+### Custom P2P stack
 
 Early on in the architecture process, we evaluated existing P2P stacks including the Ethereum stack and [libp2p](https://github.com/libp2p). We decided that these existing stacks were too tightly coupled to the respective protocols: for instance, the Ethereum P2P stack requires that all data be sent using a custom encoding called RDP, and libp2p necessitates use of Kademlia DHT, which is useful for file sharing but is not required by Spacemesh. We therefore decided to implement our own lightweight P2P stack. For more information on this decision process, see [The search for the perfect p2p library](https://medium.com/spacemesh/perfect-p2p-library-c559d1ca57dc) (but note that some of the information, such as the discussion of the DHT, is outdated).
+
+### Identity
+
+Each peer is identified by the peer's unique P2P public key. This public key is used both to encrypt data in transit between peers, and for [peer authentication](#authentication). Note that this public key is not used outside of the P2P stack. The keypair that Spacemesh nodes use to identify themselves in the P2P network is distinct from both the keypair used in mining (signing blocks, ATXs, Hare messages, etc.) and the wallet keypair used to sign transactions.
+
+This is a privacy feature: P2P IDs are not considered private since anyone on the network can determine the IP address of any P2P ID. In this way, a miner can change their P2P ID as often as they like (and, e.g., reconnect to the P2P network using a new ID). While traffic analysis can to some extent be used to associate different IDs belonging to the same node, there are additional steps one can take to protect their privacy. We are exploring the use of features such as [Dandelion](https://arxiv.org/pdf/1701.04439.pdf) in Spacemesh for this purpose.
 
 ### Protocols, multiplex, and gossip
 
