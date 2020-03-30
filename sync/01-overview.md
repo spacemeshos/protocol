@@ -4,7 +4,7 @@
 
 In order for a node to fully participate in the Spacemesh protocol, including the [Consensus protocol](../consensus/01-overview.md), it is essential that the node be aware of the current state of the network. This includes knowing the current [layer and epoch](../intro.md#spacemesh-basics), the latest blocks and [transactions](../transactions/01-overview.md), and the current [set of eligible miners](../mining/05-atx.md). (Other aspects of the protocol, such as the canonical ledger and the global state, are things the node can work out for itself based on these data.) The Sync protocol is the means by which a node achieves this: it sends and receives messages over the Spacemesh [P2P network](../p2p/01-overview.md), and listens for new blocks and transactions.
 
-## Gossip vs. request
+## Getting data
 
 There are fundamentally only two ways that a node synchronizes data in Spacemesh: gossip and direct request.
 
@@ -14,9 +14,13 @@ The [gossip protocol](../p2p/01-overview.md#gossip) is the primary way that data
 
 ### Direct request
 
-When the node learns of a new block via a gossip message from one of its peers, the first thing it does is to attempt to find all of the other pieces of data that the block points to. A block is deemed syntactically invalid if it points to something, such as another block or an ATX, that's unavailable. The node checks its local database, but if it cannot find the data, then it sends a request to its peers for the missing data. If a peer has the data in question, it responds with the data.
+Many data structures in Spacemesh, such as blocks and ATXs, rely on (or "point to") other pieces of data. For instance, a block contains a `view` that contains the IDs of blocks in previous layers, and it contains the ID of an [ATX](../mining/05-atx.md) that establishes the eligibility of the miner to produce that block in that layer. Similarly, an ATX references a [PoET proof](../mining/03-poet.md). When a node receives a block or an ATX, it needs to have access to these dependent data structures to perform validation on it.
 
-It continues to attempt to resolve dependencies as they arise: for example, if new block A points to a new block B, and new block B points to a new ATX Q, the node will attempt to fetch A, B, and Q, and it will not be able to determine the syntactic validity of A until it has fetched all of the other data that A depends on. This includes other blocks, transactions, and ATXs (as well as the data that they in turn rely on!). 
+When the node receives a new block or ATX, the first thing it does is to attempt to find all of the other pieces of data that the data structure points to. The node first checks its local database, but if it doesn't already have the data (i.e., has never seen this particular piece of data before), then it sends a direct request to its peers for the missing data. If a peer has the data in question, it responds with the data. If none of its peers have the data either, then the data structure in question is deemed invalid.
+
+### Resolving dependencies
+
+Note that these dependencies are recursive: for instance, a block may point to another block that points to an ATX that points to a PoET proof, none of which the node has seen before. (This is actually a relatively simple example! In the [initial sync](#initial-sync) phase, the dependency tree will be vastly larger.) The node keeps a separate request queue for each distinct data type, and the dependency tree is explored in breadth-first fashion, and in such a way that the same dependency is never fetched twice. To continue with the example, once the PoET proof is retrieved, it resolves all of the dependencies for the ATX, which is thus validated. This in turn resolves all of the dependencies for the block, which in turn is deemed valid, and so on. The dependencies are unwound in recursive fashion.
 
 ## Initial sync
 
@@ -32,7 +36,7 @@ In short, any data structure is considered invalid in Spacemesh if any of the da
 
 ## Layers, the clock, and sync
 
-The syncer polls against the clock and the database to figure out the most recent layer a node should know about, and the most recent layer it actually knows about. Based on this information, it can re-enter syncing mode if the node falls out of sync.
+The syncer polls against the clock and the database to figure out the most recent layer a node should know about, and the most recent layer it actually knows about. Based on this information, it can re-enter syncing mode if the node falls out of sync. If a node receives no blocks for one layer—e.g., because temporarily went offline—it switches back into sync mode to fetch the missing data.
 
 ## Weakly vs. fully synced
 
