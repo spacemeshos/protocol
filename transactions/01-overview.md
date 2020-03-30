@@ -55,29 +55,9 @@ Note that the node considers other _pending outgoing transactions_ when performi
 
 ### Assembling blocks
 
-Each mining node is incentivized to include as many fee-paying transactions as possible into blocks that it assembles. Note that it is not trivial to determine which transactions will pay fees. This is because only transactions that are _[contextually valid](#contextual-validity) in the instant when they're [applied to the global state](#global-state)_ pay fees (invalid transactions are discarded). Moreover, unlike in a blockchain, in Spacemesh a miner actually has no control over the final order of transactions in a layer. This is because the miner submits only a single block to the layer, and does not know the ultimate [order of blocks and transactions](#transaction-ordering) in that layer. If another conflicting transaction appears before the transaction in question--e.g., one that spends all of the funds in the sending account, or has the same transaction counter--then the transaction in question may ultimately be deemed invalid, and discarded, without paying a fee.
+Each mining node is incentivized to include as many fee-paying transactions as possible into blocks that it assembles. Note that it is not trivial to determine which transactions will pay fees. This is because only transactions that are _[contextually valid](#contextual-validity) in the instant when they're [applied to the global state](#global-state)_ pay fees (invalid transactions are discarded). Moreover, unlike in a blockchain, in Spacemesh a miner actually has no control over the final order of transactions in a layer. This is because the miner submits only a single block to the layer, and does not know the ultimate [order of blocks and transactions](#transaction-ordering) in that layer. If another conflicting transaction appears before the transaction in question—e.g., one that spends all of the funds in the sending account, or has the same transaction counter—then the transaction in question may ultimately be deemed invalid, and discarded, without paying a fee.
 
 For the same reason, in Spacemesh, _one invalid transaction does not invalidate a block._
-
-### Fees and mining rewards
-
-As in Bitcoin and other blockchain platforms, a Spacemesh transaction pays a fee to incentivize a miner to include the transaction in a block. However, fees and mining rewards work a bit differently in Spacemesh.
-
-#### Mining rewards
-
-Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](../README.md#spacemesh-basics). An epoch consists of a fixed number of layers. Each layer is five minutes long and contains a set of blocks.
-
-Every five minutes, the Spacemesh protocol distributes 50 Smesh (SMH) (subject to the Smesh minting schedule) to the miners who contributed blocks to the previous layer. The amount of the reward paid to each miner depends on the number of blocks contributed by that miner, and on the total number of blocks contributed in that layer. A miner that contributes more blocks receives more reward.
-
-#### Transaction fees
-
-Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled per layer and evenly distributed to all miners who contributed blocks to the layer, proportional to how many (contextually valid) blocks they contributed.
-
-#### Block weights
-
-At present, both block rewards and fees are divided equally among all the published, [contextually valid](../consensus/01-overview.md) blocks in a layer: in other words, a miner that contributed four blocks (and was eligible to contribute at least four blocks) would receive precisely twice the reward and twice the fees for that layer as a miner who contributed (and was eligible to contribute) two.
-
-However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](../mining/05-atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each contextually valid block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share. The rest will be distributed among all published blocks along with the rest of the pool.)
 
 ## Applying transactions
 
@@ -108,7 +88,19 @@ A transaction is deemed contextually valid if, _at the moment when a transaction
 
 ### Global state
 
-The transactions in a given layer are applied to global state, [in order](#ordering), when that layer is [finalized](../consensus/01-overview.md). The entire process of applying the transactions for a given layer is performed as a single, atomic database transaction. Transactions are applied by being passed through the following state transition function:
+The transactions in a given layer are applied to global state, [in order](#ordering), when that layer is finalized.
+
+#### Finality
+
+There are two stages of finalization in Spacemesh: the Hare and the Tortoise. A layer (and all of the transactions it includes) is applied to global state when the Hare protocol reaches consensus about it, usually within four minutes of when the blocks are produced. When the Tortoise reaches this layer later (depending on network parameters and conditions, this will usually be two layers later) it can reaffirm the output of the Hare or reverse its conclusion. In the latter case, both transactions and rewards are rolled back and reapplied based on the new set of valid blocks.
+
+In the future, self healing will also possibly cause a rollback, but this is not implemented yet.
+
+For more information on the consensus process, see [Consensus](../consensus/01-overview.md).
+
+#### State transition function
+
+The entire process of applying the transactions for a given layer is performed as a single, atomic database transaction. Transactions are applied by being passed through the following state transition function:
 
 1. The origin account balance is decremented by the transaction amount + fee
 1. The recipient account balance is incremented by the transaction amount
@@ -116,5 +108,28 @@ The transactions in a given layer are applied to global state, [in order](#order
 
 After each pass over the list of transactions, another pass is performed on the remaining (unapplied) transactions, in the same order, until no transaction from the list can be applied. The worst case performance is `O(N^2)`, and the expected (i.e., non-malevolent) case is `O(N)`, where `N` is the number of transactions in the layer. (In fact, it's `O(N*M)` where `M` is the length of the longest chain of intra-layer dependencies. However, `M` is expected to be very small since a wallet should not create transactions that depend upon other transactions in the same layer.)
 
-Fees are distributed to the miner at the same time, but using an independent state transition. This is because transaction fees are pooled per layer, more on which below.
+Fees are distributed to the miner at the same time, but using an independent state transition. This is because transaction fees are pooled per layer.
 
+### Fees and rewards
+
+As in Bitcoin and other blockchain platforms, a Spacemesh transaction pays a fee to incentivize a miner to include the transaction in a block. However, fees and mining rewards work a bit differently in Spacemesh.
+
+#### Mining rewards
+
+Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](../README.md#spacemesh-basics). An epoch consists of a fixed number of layers. Each layer is five minutes long and contains a set of blocks.
+
+The Spacemesh protocol distributes 50 Smesh (SMH) (subject to the Smesh minting schedule) to the miners who contributed blocks to each layer. The amount of the reward paid to each miner depends on the number of blocks contributed by that miner, and on the total number of blocks contributed in that layer. A miner that contributes more blocks receives more reward.
+
+#### Transaction fees
+
+Like the wait staff in a restaurant pooling tips, transaction fees in Spacemesh are also pooled per layer and evenly distributed to all miners who contributed blocks to the layer, proportional to how many (contextually valid) blocks they contributed.
+
+#### Timing
+
+Both mining rewards and fees are credited to miners as part of the same atomic database transaction where all transactions in a layer are applied.
+
+#### Block weights
+
+At present, both block rewards and fees are divided equally among all the published, [contextually valid](../consensus/01-overview.md) blocks in a layer: in other words, a miner that contributed four blocks (and was eligible to contribute at least four blocks) would receive precisely twice the reward and twice the fees for that layer as a miner who contributed (and was eligible to contribute) two.
+
+However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](../mining/05-atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each contextually valid block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share. The rest will be distributed among all published blocks along with the rest of the pool.)
