@@ -66,13 +66,14 @@ Unlike gossip, the sync subprotocol is used to exchange specific pieces of data 
 
 Each message is signed using the sender's public key. In addition to the message data itself (the payload), it includes a protocol, a client version, a timestamp, the public key of the message originator, a network ID, whether the message is a request or a response, the request ID, and the type of message in the specified protocol. All messages are serialized on the wire using [the XDR standard](https://en.wikipedia.org/wiki/External_Data_Representation).
 
-The sub-protocol that generated the message then sends it to the P2P stack. It can either broadcast the message to all peers over the gossip network, or it can send the message to one specific peer. Most sub-protocols only broadcast messages, but the `sync` sub-protocol sends messages to specific peers: for example, to respond to an incoming request for a specific block from a specific peer.
+The sub-protocol that generated the message then sends it to the P2P stack. It can either broadcast the message to all peers over the gossip network, or it can send the message to one directly-connected "neighbor" peer. Most sub-protocols only broadcast messages, but the `sync` sub-protocol sends messages to specific peers: for example, to respond to an incoming request for a specific block from a specific peer.
 
 ### Peer Discovery
 
-As [described above](#discovery), there are two methods by which peers may discover other peers, bootstrap and additional discovery.
+As [described above](#discovery), a peer performs an initial discovery process, called bootstrap, when it first comes online, then subsequently performs additional peer discovery to ensure it has a sufficiently large list of other nodes, and to prevent eclipse attacks.
 
 The following flow describes how a node requests a list of peers from another node:
+
 1. The initiator must first send ping message, to verify that node is alive. The ping contains the node ID (public key), the sender's IP and port.
 1. The recipient responds to the ping with a pong message, of the same format as the ping, to validate this information. (In other words, the recipient ensures the intiator is indeed listening at the IP and port they advertised. This prevents reflective DoS attacks.)
 1. The initiator then sends a `getAddresses` message, requesting a list of peers.
