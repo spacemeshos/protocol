@@ -74,6 +74,7 @@ Note: we say candidate (opposed to accepted) since it is possible that the sende
 Note: accepted proposals must have been received no later than the end of the proposal round. Hence, any accepted proposal will arrive to all honest participants no later than this commit round and that is why we are ensured to detect equivocation.
 
 **Notify Round**
+- An (active) participant that were able to form a certificate at the end of the commit round, broadcasts a notify message which includes (S, k, ki, C(S, k))
 - Upon receiving a valid notify message the participant updates his internal state according to the attached set
 
 **Termination**
