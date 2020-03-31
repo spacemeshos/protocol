@@ -132,8 +132,9 @@ Syntax validity assures the stracture of the message is correct. For example if 
 #### Commit Certificate Validation
 Reminder: a commit certificate is a collection of commit messages.
 Validations:
-* validate that all messages are of type commit.
-* validate that all (commit) messages state the same iteration number.
+* validate that all messages are of type commit
+* validate that all (commit) messages state the same iteration number
+* uniqueness of sender across all commit messages
 * validate that all messages state the same set (in the implemntation the set is optimized-out of the commit message and attached to the certificate only once)
 
 
@@ -141,7 +142,8 @@ Validations:
 Reminder: SVP consists of f+1 status messages.
 Validations:
 * validate all messages are of type status
-* validate all (status) messages state the same iteration number.
+* validate all (status) messages state the same iteration number
+* uniqueness of sender across all commit messages
 * for each status messsages(S, K , Ki):
     - if ki > 0 look for a certificate on (S,K)
     - if ki = -1 prove by preround messages
