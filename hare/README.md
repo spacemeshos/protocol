@@ -20,6 +20,8 @@ On this page we will discuss the core protocol concepts and clarify it. Please n
 
 `ISi` - The initial set of Pi
 
+`Round` - the duration in which messages are sent and recieved. It is assumed by the protocol that messages that are sent (by honest) at the begining of the round are received (by honest) no later than the end of that round. Since we are using the P2P to broadcast messages, it follows that the round duration is no less than the expected propogation in the P2P network.
+
 #### Byzantine Agreement on Sets
 
 Parties {Pi} are said to achieve byzantine agreement on sets {Si} if three conditions are satisfied:
