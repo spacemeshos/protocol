@@ -121,6 +121,26 @@ A late message is a contextually invalid message.
 ### Syntactic Validity
 Syntax validity assures the stracture of the message is correct. For example if it is a proposal message then it should include an SVP.
 
+#### Commit Certificate Validation
+Reminder: a commit certificate is a collection of commit messages.
+Validations:
+* validate that all messages are of type commit.
+* validate that all (commit) messages state the same iteration number.
+* validate that all messages state the same set (in the implemntation the set is optimized-out of the commit message and attached to the certificate only once)
+
+
+#### Proposal & SVP Validation
+Reminder: SVP consists of f+1 status messages.
+Validations:
+* validate all messages are of type status
+* validate all (status) messages state the same iteration number.
+* for each status messsages(S, K , Ki):
+    - if ki > 0 look for a certificate on (S,K)
+    - if ki = -1 prove by preround messages
+* Validate SVP type:
+    - Type A - the proposal states the union of all status messages
+    - Type B - the proposal states the set S for which ki is maximal
+
 ![Message Validation](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/msg_validation.svg?sanitize=true)
 ![Round 1](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/round1.svg?sanitize=true)
 ![Round 2](https://raw.githubusercontent.com/spacemeshos/protocol/hare/hare/svg/round2.svg?sanitize=true)
