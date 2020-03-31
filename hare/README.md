@@ -63,19 +63,22 @@ Each round longs a constant time. A `Roles Oracle` is used to generate roles in 
 - At the end of this round, a participant can form an SVP based on the statuses he collected during the round
 
 **Proposal Round**
-- The leader can now give his proposition set T with the corresponding SVP P to the network
-- Each participant can validate the proposition sent by the leader and consider that set T on the next round
+- The leader can now give his proposal which provides a set T with the corresponding SVP P to the network
+- Each participant can validate the proposition sent by the leader and consider that set T as a candidate of a set to commit on
+Note: we say candidate (opposed to accepted) since it is possible that the sender is malicious, sending more than one proposal during this round. We call it **equivocation**. During the following round we will be able to detect equivocation.
 
 **Commit Round**
-- Active participants announce their will to commit to the proposed set T
-- If a participant observes f+1 participants willing to commit to T, he commits to T and constructs the matching certificate (which is the proof that he witnessed f+1 commits to T) and sends a notify message stating that he committed to T
-- If equivocation is detected by a party P, it doesn't commit to T. Equivocation means that the leader sent two or more contradicting proposals to the network
+- Active participants announce their will to commit to the proposed set T by broadcasting (S, k, ki)
+- At the end of the round, observing f+1 commit messages that indicate the set T implies at least one honest is willing to commit to T. This f+1 commit message can now form the certificate on the set T which is the proof that will be provided to the rest of the network in the following round.
+- If equivocation is detected by a party P, P doesn't commit to T.
+Note: accepted proposals must have been received no later than the end of the proposal round. Hence, any accepted proposal will arrive to all honest participants no later than this commit round and that is why we are ensured to detect equivocation.
 
 **Notify Round**
-- Upon receiving a valid notify message the party updates his internal state according to the attached set
+- Upon receiving a valid notify message the participant updates his internal state according to the attached set
 
 **Termination**
-If at any point of the protocol, a party P receives f+1 notify messages on the same set S, it commits to S and terminates. Note that after an honest party has terminated, the other honest parties are ensured to terminate up to the following round, thanks to the gossip properties.
+If at any point of the protocol, a participant P receives f+1 notify messages on the same set S, it commits to S and terminates.
+Note: it is hereby follows that all honest participants will receive f+1 notifications no later than the following round and hence will terminate also.
 
 ## Eligibility Oracle
 
