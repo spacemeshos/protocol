@@ -111,6 +111,14 @@ The leader eligibility is derived by the same process described above. The only 
 
 ## Message Validation & Processing Flow
 
+### ELigibility & Signature Validation
+Each message received (no matter of what type) is checked for:
+* Validity of signature (the message signature)
+* Validity of eligibility (the role proof signature and the treshold as specified under EligibiltyOracle
+
+Note: messages that form a commit certificate or an SVP should also be validated for eligibility and signature.
+
+
 ### Contextual Validity
 A message M(TYPE, K) where K is the round counter (K%4 is the round K/4 is the iteration) is said to be contextually valid iff the reciever received the message on round K%4 of iteration K/4.
 For example, a message of type status round should arrive during the status round and in addition if K=8 then the receiver should be in the second iteration.
