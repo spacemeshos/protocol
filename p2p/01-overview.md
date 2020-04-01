@@ -6,7 +6,7 @@ The Spacemesh protocol leads to the construction of a global, distributed ledger
 
 ## What is P2P?
 
-[Peer-to-peer](https://en.wikipedia.org/wiki/Peer-to-peer) is a distributed application architecture that allows sharing of data and resources among nodes, called peers, that are similarly privileged (i.e., no single server or master node has any special capabilities). The P2P architecture also distributes workloads by partitioning the network into smaller subnetworks where each node has access to and communicates with a small number of nodes in the same subnetwork.
+[Peer-to-peer](https://en.wikipedia.org/wiki/Peer-to-peer) is a distributed application architecture that allows sharing of data and resources among nodes, called peers, that are similarly privileged. This means that no single server or master node has any special capabilities, unlike in a client-server architecture.
 
 Historically, peer to peer technology has mainly been used for file sharing, as popularized by [Napster](https://en.wikipedia.org/wiki/Napster), VoIP services like Skype and, more recently, [BitTorrent](https://en.wikipedia.org/wiki/BitTorrent). Other usage cases have emerged, including distributed file systems and of course blockchain technology.
 
