@@ -1,13 +1,18 @@
 - [Overview](README.md)
 
-**Getting Started**
-- [Installing](guide/install.md)
-- [Setting up](guide/setup.md)
-- [Checking Status](guide/status.md)
+**Consensus**
+- [Intro](consensus/01-overview.md)
 
-**Doing More**
-- [Using your wallet](wallet.md)
-- [Watching video guides](videos.md)
-- [Getting help](help.md)
-- [Joining the community](comm.md)
-- [Additional guides](all.md)
+**Hare**
+- [FAQ](hare/FAQ.md)
+- [Intro](hare/README.md)
+
+**Mining**
+- [Overview](mining/01-overview.md)
+- [PoST](mining/02-post.md)
+- [PoET](mining/03-poet.md)
+- [NiPOST](mining/nipost.md)
+- [ATX](mining/atx.md)
+
+**Traansactions**
+- [Overview](transactions/01-overview.md)
