@@ -7,7 +7,7 @@ The general problem is the [Byzantine Agreement Problem](https://en.wikipedia.or
 
 It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence, multiple consensus instances may be run concurrently.  
 
-On this page we will discuss the core protocol concepts and clarify it. Please note we do not intend to talk about the implementation itself, we might mention practicale ways that overlap with it.
+On this page we will discuss the core protocol concepts and clarify it. Please note we do not intend to talk about the implementation itself, we might mention practical ways that overlap with it.
 
 ## Definitions
 `N` - The number of active participants
@@ -20,7 +20,7 @@ On this page we will discuss the core protocol concepts and clarify it. Please n
 
 `ISi` - The initial set of Pi
 
-`Round` - the duration in which messages are sent and recieved. It is assumed by the protocol that messages that are sent (by honest) at the begining of the round are received (by honest) no later than the end of that round. Since we are using the P2P to broadcast messages, it follows that the round duration is no less than the expected propogation in the P2P network.
+`Round` - the duration in which messages are sent and received. It is assumed by the protocol that messages that are sent (by honest) at the beginning of the round are received (by honest) no later than the end of that round. Since we are using the P2P to broadcast messages, it follows that the round duration is no less than the expected propagation in the P2P network.
 
 #### Byzantine Agreement on Sets
 
@@ -28,12 +28,12 @@ Parties {Pi} are said to achieve byzantine agreement on sets {Si} if three condi
 1. `Consistency`: Every honest party outputs the same set S'
 2. `Validity 1` (“all honest witnessed”): If for every honest party Pi value v is in ISi then v is in S'
 3. `Validity 2` (“no honest witness”): If for no honest party Pi value v in ISi then v is not in S'. In other words, all values in S' should have had at least one honest witness.
-4. `Termination` - All honest participants terminate with overwhelming probablity.
+4. `Termination` - All honest participants terminate with overwhelming probability.
 
 #### Active Participants
-In each round, a new committee is selected randomly by the oracle (which we assume its existance).
-Picking a random committe over having all the nodes participate in the protocol is good for two main reasons:
-1. Less participants means lower communication requirments.
+In each round, a new committee is selected randomly by the oracle (which we assume its existence).
+Picking a random committee over having all the nodes participate in the protocol is good for two main reasons:
+1. Less participants means lower communication requirements.
 2. Random election of participants means the participants are not predicted hence less likely to be exposed to DDOS attacks (for example).
 In the proposal round, the expected number of participants is low (1 for example). In all other rounds we expect N (active) participants.
 
@@ -107,7 +107,7 @@ In order to validate the vrf message the receiver should:
 2. Validate the the hash of signature of the VRF message passes the treshold.
 
 **Leadership**
-The leader eligibility is derived by the same process described above. The only difference is that the expected number of actives is set to 1. Since eligibility is random, it is possible that more than one leader will exist in the same (proposal) round. To handle this, we agree on a way to order the signatures in order to decide who is the real accepted leader. For example, this can be done by comparing bytes and accepting lowest ranked leader. 
+The leader eligibility is derived by the same process described above. The only difference is that the expected number of actives is set to 1. Since eligibility is random, it is possible that more than one leader will exist in the same (proposal) round. To handle this, we agree on a way to order the signatures in order to decide who is the real accepted leader. For example, this can be done by comparing bytes and accepting lowest ranked leader.
 
 ## Message Validation & Processing Flow
 
