@@ -44,8 +44,8 @@ f+1 commit messages implies at least one of them is honest and hence the set S i
 #### Safe Value Proof (SVP)
 The SVP is used to prove a proposal sent by the leader.
 There are two types of SVP proofs, both consist of f+1 status messages:
-Type A - assumes that no honest participant has commited to a set yet. In that case, any proposal is valid and we validate it by cheking the validity of the status messages which are provable by the pre-round messages.
-Type B - assumes an honest has already commited. From this moment, we know there is a certificate (the Commit Certificate) we should consider. We must Validate the certificate and check that the certificate is at least not older than the last certificate we know of.
+Type A - assumes that no honest participant has committed to a set yet. In that case, any proposal is valid and we validate it by checking the validity of the status messages which are provable by the pre-round messages.
+Type B - assumes an honest has already committed. From this moment, we know there is a certificate (the Commit Certificate) we should consider. We must Validate the certificate and check that the certificate is at least not older than the last certificate we know of.
 
 ---
 
@@ -89,45 +89,45 @@ Eligibility to participate in a round (being active) is determined by the oracle
 The oracle is required to provide three main properties:
 A. Eligibility is under consensus - meaning all honest participant who receive a message will either classify it as active or as passive.
 B. The eligibility can be calculated in advance only up to some configurable limit of time before it can be used to participate.
-C. Eligibility is detrmined for each round in a layer separately and at random.
+C. Eligibility is determined for each round in a layer separately and at random.
 
 ### Proof & Validation
 The Threshold
 Thresholding a random input can be used to determine eligibility. I.e. we can set the threshold a participant should pass in order to participate. For example, we can set a threshold of X participants over the space of a 32 bit uint which is simply X/2^32. Randomly picking numbers in [0,2^32-1] will result in an expected number of X participants passing the threshold and hence X actives.
 
 **Proof**
-A paritipant who wants to prove eligibility attaches the signature of the VRF message.
+A participant who wants to prove eligibility attaches the signature of the VRF message.
 The VRF message is the tuple {agreed value, Layer, Round}. Signing the layer and the round is what ensures property C.
-The value is provided by the Hare Beacon. It aims to ensure that the value is under consensus. I.e. all partipants will use the same value (hence complying with property A). The value, for example, can be taken from some point in the past of the mesh which complies with property B.
+The value is provided by the Hare Beacon. It aims to ensure that the value is under consensus. I.e. all participants will use the same value (hence complying with property A). The value, for example, can be taken from some point in the past of the mesh which complies with property B.
 The reason we use a VRF signature is that we want to make sure the signing process is not grindable. This is ensured by the property of VRF messages where each output has a single source.
 
 **Validation**
 In order to validate the vrf message the receiver should:
 1. Reconstruct the matching VRF message and check the signature against that message.
-2. Validate the the hash of signature of the VRF message passes the treshold.
+2. Validate the the hash of signature of the VRF message passes the threshold.
 
 **Leadership**
 The leader eligibility is derived by the same process described above. The only difference is that the expected number of actives is set to 1. Since eligibility is random, it is possible that more than one leader will exist in the same (proposal) round. To handle this, we agree on a way to order the signatures in order to decide who is the real accepted leader. For example, this can be done by comparing bytes and accepting lowest ranked leader.
 
 ## Message Validation & Processing Flow
 
-### ELigibility & Signature Validation
+### Eligibility & Signature Validation
 Each message received (no matter of what type) is checked for:
 * Validity of signature (the message signature)
-* Validity of eligibility (the role proof signature and the treshold as specified under EligibiltyOracle
+* Validity of eligibility (the role proof signature and the threshold as specified under EligibilityOracle
 
 Note: messages that form a commit certificate or an SVP should also be validated for eligibility and signature.
 
 
 ### Contextual Validity
-A message M(TYPE, K) where K is the round counter (K%4 is the round K/4 is the iteration) is said to be contextually valid iff the reciever received the message on round K%4 of iteration K/4.
+A message M(TYPE, K) where K is the round counter (K%4 is the round K/4 is the iteration) is said to be contextually valid iff the receiver received the message on round K%4 of iteration K/4.
 For example, a message of type status round should arrive during the status round and in addition if K=8 then the receiver should be in the second iteration.
 A message that arrives at the correct iteration but one round before the correct round is considered early.
 A late message is a contextually invalid message.
 
 
 ### Syntactic Validity
-Syntax validity assures the stracture of the message is correct. For example if it is a proposal message then it should include an SVP.
+Syntax validity assures the structure of the message is correct. For example if it is a proposal message then it should include an SVP.
 
 #### Commit Certificate Validation
 Reminder: a commit certificate is a collection of commit messages.
@@ -135,7 +135,7 @@ Validations:
 * validate that all messages are of type commit
 * validate that all (commit) messages state the same iteration number
 * uniqueness of sender across all commit messages
-* validate that all messages state the same set (in the implemntation the set is optimized-out of the commit message and attached to the certificate only once)
+* validate that all messages state the same set (in the implementation the set is optimized-out of the commit message and attached to the certificate only once)
 
 
 #### Proposal & SVP Validation

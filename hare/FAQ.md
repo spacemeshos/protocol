@@ -22,7 +22,7 @@ A: Exactly. That is because the pre-round round is only used to take care of val
 
 Q: So, the pre-round is used to filter blocks that we didn’t get from at least f+1 active participants?
 
-A: Yes, because that will mean that every value (block id) that is not filtered after the pre-round had f+1 witnesses, meaning it was seen by at least one honest, meaning valididty 2 is satisfied.
+A: Yes, because that will mean that every value (block id) that is not filtered after the pre-round had f+1 witnesses, meaning it was seen by at least one honest, meaning validity 2 is satisfied.
 
 ---
 
@@ -34,7 +34,7 @@ Q:  Round 2: is the `notify message` sent to the whole network via gossip?
 
 ---
 
-Q: Round 2: what is `equivocation` - it is not previosuly defined. Please define.. what does it mean to detect and equivocation?
+Q: Round 2: what is `equivocation` - it is not previously defined. Please define.. what does it mean to detect and equivocation?
 
 A: Equivocation, generally means that someone tried to present more than one truth. Specifically itis used to describe a malicious leader that sends more than one proposal to the network - that is called leader equivocation or proposal equivocation. This behavior can be broaden to other message types, for example pre-round messages.
 
@@ -57,9 +57,9 @@ Let's mark them Pre-Round and Round1 to Round4. In that case, the protocol can t
 
 Q: As long as less than 1/3 + are dishonest - does hare always eventually terminates with a consensus on a set even if more than 1 4-rounds iteration is needed?
 
-A: Regarding the termination it is a bit delicate. When we talk about termination we actually relate to termination under the assumptions of our system which is 1. 2/3 honest majority. 2. Intersection of honest sets is not empty. The former implies that with extremely high probability we have a 1/2(+1) honest majority. The latter means the pre-round will never (actually, very high probability = 2^-40) end with empty set. Put these two together and it means that on expectation the consensus will terminate in two iterations (because the protocol ensures that once an honest is picked as leader - the consensus will terminate in that same iteartion). Putting that aside, there is about 2^-40 probability that the protocol will never terminate.
+A: Regarding the termination it is a bit delicate. When we talk about termination we actually relate to termination under the assumptions of our system which is 1. 2/3 honest majority. 2. Intersection of honest sets is not empty. The former implies that with extremely high probability we have a 1/2(+1) honest majority. The latter means the pre-round will never (actually, very high probability = 2^-40) end with empty set. Put these two together and it means that on expectation the consensus will terminate in two iterations (because the protocol ensures that once an honest is picked as leader - the consensus will terminate in that same iteration). Putting that aside, there is about 2^-40 probability that the protocol will never terminate.
 
 ---
 Q: what happens when 1/3 +1 are dishonest? Does hare terminate w/o a set or does it never terminates? e.g. can the dishonest parties cause hare to never terminate?
 
-A: Well the question is not well defined. Please check my answer to Q11. Generally, as long as dishonest leader is picked to lead - he can stall the consensus by one iteration. Since we assume half are honest we expect two iterations as I explained. On the other hand, if we tollerate f dishonest and there are f+1 or more (no matter if f is 1/3, 1/4 or 1/2 etc) then the assumptions are broken, nothing is guranteed and you can end up with non consistent sets on termination or not terminate at all.
+A: Well the question is not well defined. Please check my answer to Q11. Generally, as long as dishonest leader is picked to lead - he can stall the consensus by one iteration. Since we assume half are honest we expect two iterations as I explained. On the other hand, if we tolerate f dishonest and there are f+1 or more (no matter if f is 1/3, 1/4 or 1/2 etc) then the assumptions are broken, nothing is guaranteed and you can end up with non consistent sets on termination or not terminate at all.
