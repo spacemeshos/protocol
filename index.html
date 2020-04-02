@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spacemesh Testnet Guide</title>
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Testnet" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/docsify-themeable/dist/css/theme-simple.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div id="app">Loading, please wait...</div>
+    <script>
+      const fallbackFileHashList = {
+        dmg: {
+          file: 'Spacemesh-0.0.1.dmg',
+          hash:
+            '01ca781d145f96c086a1d76cb1e7de880ea0bca6c17dc75fb5e36df5eebc0c910b6a6c4d4bd28abfd147458ad4f5ccab0e21b85cd2d9f88309db1ef28a8c142f'
+        },
+        exe: {
+          file: 'Spacemesh+Wallet+Setup+0.0.1.exe',
+          hash:
+            '9b319bf529ca7d13afe259a3d9397775a4f070a67c4da353d6b8b813b91f677a76e99c0c3db2e80e4ad5c7b6e1a09932487a8b57a19eff89ff22121ce713aeb0'
+        },
+        deb: {
+          file: 'smapp_0.0.1_amd64.deb',
+          hash:
+            'c5c7a390d999b5bb48c4cf45d65d3ad193b8e942a7c5d98c8c776ca7630d3492aa02e7f4d09fd44b43c0a399c474622f26182b26270b62adb4ad121db90a6954'
+        },
+        snap: {
+          file: 'smapp_0.0.1_amd64.snap',
+          hash:
+            '60b668f61c05ff49df3b6324dfabc363f9dc4ae2cc93a1e3be19114d0a228175422c488f3ccdef9ff9c750ed5f0ca1d02e57c58602a993113626fc2d0870ecec'
+        },
+        AppImage: {
+          file: 'Spacemesh+0.0.1.AppImage',
+          hash:
+            '277d06e8d177a1d980da48fdebf1b6439439a53c2f57c99abe54e17cf9edc7f87a2867c935fcf1cded90c262414a0529ce150d219cd73da21ac6dae2e264e7d2'
+        }
+      };
+      window.$docsify = {
+        name: 'Spacemesh Protocol 0.1',
+        repo: 'https://github.com/spacemeshos/testnet-guide',
+        homepage: 'README.md',
+        //logo: '/images/logo.svg',
+        loadNavbar: false,
+        loadSidebar: true,
+        ga: 'UA-111612428-5',
+        notFoundPage: '404.md',
+        coverpage: true,
+        executeScript: true,
+        auto2top: true,
+        themeable: {
+          // readyTransition : false,
+          // responsiveTables: false
+        },
+        plugins: [
+          (hook, vm) => {
+            hook.init(async () => {
+              const fileListJson =
+                'https://downloads.lab.spacemesh.io/publishFilesList.json';
+              const requestOptions = {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              };
+              try {
+                const result = await fetch(fileListJson, requestOptions).then(
+                  res => res.json()
+                );
+                window.fileHashList = JSON.parse(JSON.stringify(result));
+              } catch (error) {
+                console.error(error);
+                window.fileHashList = null;
+              }
+            });
+
+            hook.beforeEach(content => {
+              // if more files need to be compuled, add to this array
+              const filesToCompile = ['guide/install.md', 'auth.md'];
+              const isFileToCompile =
+                filesToCompile.indexOf(vm.route.file) >= 0;
+              const bucketPrefix = 'https://downloads.lab.spacemesh.io/';
+              const isSavedFileHashList = !!window.fileHashList;
+
+              if (!isFileToCompile) {
+                // not a compiled page
+                return content;
+              }
+
+              if (isFileToCompile && !isSavedFileHashList) {
+                // from fallback list
+                window.fileHashList = { ...fallbackFileHashList };
+              }
+
+              const getCompiledContent = content => {
+                const contentArray = content.split('\n').map(contentRow => {
+                  if (contentRow.includes('_installer')) {
+                    for (const key of Object.keys(window.fileHashList)) {
+                      contentRow = contentRow.replace(
+                        `${key}_installer`,
+                        `${bucketPrefix}${window.fileHashList[key].file}`
+                      );
+                      contentRow = contentRow.replace(
+                        `${key}_sha512`,
+                        window.fileHashList[key].hash
+                      );
+                    }
+                  }
+                  return contentRow;
+                });
+                return contentArray.join('\n');
+              };
+              return getCompiledContent(content);
+            });
+          }
+        ]
+      };
+</script>
+    </script>
+    <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+    <script src="//unpkg.com/docsify/lib/plugins/ga.min.js"></script>
+    <script src="https://unpkg.com/docsify-themeable"></script>
+    <script src="https://unpkg.com/docsify/lib/plugins/search.js"></script>
+    <script src="https://unpkg.com/docsify-copy-code@2"></script>
+  </body>
+</html>
