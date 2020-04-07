@@ -130,8 +130,8 @@ The goal of the Hare protocol is to achieve consensus among all honest miners ab
 
 0. Pre-round: each active participant shares their current view of blocks that are valid. At the end of the round, each then factors in the views shared by other participants and updates their view by removing blocks that didn't receive enough support from other participants.
 1. Status round: each active participant broadcasts a status message reporting its updated view.
-2. Proposal round: each active participant broadcasts a proposal to the group, based on the results of the previous round. One of these participants will be randomly chosen the leader. Each active participant that receives this proposal from the leader, and accepts it, broadcasts a message to this effect.
-3. Commit round: each active participant reviews the proposal and signals its willingness to commit to it to the group. By the end of this round, each participant that received a valid proposal from the leader (with no conflicting proposal) _and_ a sufficient number of commit messages from other participants creates a “commit certificate” including all of this information.
+2. Proposal round: each active participant broadcasts a proposal to the group, based on the results of the previous round. One of these participants will be randomly chosen the leader.
+3. Commit round: each active participant independently determines who was elected leader, reviews the proposal from this leader, and signals its willingness to commit to it to the group. By the end of this round, each participant that received a valid proposal from the leader (with no conflicting proposal broadcast by the leader) _and_ a sufficient number of commit messages from other participants creates a “commit certificate” including all of this information.
 4. Notify round: each active participant holding a commit certificate broadcasts it to the group. If a sufficient number of commit certificates are received from other participants, the protocol terminates and each participant knows the canonical set. (If not, the protocol returns to the Status round and iterates.)
 
 
