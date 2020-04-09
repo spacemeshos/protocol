@@ -76,7 +76,7 @@ For more information see [PoET](mining/03-poet.md) and the [PoET codebase](https
 
 ### Spacemesh App
 
-The Spacemesh App is a GUI-based desktop application built for Windows, Mac, and OS X that has two main functions: it acts as a wallet, allowing a user to hold and transact [Smesh coin](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md#smesh-smh), and it allows a user to mine (known as [Smeshing](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md#smesher)) by allocating a certain amount of hard drive space, constructing and submitting eligibility proofs, producing blocks, and collecting rewards.
+The Spacemesh App is a GUI-based desktop application built for Windows, Mac, and Linux that has two main functions: it acts as a wallet, allowing a user to hold and transact [Smesh coin](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md#smesh-smh), and it allows a user to mine (known as [Smeshing](https://github.com/spacemeshos/testnet-guide/blob/master/dict.md#smesher)) by allocating a certain amount of hard drive space, constructing and submitting eligibility proofs, producing blocks, and collecting rewards.
 
 The App runs an instance of the go-spacemesh full node under the hood. For more information see the [Spacemesh App codebase](https://github.com/spacemeshos/smapp).
 
