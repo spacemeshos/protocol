@@ -2,7 +2,11 @@
 
 ## Overview
 
-In order for a node to fully participate in the Spacemesh protocol, including the [Consensus protocol](../consensus/01-overview.md), it is essential that the node be aware of the current state of the network. This includes knowing the current [layer and epoch](../intro.md#spacemesh-basics), the latest blocks and [transactions](../transactions/01-overview.md), and the current [set of eligible miners](../mining/05-atx.md). (Other aspects of the protocol, such as the canonical ledger and the global state, are things the node can work out for itself based on these data.) The Sync protocol is the means by which a node achieves this: it sends and receives messages over the Spacemesh [P2P network](../p2p/01-overview.md), and listens for new blocks and transactions.
+In order for a node to fully participate in the Spacemesh protocol, including the [Consensus protocol](../consensus/01-overview.md), it is essential that the node be aware of the current state of the network. This includes knowing the current [layer and epoch](../intro.md#spacemesh-basics), the latest blocks and [transactions](../transactions/01-overview.md), and the current [set of eligible miners](../mining/05-atx.md). (Other aspects of the protocol, such as the canonical ledger and the global state, are things the node can work out for itself based on these data.)
+
+In addition to receiving _new_ data as it becomes available, this also means that the node must be able to fetch historical data, such as when a new node first comes online, or after a node reconnects to the network after having been offline for some time. 
+
+The Sync subprotocol is the means by which a node achieves this: it sends and receives messages over the Spacemesh [P2P network](../p2p/01-overview.md), and listens for new blocks and transactions.
 
 ## Getting data
 
@@ -20,7 +24,7 @@ When the node receives a new block or ATX, the first thing it does is to attempt
 
 ### Resolving dependencies
 
-Note that these dependencies are recursive: for instance, a block may point to another block that points to an ATX that points to a PoET proof, none of which the node has seen before. (This is actually a relatively simple example! In the [initial sync](#initial-sync) phase, the dependency tree will be vastly larger.) The node keeps a separate request queue for each distinct data type, and the dependency tree is explored in breadth-first fashion, and in such a way that the same dependency is never fetched twice. To continue with the example, once the PoET proof is retrieved, it resolves all of the dependencies for the ATX, which is thus validated. This in turn resolves all of the dependencies for the block, which in turn is deemed valid, and so on. The dependencies are unwound in recursive fashion.
+Note that these dependencies are recursive: for instance, a block may point to another block that points to an ATX that points to a PoET proof, none of which the node has seen before. The node keeps a separate request queue for each distinct data type, and the dependency tree is explored in breadth-first fashion, and in such a way that the same dependency is never fetched twice. To continue with the example, once the PoET proof is retrieved, it resolves all of the dependencies for the ATX, which is thus validated. This in turn resolves all of the dependencies for the block, which in turn is deemed valid, and so on. The dependencies are unwound in recursive fashion.
 
 ## Initial sync
 
@@ -44,7 +48,7 @@ There are two notions of sync in Spacemesh: weakly and fully synced.
 
 **Weakly synced** means that a node knows about the most recent layer in the mesh (which it can calculate using the clock). However, a node that is weakly synced has no way of knowing whether it's seen all of the blocks for this layer.
 
-**Fully synced** means that a node knows about all past blocks, up to and including the present layer. It achieves this by listening, via gossip, for all of the blocks in the current layer. Since blocks vote recursively on valid past blocks (see [Tortoise](../consensus/01-overview.md#tortoise)), it knows that once it's seen all of the blocks in the current layer and recursively fetched the blocks they rely on, it is fully synced.
+**Fully synced** means that a node has finished processing all of the blocks for the most recent layer in the mesh.
 
 ## Synchronization status and participation in consensus
 
@@ -54,4 +58,8 @@ A node can only participate in the Hare consensus mechanism once it is fully syn
 
 ## Sync and the Tortoise
 
-Sync is what triggers the Tortoise protocol to run on a new layer. Once a node has synced enough new layers and blocks that vote for or against the blocks in a given layer, it triggers the Tortoise to process those votes.
+Sync is what triggers the [Tortoise protocol](../consensus/01-overview.md#tortoise) to validate blocks. This works in two ways.
+
+For the current layer, Sync waits a specified period of time, called `ValidationDelta`, to accumulate blocks. Once this interval is passed, it kicks off the Tortoise to process the votes in these new blocks. In the case where a node is synchronizing historical layers, each layer is processed as soon as all of its blocks are received.
+
+For blocks that arrive late, i.e., for previous layers, Sync immediately passes the data to the Tortoise.
