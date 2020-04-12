@@ -40,7 +40,7 @@ In short, any data structure is considered invalid in Spacemesh if any of the da
 
 ## Layers, the clock, and sync
 
-The syncer polls against the clock and the database to figure out the most recent layer a node should know about, and the most recent layer it actually knows about. Based on this information, it can re-enter syncing mode if the node falls out of sync. If a node receives no blocks for one layer—e.g., because temporarily went offline—it switches back into sync mode to fetch the missing data.
+The syncer polls against the clock and the database to figure out the most recent layer a node should know about, and the most recent layer it actually knows about. Based on this information, it can re-enter syncing mode if the node falls out of sync. If a node is, e.g., temporarily offline, once it comes back online and realizes it's fallen behind, it switches back into sync mode to fetch the missing data.
 
 ## Weakly vs. fully synced
 
