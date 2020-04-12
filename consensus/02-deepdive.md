@@ -52,13 +52,12 @@ The Hare is a BFT-compatible algorithm and is based on [ADDNR18](https://eprint.
 
 ### What does it give us?
 
-Because of the self-healing mechanism (described above), Spacemesh would function without the Hare. This is because self-healing guarantees that Spacemesh nodes will eventually converge and reach consensus from any starting condition, even without the initial, bootstrapped agreement that the Hare gives us. However, we would lose three things without the Hare:
+Because of the self-healing mechanism (described above), Spacemesh would function without the Hare. This is because self-healing guarantees that Spacemesh nodes will eventually converge and reach consensus from any starting condition, even without the initial, bootstrapped agreement that the Hare gives us. However, we would lose two things without the Hare:
 
 1. **Time:** self-healing takes time.
 1. **Efficiency:** the self-healing protocol is less efficient (measured in terms of both computational and communication complexity) than the Hare. We have put considerable work into optimizing the Hare.
-1. **Robustness:** while self-healing requires > 2/3 honest majority, the Hare requires only a simple honest majority, and depending on the size of the committee it can theoretically tolerate up to 2/3 malicious participants. This is because it takes advantage of strong synchrony assumptions.
 
-The Hare is parameterized to support up to approx. 800 participants. This is based on a statistical security parameter of `2^-40`.
+Depending on committee size the Hare can theoretically tolerate up to 2/3 malicious participants. This is because it takes advantage of strong synchrony assumptions. In practice, however, for efficiency purposes the Hare is parameterized to support up to approx. 800 participants with a simple honest majority assumption. This is based on a statistical security parameter of `2^-40`. 
 
 ### Hare beacon
 
@@ -78,5 +77,11 @@ In the case of a network partition or attack, the Hare protocol may cease to wor
 ## Other Proof of Space-based protocols
 
 ### Chia
+
+The Chia protocol aims to emulate Bitcoin and Nakamoto consensus more generally, but to replace Proof of Work with a novel mechanism called [Proof of Space](https://www.chia.net/assets/ChiaGreenPaper.pdf). In order to emulate the PoW lottery mechanism, Chia utilizes a VDF to create a "temporal lottery." Chia protocol and Spacemesh are only superficially related, in that both require commitment of space as a scarce resource. High-level differences include:
+
+- In Spacemesh, many blocks are produced at each layer, giving rise to its signature mesh (i.e., DAG) structure. Chia is a more traditional blockchain.
+- In Spacemesh, a miner may create many proofs using the same committed space. This is not the case in Chia.
+- In Chia, a miner may grind on many different proofs in order to win the lottery more often, which reduces to proof of work. By contrast, Spacemesh is race free. Crucially, the slots in which a miner is eligible to produce blocks in Spacemesh do not depend on the proof of resource use. They're based solely on a miner's ID (plus a random input from a beacon).
 
 ### Filecoin
