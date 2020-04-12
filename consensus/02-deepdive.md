@@ -28,15 +28,19 @@ Self-healing works via a _separate byzantine agreement mechanism_ that does not 
 
 ### Tortoise beacon
 
-The Tortoise beacon uses a VRF-based protocol to generate a "weak coin" toss. In each round, each party calculates the output of a VRF based on their identity and the round number. Parties with a sufficiently low result publish their results and the lowest result wins. The value of the "coin toss" is one bit, e.g., the highest-order bit, of this lowest result.
+The Tortoise beacon uses a VRF-based protocol to generate a "weak coin" toss. In each round, each party calculates the output of a VRF based on their identity and the round number. Parties with a sufficiently low result publish their results and the lowest result wins. The value of the "coin toss" is one bit, e.g., the least significant bit, of this lowest result.
 
 If the lowest result comes from an honest participant, it will be published on time and everyone will receive this result, and all honest parties will agree on it. The "weak" nature of the coin comes from the fact that, in some cases, a dishonest adversary may "win" and be able to bias the results by, e.g., choosing not to publish their result, publishing it late, etc.
 
 In the case where all honest parties _do_ agree on the result of the "coin toss," they will all adjust their next round of votes on the blocks in question _in the same direction_ (e.g., "heads" means "vote yes"), and convergence will be achieved in the following round. In the case where an adversary successfully attacks the result, convergence will be delayed one round. Note that the honest parties only need to "win" this coin toss game once in order to achieve convergence, and over time the likelihood of this occurring only grows.
 
+Importantly, the Tortoise beacon _does not rely upon any previous data_ and, thus, does not rely upon consensus having been previously achieved or maintained. This is what enables the self-healing property.
+
+An astute reader will notice that, unlike, e.g., the Hare beacon, there is no random input to the Tortoise beacon VRF, since the input is just a node's identity and the current round number. This means that an adversary can grind on this identity and could possibly generate many identities to give them an advantage in biasing the weak coin toss. This is an area of active research, but our current thinking is that, in response, we should allow grinding on VRF identities but make it sufficiently expensive to do so.
+
 ### Compared to other protocols
 
-Blockchains based on Nakamoto-consensus, such as Bitcoin, also have this property, but it's much more difficult to achieve _without_ Proof of Work, as in the case of Spacemesh. This is because, in most BFT-style protocols, if the network loses consensus for even a moment, it's impossible to re-establish consensus. In protocols that have committees that nominate a committee for the following round, for instance, without agreement on the current committee, there's no way for the network to reach agreement on the next valid committee.
+Blockchains based on Nakamoto consensus, such as Bitcoin, also have this "self-healing" property: some node will always produce the next block (the ability to produce a new block doesn't depend upon consensus having been achieved in a prior round), and over time all nodes will always converge around the "longest chain." However, it's much more difficult to achieve _without_ Proof of Work, as in the case of Spacemesh. This is because, in most BFT-style protocols, if the network loses consensus for even a moment, it's impossible to re-establish consensus. In protocols that have committees that nominate a committee for the following round, for instance, without agreement on the current committee, there's no way for the network to reach agreement on the next valid committee.
 
 In a PBFT-style system, such as those based on HotStuff BFT, losing consensus in this manner might mean that different participants have a different view on which transactions are confirmed. Self-healing ensures that this cannot happen in Spacemesh.
 
@@ -56,9 +60,23 @@ Because of the self-healing mechanism (described above), Spacemesh would functio
 
 The Hare is parameterized to support up to approx. 800 participants. This is based on a statistical security parameter of `2^-40`.
 
+### Hare beacon
+
+Eligibility to participate in each [round of the Hare protocol](01-overview.md#rounds) is based on the output of a VRF, which includes randomness from the Hare beacon. This makes it impossible for an adversary to grind on an identity and produce identities that would bias the results of the Hare too much - since they could only forecast Hare eligibility for a small number of future rounds.
+
+The Hare has the advantage that it can rely on the Tortoise for its beacon, which makes it much simpler than the Tortoise beacon. We can use any value that honest parties are guaranteed to have previously agreed up _even if the Hare isn't working,_ such as the set of block IDs from a previous layer that's sufficiently far back. In practice, we pick a layer that's tens of clusters back.
+
+In the case of a network partition or attack, the Hare protocol may cease to work. It may not achieve a sufficient vote quorum or, in the extreme case, nodes may not even agree on the beacon value. In this case, the Hare will keep trying to run at every new layer until the Tortoise's self-healing mechanism achieves convergence, at which point the Hare will begin to function again.
+
 ### Compared to HotStuff and Tendermint
 
 - [HotStuff](https://arxiv.org/pdf/1803.05069.pdf) requires a known set of participants (i.e., it does not support player replaceability), cannot be made permissionless, doesn't scale to thousands of participants, and does not easily convert to set agreement (i.e., agreement on a set of valus rather than on a single bit value). The requirement to have a known set of participants opens a DoS attack vector on known future participants.
 - HotStuff and Tendermint both require a 2/3 honest majority, whereas the Hare requires only a simple honest majority
 - HotStuff and Tendermint make different assumptions about network synchrony: they both assume a _partially-synchronous network_ (i.e., there exists a "global stabilization time" after which all messages may be assumed to have been delivered, but you don't know exactly when this time is). Hare, on the other hand, assumes a _fully-synchronous network,_ i.e., that all messages are delivered within a known period of time (which is specified as a protocol parameter, and affects layer time). As a result, HotStuff and Tendermint can make progress faster than Hare, but at the cost of having a lower corruption threshold.
-- HotStuff and Tendermint achieve a form of consensus known as _state machine replication_ (SMR): this is a classical form of PBFT consensus where participants in the protocol agree upon an ordered sequence of transactions. The Hare protocol plays a different role in the Spacemesh protocol, and thus its goal is not to achieve SMR-style consensus. Rather, every time the Hare runs, its goal is to run for a finite number of rounds and achieve a "one-time agreement" (on the set of valid blocks in the current layer), then terminate. Terminating an SMR-style consensus protocol is more difficult since it's unclear how to ensure that all participants have achieved precisely the same state--indeed, these protocols are designed to run through an indefinite number of rounds.
+- HotStuff and Tendermint achieve a form of consensus known as _state machine replication_ (SMR): this is a classical form of PBFT consensus where participants in the protocol agree upon an ordered sequence of transactions. The Hare protocol plays a different role in the Spacemesh protocol, and thus its goal is not to achieve SMR-style consensus. Rather, every time the Hare runs, its goal is to run for a finite number of rounds and achieve a "one-time agreement" (on the set of valid blocks in the current layer), then terminate. Terminating an SMR-style consensus protocol is more difficult since it's unclear how to ensure that all participants have achieved precisely the same state—indeed, these protocols are designed to run through an indefinite number of rounds.
+
+## Other Proof of Space-based protocols
+
+### Chia
+
+### Filecoin
