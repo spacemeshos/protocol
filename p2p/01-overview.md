@@ -50,7 +50,7 @@ This is a privacy feature: P2P IDs are not considered private since anyone on th
 
 ### Protocols, multiplex, and gossip
 
-Spacemesh [multiplexes](https://en.wikipedia.org/wiki/Multiplexing) messages from many sub-protocols (`gossip`, `discovery`, `hare`, `sync`) over each peer connection. The P2P stack is agnostic to the format and contents of messages belonging to individual sub-protocols.
+Spacemesh [multiplexes](https://en.wikipedia.org/wiki/Multiplexing) messages from many subprotocols (`gossip`, `discovery`, `hare`, `sync`) over each peer connection. The P2P stack is agnostic to the format and contents of messages belonging to individual subprotocols.
 
 #### Discovery
 
@@ -58,21 +58,25 @@ The discovery subprotocol is used to [discover new peers](#discovery) to connect
 
 #### Gossip
 
-In a blockchain protocol like Spacemesh, many types of data, including transactions and blocks, must traverse the network and reach every node. The broadcast protocol that's used to achieve this is called the gossip protocol. Gossip allows each node to broadcast a message to the entire network, and also to forward on other gossip messages it receives. Gossip is implemented on top of the P2P layer.
+In a blockchain protocol like Spacemesh, many types of data, including transactions and blocks, must traverse the network and reach every node. This is achieved using the Gossip subprotocol. Gossip allows each node to broadcast a message to the entire network, and also to forward on other gossip messages it receives. Gossip is implemented on top of the P2P layer.
 
-Each individual protocol must register an incoming message handler with the P2P stack. When a protocol receives and validates a gossip message, it may report back to the P2P stack that the message is valid, which allows the message to continue to propagate throughout the P2P network to the node's peers. This helps prevent DoS attacks by ensuring that bad data (blocks, transactions, etc.) don't traverse the network since honest nodes will never gossip them.
+Each individual subprotocol must register an incoming message handler with the P2P stack. When a subprotocol receives and validates a gossip message, it may report back to the P2P stack that the message is valid, which allows the message to continue to propagate throughout the P2P network to the node's peers. This helps prevent DoS attacks by ensuring that bad data (blocks, transactions, etc.) don't traverse the network since honest nodes will never gossip them.
 
-The Hare subprotocol is implemented on top of the Gossip subprotocol.
+#### Hare
+
+The Hare is one of the two main consensus engines in Spacemesh. As it involves message passing among nodes, and as all nodes need to receive these messages, it's implemented on top of the Gossip subprotocol. For more information, see [Hare](../consensus/01-overview.md#hare).
 
 #### Sync
 
-Unlike gossip, the sync subprotocol is used to exchange specific pieces of data with specific peers. For instance, when a new node comes online, it calculates the current layer based on the current time, asks its peers for the list of blocks for the current layer, then recursively fetches all of the data that those blocks point to. The Sync subprotocol is also implemented directly on top of the P2P layer. For more information, see [Sync](../sync/01-overview.md).
+Unlike Gossip, the Sync subprotocol is used to exchange specific pieces of data with specific peers. For instance, when a new node comes online, it needs to fetch every layer, block, transaction, ATX, etc. since genesis. It does this by requesting all of the blocks for a given layer, then all of the transactions for a given block, etc., from its peers.
+
+The Sync subprotocol is also implemented directly on top of the P2P layer. For more information, see [Sync](../sync/01-overview.md).
 
 ### Messages
 
-Each message is signed using the sender's public key. In addition to the message data itself (the payload), it includes a protocol, a client version, a timestamp, the public key of the message originator, a network ID, whether the message is a request or a response, the request ID, and the type of message in the specified protocol. All messages are serialized on the wire using [the XDR standard](https://en.wikipedia.org/wiki/External_Data_Representation).
+Each message is signed using the sender's public key. In addition to the message data itself (the payload), it includes a subprotocol, a client version, a timestamp, the public key of the message originator, a network ID, whether the message is a request or a response, the request ID, and the type of message in the specified subprotocol. All messages are serialized on the wire using [the XDR standard](https://en.wikipedia.org/wiki/External_Data_Representation).
 
-The sub-protocol that generated the message then sends it to the P2P stack. It can either broadcast the message to all peers over the gossip network, or it can send the message to one directly-connected "neighbor" peer. Most sub-protocols only broadcast messages, but the `sync` sub-protocol sends messages to specific peers: for example, to respond to an incoming request for a specific block from a specific peer.
+The subprotocol that generated the message then sends it to the P2P stack. It can either broadcast the message to all peers over the gossip network, or it can send the message to one directly-connected "neighbor" peer. Most subprotocols only broadcast messages, but the `sync` subprotocol sends messages to specific peers: for example, to respond to an incoming request for a specific block from a specific peer.
 
 ### Peer Discovery
 
