@@ -28,7 +28,7 @@ The remainder of this document contains a high-level overview of the Spacemesh p
   - [Hare](consensus/01-overview.md#hare)
 - [Transactions](transactions/01-overview.md)
 - Sync (coming soon)
-- P2P Networking (coming soon)
+- [P2P Networking](p2p/01-overview.md)
 - Data structures (coming soon)
 
 ### Hare Protocol
@@ -125,7 +125,7 @@ Spacemesh employs a two-step process to achieve finality. The first step is the 
 
 The Spacemesh network consists of a peer-to-peer network of independent nodes, each running go-spacemesh (or another Spacemesh protocol client). Messages, which may consist of new transactions, old or new blocks, votes on consensus, etc., transit the network in one of only two fashions: a message may be transmitted from one node directly to a recipient node (e.g., in response to a request for a particular piece of data, such as a block), or a message may be gossiped across the entire network (e.g., a new transaction or block).
 
-For more information, see Network [LINK forthcoming].
+For more information, see [P2P Networking](p2p/01-overview.md).
 
 ## Data Structures
 
