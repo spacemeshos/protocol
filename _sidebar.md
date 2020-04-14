@@ -1,5 +1,8 @@
 - [Overview](README.md)
 
+**P2P**
+- [P2P](p2p/01-overview.md)
+
 **Consensus**
 - [Intro](consensus/01-overview.md)
 
@@ -14,5 +17,5 @@
 - [NiPOST](mining/04-nipost.md)
 - [ATX](mining/05-atx.md)
 
-**Traansactions**
+**Transactions**
 - [Overview](transactions/01-overview.md)
