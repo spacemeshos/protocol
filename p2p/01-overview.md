@@ -40,7 +40,7 @@ The Spacemesh network is an unstructured peer-to-peer network. Each peer both co
 
 ### Custom P2P stack
 
-Early on in the architecture process, we evaluated existing P2P stacks including the Ethereum stack and [libp2p](https://github.com/libp2p). We decided that these existing stacks were too tightly coupled to the respective protocols: for instance, the Ethereum P2P stack requires that all data be sent using a custom encoding called RDP, and libp2p necessitates use of Kademlia DHT, which is useful for file sharing but is not required by Spacemesh. We therefore decided to implement our own lightweight P2P stack. For more information on this decision process, see [The search for the perfect p2p library](https://medium.com/spacemesh/perfect-p2p-library-c559d1ca57dc) (but note that some of the information, such as the discussion of the DHT, is outdated).
+Early on in the architecture process, we evaluated existing P2P stacks including the Ethereum stack and [libp2p](https://github.com/libp2p). We decided that these existing stacks were too tightly coupled to the respective protocols: for instance, the Ethereum P2P stack requires that all data be sent using a custom encoding called [RLP](https://github.com/ethereum/wiki/wiki/RLP), and libp2p necessitates use of [Kademlia DHT](https://en.wikipedia.org/wiki/Kademlia), which is useful for file sharing but is not required by Spacemesh. We therefore decided to implement our own lightweight P2P stack. For more information on this decision process, see [The search for the perfect p2p library](https://medium.com/spacemesh/perfect-p2p-library-c559d1ca57dc) (but note that some of the information, such as the discussion of the DHT, is outdated).
 
 ### Identity
 
