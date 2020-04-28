@@ -214,3 +214,10 @@ p {
 	border-color: #252429;
 	background-color: #252429;
 }
+
+.cover-logo._dark {
+	display: block !important;
+}
+.cover-logo._light {
+	display: none !important;
+}
