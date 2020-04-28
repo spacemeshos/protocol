@@ -1,0 +1,80 @@
+:root {
+	--link-color: #B6B6B6;
+	--link-color--hover: #B6B6B6;
+	--base-color: white;
+
+	--cover-heading-color: white;
+	--cover-background-color: #252429;
+	--cover-background-image: none;
+	--cover-background-mask-visibility: hidden;
+	--code-theme-background: #353438;
+	--code-theme-text: white;
+	--code-inline-color: #252429;
+	--copycode-color: white;
+	--copycode-background: #353438;
+	--notice-tip-border-color: white;
+	--notice-tip-background: #1776E3;
+	--notice-important-color: white;
+	--notice-tip-color: white;
+	--notice-color: white;
+	--blockquote-background: #1776E3;
+	--blockquote-border-color: white;
+	--blockquote-color: white;
+	--sidebar-background: #353438;
+	--sidebar-border-color: #353438;
+	--sidebar-toggle-icon-color: #4D4D4D;
+	--search-input-color: white;
+	--search-input-placeholder-color: white;
+	--search-input-background-color: #252429;
+	--search-input-border-color: #353438;
+	--search-input-background-image: url("data:image/svg+xml,%3Csvg height='20px' width='20px' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10.5' cy='10.5' r='7.5' vector-effect='non-scaling-stroke'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='15.8' y2='15.8' vector-effect='non-scaling-stroke'%3E%3C/line%3E%3C/svg%3E");
+	--notice-important-background: #1776E3;
+	--notice-tip-before-background: url('images/icon-white.svg') no-repeat;
+	--sidebar-nav-link-color: white;
+	--sidebar-name-color: white;
+	--sidebar-toggle-background:#E3E3E3;
+	--sidebar-toggle-border-color:#E3E3E3;
+	--sidebar-nav-pagelink-padding: .25em 0 .25em .75em;
+	--strong-color: white;
+	--heading-h1-color: white;
+	--heading-h3-color: white;
+	--heading-h4-color: white;
+	--heading-h5-color: white;
+	--heading-h6-color: white;
+}
+
+body {
+	background-color: var(--cover-background-color);
+}
+
+.sidebar-nav li.active > a[href^="#/"]:not([href*="?id="]):only-child {
+	background-image: none;
+	padding-left: 0;
+}
+.sidebar-nav > ul > li.active > a:before  {
+	content: "[";
+	display: inline-block;
+	vertical-align: center;
+	margin: 0;
+}
+.sidebar-nav > ul > li.active > a:after  {
+	content: "]";
+	display: inline-block;
+	vertical-align: center;
+	margin: 0;
+}
+
+p {
+	color: white;
+}
+
+.markdown-section p > strong {
+	color: var(--strong-color);
+}
+
+.cover-logo._light {
+	display: block !important;
+}
+.cover-logo._dark {
+	display: none !important;
+}

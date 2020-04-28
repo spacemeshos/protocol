@@ -1,49 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Spacemesh Protocol 0.1 Guide</title>
-    <link rel="shortcut icon" href="/assets/favicon.png" type="image/png" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="description" content="Testnet" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <title>Spacemesh Protocol 0.1 Guide</title>
+  <link rel="shortcut icon" href="/assets/favicon.png" type="image/png" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Testnet" />
+  <meta
+          name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  />
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/docsify-themeable/dist/css/theme-simple.css"
-    />
+  <link
+          rel="stylesheet"
+          href="https://unpkg.com/docsify-themeable/dist/css/theme-simple.css"
+  />
 
-    <link rel="stylesheet" href="style.css" />
-  </head>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style-dark.css" name="dark-theme" disabled />
+  <script>
+    if (localStorage.getItem('dark-theme')) {
+      var darkStylesElem = document.querySelector('[rel="stylesheet"][name="dark-theme"]');
 
-  <body>
-    <div id="app">Loading, please wait...</div>
-    <script>
-        window.$docsify = {
-            name: 'Spacemesh Protocol 0.1',
-            repo: 'https://github.com/spacemeshos/protocol',
-            homepage: 'README.md',
-            //logo: '/images/logo.svg',
-            loadNavbar: false,
-            loadSidebar: true,
-            ga: 'UA-111612428-6',
-            notFoundPage: '404.md',
-            coverpage: true,
-            executeScript: true,
-            auto2top: true,
-            themeable: {
-              // readyTransition : false,
-              // responsiveTables: false
-            },
-      };
-    </script>
-    <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
-    <script src="//unpkg.com/docsify/lib/plugins/ga.min.js"></script>
-    <script src="https://unpkg.com/docsify-themeable"></script>
-    <script src="https://unpkg.com/docsify/lib/plugins/search.js"></script>
-    <script src="https://unpkg.com/docsify-copy-code@2"></script>
-  </body>
+      darkStylesElem.disabled = false;
+    }
+  </script>
+</head>
+
+<body>
+<div class="theme-switcher">
+  <input type="checkbox" id="theme-switcher" class="theme-switcher__input">
+  <label for="theme-switcher" class="theme-switcher__label"></label>
+</div>
+<div id="app">Loading, please wait...</div>
+<script>
+  var darkStylesElem = document.querySelector('[rel="stylesheet"][name="dark-theme"]');
+  var switcherElem = document.querySelector('.theme-switcher__input');
+  var isDarkThemeActive = localStorage.getItem('dark-theme');
+
+  switcherElem.addEventListener('change', function() {
+    if (localStorage.getItem('dark-theme')) {
+      localStorage.removeItem('dark-theme');
+      darkStylesElem.disabled = true;
+    } else {
+      localStorage.setItem('dark-theme', 'active');
+      darkStylesElem.disabled = false;
+    }
+  });
+
+  switcherElem.checked = !isDarkThemeActive;
+</script>
+<script>
+  window.$docsify = {
+    name: 'Spacemesh Protocol 0.1',
+    repo: 'https://github.com/spacemeshos/protocol',
+    homepage: 'README.md',
+    //logo: '/images/logo.svg',
+    loadNavbar: false,
+    loadSidebar: true,
+    ga: 'UA-111612428-6',
+    notFoundPage: '404.md',
+    coverpage: true,
+    executeScript: true,
+    auto2top: true,
+    themeable: {
+      // readyTransition : false,
+      // responsiveTables: false
+    },
+  };
+</script>
+<script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+<script src="//unpkg.com/docsify/lib/plugins/ga.min.js"></script>
+<script src="https://unpkg.com/docsify-themeable"></script>
+<script src="https://unpkg.com/docsify/lib/plugins/search.js"></script>
+<script src="https://unpkg.com/docsify-copy-code@2"></script>
+</body>
 </html>
