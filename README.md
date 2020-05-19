@@ -27,7 +27,7 @@ The remainder of this document contains a high-level overview of the Spacemesh p
   - [Tortoise](consensus/01-overview.md#tortoise)
   - [Hare](consensus/01-overview.md#hare)
 - [Transactions](transactions/01-overview.md)
-- Sync (coming soon)
+- [Sync](sync/01-overview.md)
 - [P2P Networking](p2p/01-overview.md)
 - Data structures (coming soon)
 
