@@ -52,9 +52,7 @@ There are two notions of sync in Spacemesh: weakly and fully synced.
 
 ## Synchronization status and participation in consensus
 
-A node begins listening to gossip messages once it's weakly synced (in order to prevent a DoS attack). Other subprotocols, however, require the node to be fully synced: the Hare, block generation, and ATX generation are all paused until a node is fully synced.
-
-A node can only participate in the Hare consensus mechanism once it is fully synced.
+While a node begins to receive gossip messages as soon as it's connected to peers, some subprotocols such as `sync` and `hare` discard these messages until the node is weakly synced. This is in order to prevent a DoS attack. Block generation and ATX generation are paused until a node is fully synced, and a node can only participate in the Hare consensus mechanism once it is fully synced.
 
 ## Sync and the Tortoise
 
