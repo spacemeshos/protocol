@@ -17,5 +17,8 @@
 - [NiPOST](mining/04-nipost.md)
 - [ATX](mining/05-atx.md)
 
+**Sync**
+- [Sync](sync/01-overview.md)
+
 **Transactions**
 - [Overview](transactions/01-overview.md)
