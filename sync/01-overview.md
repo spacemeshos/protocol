@@ -34,9 +34,9 @@ Once this initial sync process completes, the node switches into a mode known as
 
 ## Data availability
 
-In Spacemesh, data structures contain pointers to other data structures. For example, blocks point to previous blocks, and to ATXs. This is to save space in the mesh: it doesn't make sense for every block to contain a copy of all of the other blocks it points to, or to contain the ATX it points to, since many blocks may point to the same one! However, this presents a challenge of data availability: given a piece of data, such as a block, how do we ensure that all of the data that it relies on is available?
+As described above, data structures contain pointers to other data structures. This is to save space in the mesh: it doesn't make sense for every block to contain a copy of all of the other blocks it points to, or to contain the ATX it points to, since many blocks may point to the same one! However, this presents a challenge of data availability: given a piece of data, such as a block, how do we ensure that all of the data that it relies on are available?
 
-In short, any data structure is considered invalid in Spacemesh if any of the data it relies on are unavailable (i.e., if none of a node's peers have the missing data). Miners should never mine, or gossip, a block with invalid pointers.
+In short, any data structure is considered invalid in Spacemesh if any of the data it relies on are unavailable (i.e., if none of a node's peers have the missing data). Miners should never mine, or gossip, a block with pointers to invalid or missing data.
 
 ## Layers, the clock, and sync
 
@@ -58,6 +58,6 @@ While a node begins to receive gossip messages as soon as it's connected to peer
 
 Sync is what triggers the [Tortoise protocol](../consensus/01-overview.md#tortoise) to validate blocks. This works in two ways.
 
-For the current layer, Sync waits a specified period of time, called `ValidationDelta`, to accumulate blocks. Once this interval is passed, it kicks off the Tortoise to process the votes in these new blocks. In the case where a node is synchronizing historical layers, each layer is processed as soon as all of its blocks are received.
+For the current layer, Sync waits a specified period of time, called `ValidationDelta`, to accumulate blocks. Once this interval has passed, it kicks off the Tortoise to process the votes in these new blocks. In the case where a node is synchronizing historical layers, each layer is processed as soon as all of its blocks are received.
 
 For blocks that arrive late, i.e., for previous layers, Sync immediately passes the data to the Tortoise.
