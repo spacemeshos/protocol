@@ -5,10 +5,11 @@
 
 **Consensus**
 - [Intro](consensus/01-overview.md)
-
-**Hare**
-- [FAQ](hare/FAQ.md)
-- [Intro](hare/README.md)
+- [Tortoise](consensus/01-overview.md#tortoise)
+- [Hare](consensus/01-overview.md#hare)
+- [Hare FAQ](hare/FAQ.md)
+- [Hare Deep Dive](hare/README.md)
+- [In context](consensus/02-deepdive.md)
 
 **Mining**
 - [Overview](mining/01-overview.md)

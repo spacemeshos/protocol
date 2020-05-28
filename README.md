@@ -26,6 +26,7 @@ The remainder of this document contains a high-level overview of the Spacemesh p
 - [Consensus](consensus/01-overview.md)
   - [Tortoise](consensus/01-overview.md#tortoise)
   - [Hare](consensus/01-overview.md#hare)
+  - [In context](consensus/02-deepdive.md)
 - [Transactions](transactions/01-overview.md)
 - [Sync](sync/01-overview.md)
 - [P2P Networking](p2p/01-overview.md)

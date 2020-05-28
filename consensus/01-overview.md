@@ -151,3 +151,5 @@ What about blocks submitted by _some_ but not _all_ honest miners? The validity 
 ### Details
 
 The Hare protocol is somewhat more complicated than can be explained here. For more details, see [The Hare Protocol](https://github.com/spacemeshos/protocol/wiki/The-Hare-Protocol). See also the [Hare Protocol Implementation Notes](https://github.com/spacemeshos/go-spacemesh/wiki/Hare-Protocol-Implementation) for information on how the protocol is implemented in go-spacemesh. Finally, for more formal proofs of these assertions, see [the full Spacemesh protocol paper](https://spacemesh.io/spacemesh-protocol-v1-0/).
+
+Read on for more information on [Spacemesh consensus in the context of other consensus mechanisms](02-deepdive.md).
