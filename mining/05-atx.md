@@ -1,6 +1,6 @@
 # Mining - Activation Transaction
 
-Miners become eligible to mine in Spacemesh by publishing an Activation Transaction (ATX). The ATX is a Spacemesh-specific data structure that contains a [NIPoST](04-nipost.md), a publicly verifiable, self-contained proof that the miner committed some space-time resources to the protocol.
+Miners become eligible to mine in Spacemesh by publishing an Activation Transaction (ATX). The ATX is a Spacemesh-specific data structure that contains a [NIPoST](mining/04-nipost.md), a publicly verifiable, self-contained proof that the miner committed some space-time resources to the protocol.
 
 The previous documents in this section describe the _theory_ behind a set of independent protocols (PoST, PoET, NIPoST) that form the foundation of the Spacemesh mining construction. With ths background in place, we are now ready to see how these building block fit together _in practice_ to enable the Spacemesh mining construction in the production network. In particular, we'll see how the NIPoST (which itself contains the PoST and PoET) is wrapped, with accompanying metadata, into an ATX and used in the Spacemesh protocol.
 
@@ -18,7 +18,7 @@ An epoch is long enough that each active miner should be able to generate at lea
 
 ## Construction
 
-Unlike the [PoST](02-post.md) and [PoET](03-poet.md) constructions, an ATX is not itself a proof and as such it does not require any additional commitment of resources or complex computation. Instead, like [NIPoST](04-nipost.md), it’s a data structure that wraps the ATX along with relevant metadata. An ATX is a “freestanding” transaction: it does not have to be included in a block to be valid, but can just be gossiped to the network directly.
+Unlike the [PoST](mining/02-post.md) and [PoET](mining/03-poet.md) constructions, an ATX is not itself a proof and as such it does not require any additional commitment of resources or complex computation. Instead, like [NIPoST](mining/04-nipost.md), it’s a data structure that wraps the ATX along with relevant metadata. An ATX is a “freestanding” transaction: it does not have to be included in a block to be valid, but can just be gossiped to the network directly.
 
 In addition to the full NIPoST attested to by the ATX, the ATX also contains fields such as the ID of the previous ATX from the same miner, the time when the eligibility for this ATX starts and ends, and the miner’s signature. See [the full protocol specifications](https://spacemesh.io/spacemesh-protocol-v1-0/) for an elaboration of the full contents of the ATX.
 
@@ -30,4 +30,4 @@ Every valid block [LINK forthcoming] contains a pointer to a valid ATX that auth
 
 ## Conclusion
 
-Congratulations, dear reader, on making it to the bottom of this deep, dark rabbit hole! With all of the building blocks in place—PoST, PoET, NIPoST, and ATX—you now fully understand all of the components of the Proof of Space-time protocol underlying the Spacemesh blockchain, and how they fit together to allow miners to prove in a publicly verifiable, self-contained, non-interactive fashion that they’ve committed a certain amount of space-time resources to the protocol. Read on to learn about the [other parts of the protocol](../README.md#repository-contents).
+Congratulations, dear reader, on making it to the bottom of this deep, dark rabbit hole! With all of the building blocks in place—PoST, PoET, NIPoST, and ATX—you now fully understand all of the components of the Proof of Space-time protocol underlying the Spacemesh blockchain, and how they fit together to allow miners to prove in a publicly verifiable, self-contained, non-interactive fashion that they’ve committed a certain amount of space-time resources to the protocol. Read on to learn about the [other parts of the protocol](README.md#repository-contents).

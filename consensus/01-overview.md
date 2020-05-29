@@ -100,7 +100,7 @@ Self-healing works by having all honest nodes agree, at every layer, on a random
 
 ### Details
 
-The Tortoise protocol is complex and the full details of the protocol are beyond the scope of this document. For more details on the protocol, including formal security proofs, see [the full Spacemesh protocol paper](https://spacemesh.io/spacemesh-protocol-v1-0/). 
+The Tortoise protocol is complex and the full details of the protocol are beyond the scope of this document. For more details on the protocol, including formal security proofs, see [the full Spacemesh protocol paper](https://spacemesh.io/spacemesh-protocol-v1-0/).
 
 
 ## Hare
