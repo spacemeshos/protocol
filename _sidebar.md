@@ -1,7 +1,7 @@
 - [Overview](README.md)
 
 **P2P**
-- [P2P](/p2p/01-overview.md)
+- [P2P](p2p/01-overview.md)
 
 **Consensus**
 - [Intro](consensus/01-overview.md)
