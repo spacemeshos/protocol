@@ -5,8 +5,8 @@
 
 **Consensus**
 - [Intro](consensus_overview.md)
-- [Tortoise](consensus_overview.md#tortoise)
-- [Hare](consensus_overview.md#hare)
+- [Tortoise](consensus_overview.md?id=tortoise)
+- [Hare](consensus_overview.md?id=hare)
 - [Hare FAQ](hare_FAQ.md)
 - [Hare Deep Dive](hare_README.md)
 - [In context](consensus_deepdive.md)
