@@ -7,7 +7,7 @@ The general problem is the [Byzantine Agreement Problem](https://en.wikipedia.or
 
 It is known in advance when an agreement process should start for each layer. On the other hand, the time it takes to achieve agreement can vary, depending on the number of faulty/malicious participants in the consensus. Hence, multiple consensus instances may be run concurrently.  
 
-On this page we will discuss the core protocol concepts and clarify it. Please note we do not intend to talk about the implementation itself, we might mention practical ways that overlap with it.
+On this page we will discuss the core protocol concepts and clarify them. Please note we do not intend to talk about the implementation itself, we might mention practical ways that overlap with it.
 
 ## Definitions
 `N` - The number of active participants
@@ -54,7 +54,7 @@ Type B - assumes an honest has already committed. From this moment, we know ther
 **Pre-Round**
 The protocol begins with one `pre-round`. This round is executed only once and its goal is to remove values which shouldn't be considered at all according to `Validity 2`
 - At the beginning of the pre-round each active party sends his set of values ISi
-- At the end of the pre-round, each value that hasn't received f+1 witnesses is removed. This ensures that we are left only with values that has at least one honest witness and therefore satisfying `validity 2`
+- At the end of the pre-round, each value that hasn't received f+1 witnesses is removed. This ensures that we are left only with values that have at least one honest witness and therefore satisfying `validity 2`
 
 The protocol repeatedly iterates through up to 4 rounds until a consensus is reached.
 
@@ -76,18 +76,18 @@ Note: we say candidate (opposed to accepted) since it is possible that the sende
 Note: accepted proposals must have been received no later than the end of the proposal round. Hence, any accepted proposal will arrive to all honest participants no later than this commit round and that is why we are ensured to detect equivocation.
 
 **Notify Round**
-- An (active) participant that were able to form a certificate at the end of the commit round, broadcasts a notify message which includes (S, k, ki, C(S, k))
+- An (active) participant that was able to form a certificate at the end of the commit round, broadcasts a notify message which includes (S, k, ki, C(S, k))
 - Upon receiving a valid notify message the participant updates his internal state according to the attached set
 
 **Termination**
 If at any point of the protocol, a participant P receives f+1 notify messages on the same set S, it commits to S and terminates.
-Note: it is hereby follows that all honest participants will receive f+1 notifications no later than the following round and hence will terminate also.
+Note: it hereby follows that all honest participants will receive f+1 notifications no later than the following round and hence will terminate also.
 
 ## Eligibility Oracle
 
 Eligibility to participate in a round (being active) is determined by the oracle mechanism.
 The oracle is required to provide three main properties:
-A. Eligibility is under consensus - meaning all honest participant who receive a message will either classify it as active or as passive.
+A. Eligibility is under consensus - meaning all honest participants who receive a message will either classify it as active or as passive.
 B. The eligibility can be calculated in advance only up to some configurable limit of time before it can be used to participate.
 C. Eligibility is determined for each round in a layer separately and at random.
 
@@ -104,7 +104,7 @@ The reason we use a VRF signature is that we want to make sure the signing proce
 **Validation**
 In order to validate the vrf message the receiver should:
 1. Reconstruct the matching VRF message and check the signature against that message.
-2. Validate the the hash of signature of the VRF message passes the threshold.
+2. Validate the hash of signature of the VRF message passes the threshold.
 
 **Leadership**
 The leader eligibility is derived by the same process described above. The only difference is that the expected number of actives is set to 1. Since eligibility is random, it is possible that more than one leader will exist in the same (proposal) round. To handle this, we agree on a way to order the signatures in order to decide who is the real accepted leader. For example, this can be done by comparing bytes and accepting lowest ranked leader.
@@ -144,7 +144,7 @@ Validations:
 * validate all messages are of type status
 * validate all (status) messages state the same iteration number
 * uniqueness of sender across all commit messages
-* for each status messsages(S, K , Ki):
+* for each status messages (S, K , Ki):
     - if ki > 0 look for a certificate on (S,K)
     - if ki = -1 prove by preround messages
 * Validate SVP type:

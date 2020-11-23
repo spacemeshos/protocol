@@ -13,7 +13,7 @@ Several strategies have been suggested for defending against such an attack (oft
 
 Any bounded resource can be used as a “payment” for the eligibility to mine. This “payment” isn’t paid to anyone, it is simply wasted or “burnt.” Its purpose is to prevent Sybil attacks, and thus to make the honest majority security assumption viable. That majority can be used by nodes on the network to reach consensus regarding the canonical list of transactions. It thus[ solves](https://satoshi.nakamotoinstitute.org/emails/cryptography/11/#selection-47.45-47.72) a classic problem in distributed computing called the [Byzantine Generals Problem](https://people.eecs.berkeley.edu/~luca/cs174/byzantine.pdf), even among a permissionless, changing set of actors, and was first introduced by Satoshi Nakamoto with the inception of Bitcoin.
 
-In order to incentivise miners to spend that resource, essential to the security of the network, miners are rewarded with newly minted tokens. This kills two birds with one stone: the initial distribution of tokens into circulation, and the incentive for nodes to support the security of the network.
+In order to incentivize miners to spend that resource, essential to the security of the network, miners are rewarded with newly minted tokens. This kills two birds with one stone: the initial distribution of tokens into circulation, and the incentive for nodes to support the security of the network.
 
 ## Proof of Work
 
