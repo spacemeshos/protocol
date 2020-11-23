@@ -85,7 +85,7 @@ As [described above](#discovery), a peer performs an initial discovery process, 
 The following flow describes how a node requests a list of peers from another node:
 
 1. The initiator must first send ping message, to verify that node is alive. The ping contains the node ID (public key), the sender's IP and port.
-1. The recipient responds to the ping with a pong message, of the same format as the ping, to validate this information. (In other words, the recipient ensures the intiator is indeed listening at the IP and port they advertised. This prevents reflective DoS attacks.)
+1. The recipient responds to the ping with a pong message, of the same format as the ping, to validate this information. (In other words, the recipient ensures the initiator is indeed listening at the IP and port they advertised. This prevents reflective DoS attacks.)
 1. The initiator then sends a `getAddresses` message, requesting a list of peers.
 1. The recipient responds with a list of additional peers: their node IDs, IP addresses, and ports.
 
@@ -95,4 +95,4 @@ Each node maintains an "address book" of known nodes. When it first starts up, o
 
 When two nodes connect for the first time, a secure P2P session needs to be established (using a TCP socket). To establish the session the initiator node first generates a handshake message containing its client version and the network ID it's trying to connect to. It then encrypts the message using a [Diffie-Hellman](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) shared secret key constructed using its own private key and the recipient's public key. It sends the message, and its public key, to the recipient.
 
-The recipient reconstucts the shared secret key, using its private key and the initator's public key, uses it to decrypt the handshake message, and checks the initiator's client version and network ID. If everything checks out, it responds to the handshake message and a session is established; if not, the TCP connection is closed and no further information is exchanged.
+The recipient reconstructs the shared secret key, using its private key and the initiator's public key, uses it to decrypt the handshake message, and checks the initiator's client version and network ID. If everything checks out, it responds to the handshake message and a session is established; if not, the TCP connection is closed and no further information is exchanged.

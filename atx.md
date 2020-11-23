@@ -2,7 +2,7 @@
 
 Miners become eligible to mine in Spacemesh by publishing an Activation Transaction (ATX). The ATX is a Spacemesh-specific data structure that contains a [NIPoST](04-nipost.md), a publicly verifiable, self-contained proof that the miner committed some space-time resources to the protocol.
 
-The previous documents in this section describe the _theory_ behind a set of independent protocols (PoST, PoET, NIPoST) that form the foundation of the Spacemesh mining construction. With ths background in place, we are now ready to see how these building block fit together _in practice_ to enable the Spacemesh mining construction in the production network. In particular, we'll see how the NIPoST (which itself contains the PoST and PoET) is wrapped, with accompanying metadata, into an ATX and used in the Spacemesh protocol.
+The previous documents in this section describe the _theory_ behind a set of independent protocols (PoST, PoET, NIPoST) that form the foundation of the Spacemesh mining construction. With this background in place, we are now ready to see how these building blocks fit together _in practice_ to enable the Spacemesh mining construction in the production network. In particular, we'll see how the NIPoST (which itself contains the PoST and PoET) is wrapped, with accompanying metadata, into an ATX and used in the Spacemesh protocol.
 
 
 ## Epochs and eligibility

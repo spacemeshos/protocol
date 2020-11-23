@@ -36,7 +36,7 @@ Q:  Round 2: is the `notify message` sent to the whole network via gossip?
 
 Q: Round 2: what is `equivocation` - it is not previously defined. Please define.. what does it mean to detect and equivocation?
 
-A: Equivocation, generally means that someone tried to present more than one truth. Specifically itis used to describe a malicious leader that sends more than one proposal to the network - that is called leader equivocation or proposal equivocation. This behavior can be broaden to other message types, for example pre-round messages.
+A: Equivocation, generally means that someone tried to present more than one truth. Specifically it is used to describe a malicious leader that sends more than one proposal to the network - that is called leader equivocation or proposal equivocation. This behavior can be broaden to other message types, for example pre-round messages.
 
 ---
 

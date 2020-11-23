@@ -120,7 +120,7 @@ When the node proposes a block in the future, it uses the output of the Hare, an
 
 At the beginning of each round (rounds 0-4, as described in the following section), a miner draws a role that tells it whether it's _active_ (i.e., participating) or _passive_ (i.e., just observing) in this round. In order to draw a role, each miner uses a [Verifiable Random Function (VRF)](https://en.wikipedia.org/wiki/Verifiable_random_function) and if the output passes some threshold (which depends on the number of total active miners) then it is active; otherwise the miner is passive for that round.
 
-Miners change roles from round to round in order to prevent denial-of-service attacks against the Hare. If a miner kept the same role thoughout all of the rounds, then, after revealing their role in an earlier round, they could be targeted by an attack in subsequent rounds.
+Miners change roles from round to round in order to prevent denial-of-service attacks against the Hare. If a miner kept the same role throughout all of the rounds, then, after revealing their role in an earlier round, they could be targeted by an attack in subsequent rounds.
 
 In round two (proposal round), a leader (with the ability to broadcast a proposal) is chosen. This also happens using a VRF, but as opposed to the assignment of active/passive roles as described above, even if a miner passes the required threshold before this round and subsequently sends a proposal, that miner is still not certain that it's the actual leader (since another miner may have drawn a lower number). There is, actually, just one leader, the one with the smallest VRF output, but this isn't known with certainty until the _end_ of the round.
 
