@@ -33,7 +33,7 @@ The remainder of this document contains a high-level overview of the Spacemesh p
 - Data structures (coming soon)
 
 ### Hare Protocol
-- [Spec](/hare/README.md)
+- [Spec](hare_README.md)
 - [go-spacemesh implementation](https://github.com/spacemeshos/go-spacemesh/wiki/Hare-Protocol-Implementation)
 
 
