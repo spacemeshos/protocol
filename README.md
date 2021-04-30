@@ -18,18 +18,18 @@ Those looking for a more formal, research-oriented presentation of the Spacemesh
 
 The remainder of this document contains a high-level overview of the Spacemesh protocol, and how all of the pieces fit together. You may also wish to dive deeper into the various components of the protocol:
 
-- [Mining](mining/01-overview.md)
-  - [Proof of Space-time (PoST)](mining/02-post.md)
-  - [Proof of Elapsed Time (PoET)](mining/03-poet.md)
-  - [Non-interactive Proof of Space-time (NIPoST)](mining/04-nipost.md)
-  - [Activation Transactions (ATX)](mining/05-atx.md)
-- [Consensus](consensus/01-overview.md)
-  - [Tortoise](consensus/01-overview.md#tortoise)
-  - [Hare](consensus/01-overview.md#hare)
-  - [In context](consensus/02-deepdive.md)
-- [Transactions](transactions/01-overview.md)
-- [Sync](sync/01-overview.md)
-- [P2P Networking](p2p/01-overview.md)
+- [Mining](mining_overview.md)
+  - [Proof of Space-time (PoST)](post.md)
+  - [Proof of Elapsed Time (PoET)](poet.md)
+  - [Non-interactive Proof of Space-time (NIPoST)](nipost.md)
+  - [Activation Transactions (ATX)](atx.md)
+- [Consensus](consensus_overview.md)
+  - [Tortoise](consensus_overview.md#tortoise)
+  - [Hare](consensus_overview.md#hare)
+  - [In context](consensus_deepdive.md)
+- [Transactions](transactions_overview.md)
+- [Sync](sync_overview.md)
+- [P2P Networking](p2p_overview.md)
 - Data structures (coming soon)
 
 ### Hare Protocol
