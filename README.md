@@ -53,7 +53,7 @@ Read on to learn more about the details of the Spacemesh protocol. You may also 
 
 The Spacemesh protocol guarantees that each Smesher that follows the rules of the protocol is eligible to produce multiple blocks during each epoch. Note also that Smeshing is entirely permissionless: in other words, _anyone who runs the Spacemesh software and follows the rules of the protocol is guaranteed to be rewarded with Smesh coins at each epoch._ This is in contrast to both Proof of Work-based protocols, such as Bitcoin, where rewards are probabilistic and only professional miners and mining pools stand a realistic chance of earning them; as well as to Proof of Stake-based protocols, where one must hold a substantial amount of the token before they are eligible to participate and earn rewards.
 
-Spacemesh is able to achieve this nice property due to certain unique characteristics of its [consensus mechanism](https://spacemesh.io/protocol/) (see also [Consensus](consensus/01-overview.md)): in particular, the fact that it’s race-free, i.e., it does not require Smeshers to compete to produce blocks in a given layer, but rather allows many blocks to be produced at each layer. This results in a DAG data structure rather than a chain. See [The race to race-free (or why we chose mesh over chain)](https://spacemesh.io/race-freeness/) for more information on this design choice.
+Spacemesh is able to achieve this nice property due to certain unique characteristics of its [consensus mechanism](https://spacemesh.io/protocol/) (see also [Consensus](consensus_overview.md)): in particular, the fact that it’s race-free, i.e., it does not require Smeshers to compete to produce blocks in a given layer, but rather allows many blocks to be produced at each layer. This results in a DAG data structure rather than a chain. See [The race to race-free (or why we chose mesh over chain)](https://spacemesh.io/race-freeness/) for more information on this design choice.
 
 ## Core Infrastructure
 
@@ -69,11 +69,11 @@ Note that, unlike full node implementations for certain other blockchain protoco
 
 ### PoET server
 
-PoET stands for “Proof of Elapsed Time.” It’s a core part of the Spacemesh [consensus protocol](consensus/01-overview.md), where it’s used to prove that a miner has allocated a chunk of hard drive space to the protocol _for some period of time._ PoST, [described below](#post), is used to prove that _space_ has been allocated; PoET is responsible for the _time_ component of space-time.
+PoET stands for “Proof of Elapsed Time.” It’s a core part of the Spacemesh [consensus protocol](consensus_overview.md), where it’s used to prove that a miner has allocated a chunk of hard drive space to the protocol _for some period of time._ PoST, [described below](#post), is used to prove that _space_ has been allocated; PoET is responsible for the _time_ component of space-time.
 
 PoET is implemented as a web service, separate from go-spacemesh, that anyone can run and offer as a service to Smeshers. Many Smeshers can share a single PoET server, and one Smesher may opt to utilize multiple PoET servers for redundancy. Go-spacemesh [includes code](https://github.com/spacemeshos/go-spacemesh/blob/develop/activation/poet.go) to communicate with a PoET server.
 
-For more information see [PoET](mining/03-poet.md) and the [PoET codebase](https://github.com/spacemeshos/poet).
+For more information see [PoET](poet.md) and the [PoET codebase](https://github.com/spacemeshos/poet).
 
 ### Spacemesh App
 
@@ -98,41 +98,41 @@ SVM is the Spacemesh Virtual Machine, a WebAssembly-compatible smart contract en
 <a name="post"></a>
 ### Proof of Space-time
 
-In Spacemesh, a miner establishes eligibility to produce blocks and participate in [consensus](consensus/01-overview.md) by publishing an [Activation Transaction (ATX)](mining/05-atx.md), which contains (among other things) a [Proof of Space-time](mining/02-post.md).
+In Spacemesh, a miner establishes eligibility to produce blocks and participate in [consensus](consensus_overview.md) by publishing an [Activation Transaction (ATX)](atx.md), which contains (among other things) a [Proof of Space-time](post.md).
 
 These proofs have two phases. In the initial phase, known as the _initialization phase,_ a miner allocates a chunk of hard drive space to the protocol, and commits to the contents of that space. The space is filled with cryptographic junk such that for the duration that this space is committed to Spacemesh it cannot be used for any other purpose. This hard drive space is the _space_ component of the _space-time_ resource that underlies a Proof of Space-time.
 
 In the ongoing phase, known as the _execution phase,_ the miner must submit a new ATX containing a proof of ongoing eligibility each epoch.
 
-See [Mining](mining/01-overview.md) for more information on how these proofs are generated and utilized.
+See [Mining](mining_overview.md) for more information on how these proofs are generated and utilized.
 
 ### Producing blocks
 
 Once a miner has successfully generated and submitted an eligibility proof, the process of actually producing blocks is relatively straightforward. The miner can calculate which layers in a given epoch they are eligible to produce blocks. (The number of layers during which they are eligible, and thus, the number of blocks they produce in each epoch, will vary depending upon the total number of miners, but the epoch size is set sufficiently large that, unless the number of miners becomes enormous, each miner will be eligible to produce multiple blocks per epoch.)
 
-Miners collect transactions into a local transaction pool, and once per eligible layer they assemble them into blocks and broadcast those blocks to the network. See [Mining](mining/01-overview.md) for more information on this process.
+Miners collect transactions into a local transaction pool, and once per eligible layer they assemble them into blocks and broadcast those blocks to the network. See [Mining](mining_overview.md) for more information on this process.
 
 ## Consensus
 
-Consensus in the Spacemesh protocol consists of several independent components that work together to allow each network node to independently arrive at the same canonical view of blocks and transactions in a [Byzantine Fault Tolerant-fashion](https://en.wikipedia.org/wiki/Byzantine_fault), i.e., even if those nodes haven't seen precisely the same information at precisely the same time. What follows is a very brief overview; see [Consensus](consensus/01-overview.md) for more information.
+Consensus in the Spacemesh protocol consists of several independent components that work together to allow each network node to independently arrive at the same canonical view of blocks and transactions in a [Byzantine Fault Tolerant-fashion](https://en.wikipedia.org/wiki/Byzantine_fault), i.e., even if those nodes haven't seen precisely the same information at precisely the same time. What follows is a very brief overview; see [Consensus](consensus_overview.md) for more information.
 
 ### Tortoise and Hare
 
 Once many miners have produced candidate blocks for a given layer, how does the network achieve consensus on the canonical set of blocks and transactions that form the layer? In other words, how does a transaction become finalized?
 
-Spacemesh employs a two-step process to achieve finality. The first step is the Hare protocol, which each node runs at the end of every layer. It’s a Byzantine agreement protocol that allows the network to quickly achieve consensus on a canonical set of blocks. The output of the Hare allows bootstrapping of the consensus of the Tortoise, which is a slower, vote-based protocol that methodically counts the votes for and against each block, leading to eventual, final consistency. Each node uses the output of the Hare protocol to decide which previous blocks its newly-produced blocks should vote for. See [Consensus](consensus/01-overview.md) for more information on these protocols.
+Spacemesh employs a two-step process to achieve finality. The first step is the Hare protocol, which each node runs at the end of every layer. It’s a Byzantine agreement protocol that allows the network to quickly achieve consensus on a canonical set of blocks. The output of the Hare allows bootstrapping of the consensus of the Tortoise, which is a slower, vote-based protocol that methodically counts the votes for and against each block, leading to eventual, final consistency. Each node uses the output of the Hare protocol to decide which previous blocks its newly-produced blocks should vote for. See [Consensus](consensus_overview.md) for more information on these protocols.
 
 ## Networking
 
 The Spacemesh network consists of a peer-to-peer network of independent nodes, each running go-spacemesh (or another Spacemesh protocol client). Messages, which may consist of new transactions, old or new blocks, votes on consensus, etc., transit the network in one of only two fashions: a message may be transmitted from one node directly to a recipient node (e.g., in response to a request for a particular piece of data, such as a block), or a message may be gossiped across the entire network (e.g., a new transaction or block).
 
-For more information, see [P2P Networking](p2p/01-overview.md).
+For more information, see [P2P Networking](p2p_overview.md).
 
 ## Data Structures
 
-The basic building blocks of the Spacemesh protocol, and the overall, canonical mesh data structure, are transactions and blocks. Transactions are account-based, and contain a sender, a recipient, an amount, a signature, and a few other pieces of data. Blocks collate zero or more transactions into a discrete set, and contain a block height (layer number), a signature of the miner, a proof of eligibility, and a few other pieces of data. See [Mining](mining/01-overview.md) for more information.
+The basic building blocks of the Spacemesh protocol, and the overall, canonical mesh data structure, are transactions and blocks. Transactions are account-based, and contain a sender, a recipient, an amount, a signature, and a few other pieces of data. Blocks collate zero or more transactions into a discrete set, and contain a block height (layer number), a signature of the miner, a proof of eligibility, and a few other pieces of data. See [Mining](mining_overview.md) for more information.
 
-Other relevant data structures include the various types of proof produced and submitted by miners and other services ([PoET](mining/03-poet.md), [ATX](mining/05-atx.md)), and vote messages exchanged as part of the [Hare protocol](consensus/01-overview.md#hare).
+Other relevant data structures include the various types of proof produced and submitted by miners and other services ([PoET](mining/03-poet.md), [ATX](atx.md)), and vote messages exchanged as part of the [Hare protocol](consensus_overview.md#hare).
 
 ## Learn More
 
