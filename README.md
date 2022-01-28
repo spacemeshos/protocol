@@ -30,6 +30,8 @@ The remainder of this document contains a high-level overview of the Spacemesh p
 - [Transactions](transactions_overview.md)
 - [Sync](sync_overview.md)
 - [P2P Networking](p2p_overview.md)
+- [Beacon](beacon_overview.md)
+  - [Protocol](beacon_protocol.md)
 - Data structures (coming soon)
 
 ### Hare Protocol
