@@ -30,6 +30,8 @@ The remainder of this document contains a high-level overview of the Spacemesh p
 - [Transactions](transactions_overview.md)
 - [Sync](sync_overview.md)
 - [P2P Networking](p2p_overview.md)
+- [Beacon](beacon_overview.md)
+  - [Protocol](beacon_protocol.md)
 - Data structures (coming soon)
 
 ### Hare Protocol
@@ -121,6 +123,9 @@ Consensus in the Spacemesh protocol consists of several independent components t
 Once many miners have produced candidate blocks for a given layer, how does the network achieve consensus on the canonical set of blocks and transactions that form the layer? In other words, how does a transaction become finalized?
 
 Spacemesh employs a two-step process to achieve finality. The first step is the Hare protocol, which each node runs at the end of every layer. It’s a Byzantine agreement protocol that allows the network to quickly achieve consensus on a canonical set of blocks. The output of the Hare allows bootstrapping of the consensus of the Tortoise, which is a slower, vote-based protocol that methodically counts the votes for and against each block, leading to eventual, final consistency. Each node uses the output of the Hare protocol to decide which previous blocks its newly-produced blocks should vote for. See [Consensus](consensus_overview.md) for more information on these protocols.
+
+## Beacon
+The spacemesh protocol generates its source of randomness by running an epoch-long beacon protocol. The purpose is to introduce unpredictability in the eligibility of making proposals and participating in the Hare protocol. This property is important for preventing a concentration attack where adversaries can influence the mesh content by creating a temporary majority at a given layer. See [Beacon](beacon_overview.md) and [Beacon Protocol](beacon_protocol.md) for more information on the beacon protocol.
 
 ## Networking
 
