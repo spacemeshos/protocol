@@ -69,7 +69,7 @@ Each smesher partitions the proposals received into three sets:
     Proposals that are neither valid nor potentially valid are invalid.
 
 
-Note that honest users cannot disagree on timing by more than δ. So if a proposal is valid for any honest user, it cannot be invalid for any honest user (and vice versa).
+Note that honest users cannot disagree on timing by more than δ. So if a proposal is valid for any honest user, it cannot be invalid for any other honest user (and vice versa).
 
 A party’s initial input to the consensus algorithm is the set of valid proposals. To reach consensus, parties execute the core tortoise algorithm for the set of proposals, treating this set as a “layer” and each proposal as a “block”.
 

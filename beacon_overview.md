@@ -25,26 +25,19 @@ The beacon protocol is essentially a simplified Tortoise consensus protocol: eac
 The beacon is used in the following components of Spacemesh:
 
 
-### Proposals
-
-Proposals are how smeshers propose transactions that will eventually be applied to the mesh. Smeshers declare the beacon value in the first proposal of the epoch and will not be able to change it for the rest of the epoch. Specifically, the beacon is recorded in a ballot inside a proposal that contains votes for all historical blocks. The first ballot of the epoch for a smesher is called the reference ballot of the smesher in the epoch.
-
-Without a beacon value, smeshers will not be able to build proposals. Even if a smesher does and publishes them, any honest party would be able to see that the proposals/ballots do not have the correct beacon and would consider them invalid.
-
-
 ### Hare Protocol
 
-A smesher is eligible to participate in the hare protocol when its VRF output is valid and passes a certain threshold. The beacon is part of the input to the VRF. If a smesher uses a different beacon value from the rest of the network, its VRF output is deemed invalid by the rest of the network. Its hare messages will be rejected.
+A smesher is eligible to participate in the hare protocol when its VRF output is valid and passes a certain threshold. The beacon is part of the input to the VRF. If a smesher uses a different beacon value than the rest of the network, its VRF output is deemed invalid by the rest of the network. Its hare messages will be rejected.
 
 
 ### Tortoise Protocol
 
-Every ballot counted by the Tortoise protocol is accompanied by a beacon value, either recorded in the ballot itself, or in the reference ballot of the epoch. The beacon is used in both modes of the Tortoise protocol, albeit slightly differently.
+Ballots are how smeshers vote for all historical blocks. The Tortoise protocol counts the votes in these ballots to reach consensus on historical blocks. A smesher must declare a beacon value in their first ballot (a.k.a the reference ballot) of an epoch and will not be able to change it for the rest of the epoch. All its remaining ballots in the epoch point to the reference ballot. The beacon values in these ballots are used to determine how smeshers' votes are counted.
 
 
 #### Verifying Tortoise
 
-In verifying tortoise, votes from ballots with incorrect beacons are not counted because these ballots are potentially malicious.
+In verifying tortoise, votes from ballots with beacon values different than what the verifying node believes is in consensus are not counted because these ballots are potentially malicious.
 
 
 #### Self Healing
