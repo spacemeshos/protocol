@@ -39,22 +39,23 @@ Each smesher partitions the proposals received into three sets:
 
 * Valid:
 
-    Proposals that satisfy both conditions below are considered valid.
+  Proposals that satisfy both conditions below are considered valid.
 
   * The proposer’s ATX was received before the end of the previous epoch
   * The proposal is received before the proposal phase ends.
+
 * Potentially Valid:
 
-    Proposals that are not valid, but meet the following conditions are considered potentially valid.
+  Proposals that are not valid, but meet the following conditions are considered potentially valid.
 
   * The proposer’s ATX was received within _δ_ after the end of the previous epoch.
   * The proposal is received within _δ_ after the proposal phase ends.
 
-    _δ_ is the network synchrony assumption of communication delay and is used as a grace period.
+  _δ_ is the network synchrony assumption of communication delay and is used as a grace period.
 
 * Invalid:
 
-    Proposals that are neither valid nor potentially valid are invalid.
+  Proposals that are neither valid nor potentially valid are invalid.
 
 Note that honest users cannot disagree on timing by more than δ. So if a proposal is valid for any honest user, it cannot be invalid for any other honest user (and vice versa).
 
