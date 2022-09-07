@@ -10,21 +10,19 @@ The consensus mechanism is one of the primary differences between Spacemesh and 
 
 Note that it’s important not to conflate consensus with mining. Indeed, there is some conceptual overlap between the two so the distinction can be a bit blurry. Mining is _the process by which a node establishes eligibility to produce blocks, and subsequently produces blocks deemed valid by the network._ (Secondarily, it is also the mechanism by which the network’s native token is distributed.) Consensus, by contrast, is _the process by which_ all nodes _come to consensus on the canonical set of blocks and transactions that form the ledger._
 
-There is a circular dependency between consensus and mining. Through mining, nodes create and submit proofs that they are eligible to propose blocks and participate in mining (in Spacemesh terminology, this is called an [Activation Transaction (ATX)](../mining/05-atx.md)). These are an input to the consensus engine: only blocks produced by an eligible miner, in an eligible slot, are syntactically valid and may be deemed canonical.
+There is a circular dependency between consensus and mining. Through mining, nodes create and submit proofs that they are eligible to propose blocks and participate in mining (in Spacemesh terminology, this is called an [Activation Transaction (ATX)](atx.md)). These are an input to the consensus engine: only blocks produced by an eligible miner, in an eligible slot, are syntactically valid and may be deemed canonical.
 
 The output of the consensus engine is also an input to the mining process. The consensus engine tells a node which blocks it should vote for in a newly proposed block: i.e., only those blocks that are visible and valid as of the time when it creates the block.
 
-You can read much more about the mining process [here](../mining/01-overview.md).
+You can read much more about the mining process [here](mining_overview.md).
 
-<a name="validity"></a>
 ### Block Validity in Spacemesh
 
 There are two sets of validity rules for a proposed block: _syntactic validity_ and _contextual validity_. A block is syntactically valid if it follows the rules of the protocol, is correctly constructed, and contains no invalid transactions. A syntactically valid block is also said to be contextually valid once the Tortoise declares it as such. This happens while the block receives enough votes in favor (in fact, when the difference between votes for and against passes the _irreversibility threshold)._
 
-Why is there a need for two types of validity? Why not, for instance, allow all syntactically valid blocks to be contextually valid? The answer is that, due to the [race free nature](../README.md#why-race-free) of the Spacemesh protocol, a miner may choose to publish a block later than they should (e.g., they were eligible to produce a block in layer 200, but they decide to actually publish the block in, say, layer 205). Since the published block is _syntactically valid,_ if the block were valid in the eyes of the protocol and of other nodes, it would cause a change to history and to the global network state, as new miners that join the network, for example, don't know when the block was actually published. We need to make sure that such blocks do not become part of the canonical ledger history: hence, even a _syntactically valid_ block may be deemed _contextually invalid_ if it wasn't published at the right time. Syntactically valid blocks form the mesh while contextually valid blocks form the ledger--or, put another way, the contextual validity of the blocks in the mesh (or lack thereof) is used to construct the ledger.
+Why is there a need for two types of validity? Why not, for instance, allow all syntactically valid blocks to be contextually valid? The answer is that, due to the [race free nature](README.md#why-race-free) of the Spacemesh protocol, a miner may choose to publish a block later than they should (e.g., they were eligible to produce a block in layer 200, but they decide to actually publish the block in, say, layer 205). Since the published block is _syntactically valid,_ if the block were valid in the eyes of the protocol and of other nodes, it would cause a change to history and to the global network state, as new miners that join the network, for example, don't know when the block was actually published. We need to make sure that such blocks do not become part of the canonical ledger history: hence, even a _syntactically valid_ block may be deemed _contextually invalid_ if it wasn't published at the right time. Syntactically valid blocks form the mesh while contextually valid blocks form the ledger--or, put another way, the contextual validity of the blocks in the mesh (or lack thereof) is used to construct the ledger.
 
 The purpose of the two consensus protocols, described below, is to determine which syntactically valid blocks are _also contextually valid._ For this reason, the rest of this document is unconcerned with syntactic validity. For the purposes of the rest of this document, "valid" should be taken to mean "contextually valid." By the same token, "blocks" refers to syntactically valid blocks.
-
 
 ### Phases
 
@@ -35,7 +33,6 @@ Blockchain consensus and block production, in general (not in Spacemesh specific
 3. Block production: Block producers elected by the protocol produce blocks at a given block height, according to the rules of the protocol, and distribute those blocks to the network.
 4. Fork choice rule: There is a mechanism by which any node in the network, based only upon their view of the network at any given point in time, and all block data they’ve received up to that point, can construct for themselves a canonical view of the blockchain data structure that is shared by other nodes with the same or similar views of the network at the same time. In concrete terms, a node must be able to decide on its own which set of blocks represent the canonical “longest chain,” and which transactions are included in that chain, in which order.
 
-
 ### Proof-of-Work-based protocols
 
 For point of comparison, and since proof of work is relatively well understood and relatively easy to reason about, following is an abridged explanation of the mechanisms that Proof-of-Work-based chains, such as Bitcoin and Ethereum, use to address each of these phases.
@@ -45,16 +42,14 @@ For point of comparison, and since proof of work is relatively well understood a
 3. Block production: Each leader candidate may produce any block they wish as long as that block follows the rules of the protocol. For instance, it must refer to the previous block and must not contain any invalid transactions. In most cases, block producers will choose to produce a block that contains as many high-fee transactions as possible to maximize revenue, but note that even empty blocks are valid according to protocol rules.
 4. Fork choice rule: The chain containing the most accumulated proof of work, measured as cumulative block difficulties up to the chain tip, is considered the current canonical chain. Note that this means finality in PoW is always probabilistic as there may always be another chain with greater total work than the current chain.
 
-
 ### Proof of Space-time
 
-In contrast to PoW-based chains, Spacemesh employs a set of consensus mechanisms collectively referred to as [Proof of Space-time (PoST)](../mining/02-post.md). Here’s how each mechanism functions to achieve consensus, at a high level.
+In contrast to PoW-based chains, Spacemesh employs a set of consensus mechanisms collectively referred to as [Proof of Space-time (PoST)](post.md). Here’s how each mechanism functions to achieve consensus, at a high level.
 
-1. Eligibility: Just as in PoW, all nodes are eligible to produce blocks in a permissionless fashion. In Spacemesh, however, instead of allocating CPU power, and by extension electricity, miners allocate hard disk space for a specified period of time. This allocation prevents Sybil attacks as explained above. To gain eligibility to produce blocks, a miner needs to send a _proof of space-time_ that asserts that the space-time resource was indeed allocated to the network. Then, once a new [epoch](../README.md#spacemesh-basics) starts they become active and are eligible to produce several blocks in that epoch. See [Mining](../mining/01-overview.md) for details on how this process works.
-2. Leader election: The protocol uses a [Verifiable Random Function (VRF)](https://en.wikipedia.org/wiki/Verifiable_random_function) to sample a set of miners eligible to produce blocks at each block height (the set of blocks at a given height is called a [layer](../README.md#spacemesh-basics) in Spacemesh terminology). Note that, unlike in PoW, _multiple_ miners are eligible to produce blocks at each layer.
+1. Eligibility: Just as in PoW, all nodes are eligible to produce blocks in a permissionless fashion. In Spacemesh, however, instead of allocating CPU power, and by extension electricity, miners allocate hard disk space for a specified period of time. This allocation prevents Sybil attacks as explained above. To gain eligibility to produce blocks, a miner needs to send a _proof of space-time_ that asserts that the space-time resource was indeed allocated to the network. Then, once a new [epoch](README.md#spacemesh-basics) starts they become active and are eligible to produce several blocks in that epoch. See [Mining](mining_overview.md) for details on how this process works.
+2. Leader election: The protocol uses a [Verifiable Random Function (VRF)](https://en.wikipedia.org/wiki/Verifiable_random_function) to sample a set of miners eligible to produce blocks at each block height (the set of blocks at a given height is called a [layer](README.md#spacemesh-basics) in Spacemesh terminology). Note that, unlike in PoW, _multiple_ miners are eligible to produce blocks at each layer.
 3. Block production: Each miner eligible to produce a block in a given layer may optionally do so (but is not punished if it chooses not to). As in Bitcoin, the miner may include any set of valid transactions they like in that block, and an empty block is syntactically valid according to the protocol.
 4. Fork choice rule: There are no forks in Spacemesh by design. The following section explains how and why this is the case.
-
 
 ### The Tortoise and the Hare
 
@@ -66,30 +61,23 @@ The problem with this approach is that votes on adversarial blocks can become "b
 
 In order to facilitate this, we run a permissionless Byzantine agreement protocol, the Hare, which outputs the set of blocks to be voted on. It bootstraps the Tortoise mechanism by allowing each node to quickly determine which recent blocks it should vote for. This helps the Tortoise quickly converge on the final, canonical ledger. The Hare runs on a random subset of nodes at every layer, producing a tentative, fast consensus on the set of canonical blocks that form that layer.
 
-
 ### Mesh Structure
 
 There are many blocks in every layer, and many transactions in every block. Each block includes a view that lists other blocks that are visible and valid according to the node that produced the block at the time the block was produced. As such, the overall structure of the mesh is a [directed acyclic graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph). There is furthermore a strict topological ordering to the blocks in a given layer, and to the transactions in each block. The valid blocks in the mesh (which are used to form the ledger) thus could form a chain. This strict ordering is necessary to determine transaction ordering, i.e., to turn the _mesh_ into a ledger. Blocks are ordered first by layer, then by block ID within a given layer. Transactions are ordered by block (i.e., the block in which they first appear), then by index within a block. If the same transaction appears in multiple blocks, it is counted only the first time it appears.
 
-See [Transaction ordering](../transactions/01-overview.md#ordering) for more information.
+See [Transaction ordering](transactions_overview.md#transaction-ordering) for more information.
 
 ## Tortoise
 
-
-### Overview
-
 The Tortoise protocol is the mechanism by which the Spacemesh network achieves final, eventual consensus on the set of blocks and transactions that form the canonical ledger. It’s a relatively slow, vote-based mechanism that tallies votes for and against each block in majority-rule fashion. For this reason, it cannot be run on a recently-produced layer of blocks, since not enough votes have yet been collected that refer to the new layer. Therefore the output of the Hare consensus mechanism is used to bootstrap the Tortoise. See the Hare section, below, for information on how tentative consensus is achieved on recent layers.
-
 
 ### Voting
 
 Each time a miner produces a new block, they include in that block a “votes” field that lists one or more previous blocks that the miner also considers valid at the time the block is produced. Each time a new block links to a given older block, the vote tally for that older block increases by one. Any block generated _after_ a given, older block that _doesn’t_ vote for that block is _counted as a vote against the block._ A vote is weighted proportional to the amount of space-time resources it represents: e.g., votes cast by a miner that has committed 200gb will count twice as much as votes cast by a miner that has committed 100gb to the protocol.
 
-
 ### Tallying votes
 
 The Tortoise protocol consists of a recursive algorithm that tallies all votes for and against each block, in majority-rule fashion: any block with a net tally greater than the irreversibility threshold becomes part of the canonical ledger. This tally algorithm may be run multiple times for a given layer until there is a clear majority voting in favor of a particular set of blocks in this layer, i.e., a majority so overwhelmingly large that it cannot be reversed because honest miners keep increasing it. At this point, the layer is finalized and set as the “best canonical layer.” This process repeats itself every time new votes are received.
-
 
 ### Self-healing
 
@@ -97,16 +85,11 @@ While the Tortoise protocol is very secure, it is fragile in the sense that its 
 
 Self-healing works by having all honest nodes agree, at every layer, on a random coin toss. When the margin of votes cast for and against a given block is very narrow, honest nodes will rely on the outcome of the coin toss to decide whether or not to vote for the block in question. This allows all nodes to reconverge on the same consensus over time.
 
-
-### Details
+### Details of Tortoise
 
 The Tortoise protocol is complex and the full details of the protocol are beyond the scope of this document. For more details on the protocol, including formal security proofs, see [the full Spacemesh protocol paper](https://spacemesh.io/spacemesh-protocol-v1-0/).
 
-
 ## Hare
-
-
-### Overview
 
 The Hare protocol is run once per layer. Its purpose is to allow each node to quickly determine the set of blocks in the layer to be voted for by _all honest miners._
 
@@ -134,7 +117,6 @@ The goal of the Hare protocol is to achieve consensus among all honest miners ab
 3. Commit round: each active participant independently determines who was elected leader, reviews the proposal from this leader, and signals its willingness to commit to it to the group. By the end of this round, each participant that received a valid proposal from the leader (with no conflicting proposal broadcast by the leader) _and_ a sufficient number of commit messages from other participants creates a “commit certificate” including all of this information.
 4. Notify round: each active participant holding a commit certificate broadcasts it to the group. If a sufficient number of commit certificates are received from other participants, the protocol terminates and each participant knows the canonical set. (If not, the protocol returns to the Status round and iterates.)
 
-
 ### Validity rules
 
 Consensus can be said to be achieved when the following three conditions are satisfied:
@@ -147,9 +129,8 @@ Hopefully the intuition here is clear: Blocks submitted by _all_ honest miners d
 
 What about blocks submitted by _some_ but not _all_ honest miners? The validity rules say nothing about this case, which is to say that they may or may not be included in the output set (depending how many honest miners saw it on time, and thus submitted it, and also upon the elected leader). This is by design, since the goal of the protocol is precisely to agree on the validity of such blocks. Since, according to validity rule #1, all honest participants agree upon the output set, based on the output set of the Hare they will _all_ vote for or against such a block in subsequent iterations of the Tortoise (regardless of whether or not they submitted the block as part of the Hare).
 
-
-### Details
+### Details of Hare
 
 The Hare protocol is somewhat more complicated than can be explained here. For more details, see [The Hare Protocol](https://github.com/spacemeshos/protocol/wiki/The-Hare-Protocol). See also the [Hare Protocol Implementation Notes](https://github.com/spacemeshos/go-spacemesh/wiki/Hare-Protocol-Implementation) for information on how the protocol is implemented in go-spacemesh. Finally, for more formal proofs of these assertions, see [the full Spacemesh protocol paper](https://spacemesh.io/spacemesh-protocol-v1-0/).
 
-Read on for more information on [Spacemesh consensus in the context of other consensus mechanisms](02-deepdive.md).
+Read on for more information on [Spacemesh consensus in the context of other consensus mechanisms](consensus_deepdive.md).

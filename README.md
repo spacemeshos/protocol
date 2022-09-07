@@ -35,9 +35,9 @@ The remainder of this document contains a high-level overview of the Spacemesh p
 - Data structures (coming soon)
 
 ### Hare Protocol
+
 - [Spec](hare_README.md)
 - [go-spacemesh implementation](https://github.com/spacemeshos/go-spacemesh/wiki/Hare-Protocol-Implementation)
-
 
 ## What is Spacemesh?
 
@@ -71,7 +71,7 @@ Note that, unlike full node implementations for certain other blockchain protoco
 
 ### PoET server
 
-PoET stands for “Proof of Elapsed Time.” It’s a core part of the Spacemesh [consensus protocol](consensus_overview.md), where it’s used to prove that a miner has allocated a chunk of hard drive space to the protocol _for some period of time._ PoST, [described below](#post), is used to prove that _space_ has been allocated; PoET is responsible for the _time_ component of space-time.
+PoET stands for “Proof of Elapsed Time.” It’s a core part of the Spacemesh [consensus protocol](consensus_overview.md), where it’s used to prove that a miner has allocated a chunk of hard drive space to the protocol _for some period of time._ PoST, [described below](#proof-of-space-time), is used to prove that _space_ has been allocated; PoET is responsible for the _time_ component of space-time.
 
 PoET is implemented as a web service, separate from go-spacemesh, that anyone can run and offer as a service to Smeshers. Many Smeshers can share a single PoET server, and one Smesher may opt to utilize multiple PoET servers for redundancy. Go-spacemesh [includes code](https://github.com/spacemeshos/go-spacemesh/blob/develop/activation/poet.go) to communicate with a PoET server.
 
@@ -97,7 +97,6 @@ SVM is the Spacemesh Virtual Machine, a WebAssembly-compatible smart contract en
 
 ## Mining
 
-<a name="post"></a>
 ### Proof of Space-time
 
 In Spacemesh, a miner establishes eligibility to produce blocks and participate in [consensus](consensus_overview.md) by publishing an [Activation Transaction (ATX)](atx.md), which contains (among other things) a [Proof of Space-time](post.md).
@@ -125,6 +124,7 @@ Once many miners have produced candidate blocks for a given layer, how does the 
 Spacemesh employs a two-step process to achieve finality. The first step is the Hare protocol, which each node runs at the end of every layer. It’s a Byzantine agreement protocol that allows the network to quickly achieve consensus on a canonical set of blocks. The output of the Hare allows bootstrapping of the consensus of the Tortoise, which is a slower, vote-based protocol that methodically counts the votes for and against each block, leading to eventual, final consistency. Each node uses the output of the Hare protocol to decide which previous blocks its newly-produced blocks should vote for. See [Consensus](consensus_overview.md) for more information on these protocols.
 
 ## Beacon
+
 The spacemesh protocol generates its source of randomness by running an epoch-long beacon protocol. The purpose is to introduce unpredictability in the eligibility of making proposals and participating in the Hare protocol. This property is important for preventing a concentration attack where adversaries can influence the mesh content by creating a temporary majority at a given layer. See [Beacon](beacon_overview.md) and [Beacon Protocol](beacon_protocol.md) for more information on the beacon protocol.
 
 ## Networking
@@ -137,18 +137,18 @@ For more information, see [P2P Networking](p2p_overview.md).
 
 The basic building blocks of the Spacemesh protocol, and the overall, canonical mesh data structure, are transactions and blocks. Transactions are account-based, and contain a sender, a recipient, an amount, a signature, and a few other pieces of data. Blocks collate zero or more transactions into a discrete set, and contain a block height (layer number), a signature of the miner, a proof of eligibility, and a few other pieces of data. See [Mining](mining_overview.md) for more information.
 
-Other relevant data structures include the various types of proof produced and submitted by miners and other services ([PoET](mining/03-poet.md), [ATX](atx.md)), and vote messages exchanged as part of the [Hare protocol](consensus_overview.md#hare).
+Other relevant data structures include the various types of proof produced and submitted by miners and other services ([PoET](poet.md), [ATX](atx.md)), and vote messages exchanged as part of the [Hare protocol](consensus_overview.md#hare).
 
 ## Learn More
 
 The documents contained in this repository are intended to provide a high-level, developer-centric overview of the Spacemesh protocol and the various infrastructure that implements the protocol. For additional resources, see the following:
 
-* [Protocol whitepaper](https://spacemesh.io/spacemesh-protocol-v1-0/), which contains a complete description of the entire protocol with accompanying proofs of correctness
-* [Technical whitepaper](https://spacemesh.io/whitepaper1/), which precedes the protocol whitepaper, and is less rigorous
-* [Protocol specifications repository](https://github.com/spacemeshos/protocol)
-* [Spacemesh protocol overview](https://spacemesh.io/overview/), an even more high-level overview of the protocol intended for a general audience
-* [The Spacemesh Consensus Protocol](https://spacemesh.io/protocol/), a three-part blog post intended for a technical audience that details many of the design decisions behind the protocol
-* [Proof of Space-Time (PoST) with a mesh-based permissionless consensus protocol](https://youtu.be/jvtHFOlA1GI), a talk by Tal Moran, Spacemesh Chief Scientist, at CESC 2018, introducing the protocol
+- [Protocol whitepaper](https://spacemesh.io/spacemesh-protocol-v1-0/), which contains a complete description of the entire protocol with accompanying proofs of correctness
+- [Technical whitepaper](https://spacemesh.io/whitepaper1/), which precedes the protocol whitepaper, and is less rigorous
+- [Protocol specifications repository](https://github.com/spacemeshos/protocol)
+- [Spacemesh protocol overview](https://spacemesh.io/overview/), an even more high-level overview of the protocol intended for a general audience
+- [The Spacemesh Consensus Protocol](https://spacemesh.io/protocol/), a three-part blog post intended for a technical audience that details many of the design decisions behind the protocol
+- [Proof of Space-Time (PoST) with a mesh-based permissionless consensus protocol](https://youtu.be/jvtHFOlA1GI), a talk by Tal Moran, Spacemesh Chief Scientist, at CESC 2018, introducing the protocol
 
 ## Contribute
 
