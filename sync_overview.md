@@ -2,11 +2,11 @@
 
 ## Overview
 
-In order for a node to fully participate in the Spacemesh protocol, including the [Consensus protocol](../consensus/01-overview.md), it is essential that the node be aware of the current state of the network. This includes knowing the current [layer and epoch](../intro.md#spacemesh-basics), the latest blocks and [transactions](../transactions/01-overview.md), and the current [set of eligible miners](../mining/05-atx.md). (Other aspects of the protocol, such as the canonical ledger and the global state, are things the node can work out for itself based on these data.)
+In order for a node to fully participate in the Spacemesh protocol, including the [Consensus protocol](consensus_overview.md), it is essential that the node be aware of the current state of the network. This includes knowing the current [layer and epoch](README.md#spacemesh-basics), the latest blocks and [transactions](transactions_overview.md), and the current [set of eligible miners](atx.md). (Other aspects of the protocol, such as the canonical ledger and the global state, are things the node can work out for itself based on these data.)
 
-In addition to receiving _new_ data as it becomes available, this also means that the node must be able to fetch historical data, such as when a new node first comes online, or after a node reconnects to the network after having been offline for some time. 
+In addition to receiving _new_ data as it becomes available, this also means that the node must be able to fetch historical data, such as when a new node first comes online, or after a node reconnects to the network after having been offline for some time.
 
-The Sync subprotocol is the means by which a node achieves this: it sends and receives messages over the Spacemesh [P2P network](../p2p/01-overview.md), and listens for new blocks and transactions.
+The Sync subprotocol is the means by which a node achieves this: it sends and receives messages over the Spacemesh [P2P network](p2p_overview.md), and listens for new blocks and transactions.
 
 ## Getting data
 
@@ -14,11 +14,11 @@ There are fundamentally only two ways that a node synchronizes data in Spacemesh
 
 ### Gossip
 
-The [gossip protocol](../p2p/01-overview.md#gossip) is the primary way that data are propagated throughout the network. Every time a block receives a new, syntactically valid transaction, it immediately shares it with all of its peers. Every time a miner produces a new candidate block, or receives one from a peer, it immediately shares it with all of its peers. In this way, these data propagate quickly throughout the entire network.
+The [gossip protocol](p2p_overview.md#gossip) is the primary way that data are propagated throughout the network. Every time a block receives a new, syntactically valid transaction, it immediately shares it with all of its peers. Every time a miner produces a new candidate block, or receives one from a peer, it immediately shares it with all of its peers. In this way, these data propagate quickly throughout the entire network.
 
 ### Direct request
 
-Many data structures in Spacemesh, such as blocks and ATXs, rely on (or "point to") other pieces of data. For instance, a block contains a `view` that contains the IDs of blocks in previous layers, and it contains the ID of an [ATX](../mining/05-atx.md) that establishes the eligibility of the miner to produce that block in that layer. Similarly, an ATX references a [PoET proof](../mining/03-poet.md). When a node receives a block or an ATX, it needs to have access to these dependent data structures to perform validation on it.
+Many data structures in Spacemesh, such as blocks and ATXs, rely on (or "point to") other pieces of data. For instance, a block contains a `view` that contains the IDs of blocks in previous layers, and it contains the ID of an [ATX](atx.md) that establishes the eligibility of the miner to produce that block in that layer. Similarly, an ATX references a [PoET proof](poet.md). When a node receives a block or an ATX, it needs to have access to these dependent data structures to perform validation on it.
 
 When the node receives a new block or ATX, the first thing it does is to attempt to find all of the other pieces of data that the data structure points to. The node first checks its local database, but if it doesn't already have the data (i.e., has never seen this particular piece of data before), then it sends a direct request to its peers for the missing data. If a peer has the data in question, it responds with the data. If none of its peers have the data either, then the data structure in question is deemed invalid.
 
@@ -28,7 +28,7 @@ Note that these dependencies are recursive: for instance, a block may point to a
 
 ## Initial sync
 
-When a node first joins the network, of course it knows nothing about the current state of the network. It completes a [bootstrap and peer discovery](../p2p/01-overview.md#bootstrap-and-peer-discovery) process to find peers to pair and exchange data with. It next checks whether it's in sync with the network: i.e., whether the latest layer that it knows about (the genesis layer, the only layer a new node knows about) is the latest known layer in existence. It will discover newer layers from its peers, thus beginning the sync process. There is no explicit "initial sync"; rather, the sync happens implicitly, via the direct request method described above, as the node receives new data—new blocks and layers—from its peers, and subsequently requests the data that they rely on.
+When a node first joins the network, of course it knows nothing about the current state of the network. It completes a [bootstrap and peer discovery](p2p_overview.md#bootstrap-and-peer-discovery) process to find peers to pair and exchange data with. It next checks whether it's in sync with the network: i.e., whether the latest layer that it knows about (the genesis layer, the only layer a new node knows about) is the latest known layer in existence. It will discover newer layers from its peers, thus beginning the sync process. There is no explicit "initial sync"; rather, the sync happens implicitly, via the direct request method described above, as the node receives new data—new blocks and layers—from its peers, and subsequently requests the data that they rely on.
 
 Once this initial sync process completes, the node switches into a mode known as "weakly synced" and begins to listen to gossip messages to be notified about new data.
 
@@ -56,7 +56,7 @@ While a node begins to receive gossip messages as soon as it's connected to peer
 
 ## Sync and the Tortoise
 
-Sync is what triggers the [Tortoise protocol](../consensus/01-overview.md#tortoise) to validate blocks. This works in two ways.
+Sync is what triggers the [Tortoise protocol](consensus_overview.md#tortoise) to validate blocks. This works in two ways.
 
 For the current layer, Sync waits a specified period of time, called `ValidationDelta`, to accumulate blocks. Once this interval has passed, it kicks off the Tortoise to process the votes in these new blocks. In the case where a node is synchronizing historical layers, each layer is processed as soon as all of its blocks are received.
 

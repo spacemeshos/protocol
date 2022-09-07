@@ -1,6 +1,6 @@
 # Protocol deep dive
 
-As described in [Overview](01-overview.md), consensus in Spacemesh consists of two independent but complementary protocols, called the Tortoise and the Hare. This document provides more details and context on these protocols, explaining how they fit into the broader landscape of BFT consensus protocols, and why they're well-suited to the needs of Spacemesh.
+As described in [Overview](consensus_overview.md), consensus in Spacemesh consists of two independent but complementary protocols, called the Tortoise and the Hare. This document provides more details and context on these protocols, explaining how they fit into the broader landscape of BFT consensus protocols, and why they're well-suited to the needs of Spacemesh.
 
 ## Tortoise
 
@@ -14,7 +14,7 @@ The Tortoise protocol has three particularly important properties:
 
 ### How it works
 
-The Tortoise counts votes, cast in more recent blocks, for and against previous blocks. These votes indicate whether those previous blocks should be considered [contextually valid](01-overview.md#block-validity-in-spacemesh), i.e., whether, from the perspective of the voter, the block was received on time. In most cases, the vast majority of honest nodes will agree on a given block's validity, and there will be an overwhelming number of votes cast for or against the block. In rare cases, such as in the case of a [balancing attack](https://arxiv.org/abs/1612.09426), a block may not clearly cross either threshold.
+The Tortoise counts votes, cast in more recent blocks, for and against previous blocks. These votes indicate whether those previous blocks should be considered [contextually valid](consensus_overview.md#block-validity-in-spacemesh), i.e., whether, from the perspective of the voter, the block was received on time. In most cases, the vast majority of honest nodes will agree on a given block's validity, and there will be an overwhelming number of votes cast for or against the block. In rare cases, such as in the case of a [balancing attack](https://arxiv.org/abs/1612.09426), a block may not clearly cross either threshold.
 
 Votes are processed per layer, and target around 800 votes per layer (this is in order to meet the network's [statistical security parameter](https://en.wikipedia.org/wiki/Security_parameter) of `2^-40`; if layers are much smaller than this, they may be grouped together into larger _clusters_). If the votes are overwhelmingly positive or negative, e.g., net +600 in favor of a block ("This block is valid") or net -700 against a block ("This block did not arrive on time"), no additional work is needed to achieve consensus. If the net vote for a block is closer to zero, e.g., +100, then instead of voting based on what they observed, all honest nodes vote according to a coin flip. This is how the Tortoise achieves self-healing.
 
@@ -61,7 +61,7 @@ Depending on committee size the Hare can theoretically tolerate up to 1/2 malici
 
 ### Hare beacon
 
-Eligibility to participate in each [round of the Hare protocol](01-overview.md#rounds) is based on the output of a VRF, which includes randomness from the Hare beacon. This makes it impossible for an adversary to grind on an identity and produce identities that would bias the results of the Hare too much, since they could only forecast Hare eligibility for a small number of future rounds.
+Eligibility to participate in each [round of the Hare protocol](consensus_overview.md#rounds) is based on the output of a VRF, which includes randomness from the Hare beacon. This makes it impossible for an adversary to grind on an identity and produce identities that would bias the results of the Hare too much, since they could only forecast Hare eligibility for a small number of future rounds.
 
 The Hare has the advantage that it can rely on the Tortoise for its beacon, which makes it much simpler than the Tortoise beacon. We can use any value that honest parties are guaranteed to have previously agreed upon _even if the Hare isn't working,_ such as the set of block IDs from a previous layer that's sufficiently far back.
 
@@ -80,5 +80,5 @@ In the case of a network partition or attack, the Hare protocol may cease to wor
 The Chia protocol aims to emulate Bitcoin and Nakamoto consensus more generally, but to replace Proof of Work with a novel mechanism called [Proof of Space](https://www.chia.net/assets/ChiaGreenPaper.pdf). In order to emulate the PoW lottery mechanism, Chia utilizes a VDF to create a "temporal lottery." Chia protocol and Spacemesh are only superficially related, in that both require commitment of space as a scarce resource. High-level differences include:
 
 - In Spacemesh, many blocks are produced at each layer, giving rise to its signature mesh (i.e., DAG) structure. Chia is a more traditional blockchain.
-- Chia requires stronger Proof of Space properties: a unique Proof of Space, and a VDF. By contrast, Spacemesh uses much weaker primitives: a [Proof of Spacetime](../mining/02-post.md) (that isn't required to have a unique proof) and a Proof of Sequential Work (a.k.a. [Proof of Elapsed Time](../mining/03-poet.md), also not necessarily unique).
+- Chia requires stronger Proof of Space properties: a unique Proof of Space, and a VDF. By contrast, Spacemesh uses much weaker primitives: a [Proof of Spacetime](post.md) (that isn't required to have a unique proof) and a Proof of Sequential Work (a.k.a. [Proof of Elapsed Time](poet.md), also not necessarily unique).
 - Unlike Chia, Spacemesh is race free. Crucially, the slots in which a miner is eligible to produce blocks in Spacemesh do not depend on the proof of resource use. They're based solely on a miner's ID (plus a random input from a beacon), as described above.

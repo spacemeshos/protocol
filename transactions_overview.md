@@ -1,7 +1,8 @@
 # Transactions
+
 ## Overview
 
-The transaction is one of the most basic data structures used in Spacemesh and in many other blockchain protocols. In Spacemesh, there are three types of transactions: a simple coin transfer, an activation transaction (ATX), and a smart contract call. Activation transactions are a special type of transaction used as part of the mining process. They are [described in the mining docs](../mining/05-atx.md). Smart contract transactions are part of the experimental [Spacemesh Virtual Machine (SVM)](https://github.com/spacemeshos/svm) project, which is not in production yet. Throughout the rest of this document, the term "transaction" refers to a coin transfer.
+The transaction is one of the most basic data structures used in Spacemesh and in many other blockchain protocols. In Spacemesh, there are three types of transactions: a simple coin transfer, an activation transaction (ATX), and a smart contract call. Activation transactions are a special type of transaction used as part of the mining process. They are [described in the mining docs](atx.md). Smart contract transactions are part of the experimental [Spacemesh Virtual Machine (SVM)](https://github.com/spacemeshos/svm) project, which is not in production yet. Throughout the rest of this document, the term "transaction" refers to a coin transfer.
 
 In Spacemesh, a transaction is an order to transfer funds from one account to another. The transaction specifies the amount to be transferred, the sender's wallet address, the recipient's wallet address, and the fee to be paid to the miner that mines the transaction. The transaction is signed using the private key of the sender, which is how the protocol knows that the transaction is legitimate (i.e., that it originated with the holder of the sender's private key).
 
@@ -41,7 +42,7 @@ Technically, any message that is 108 bytes long can be interpreted as a syntacti
 
 ### Mempool and gossip
 
-Miners receive incoming, unprocessed transactions via the [gossip network](../p2p/01-overview.md) and locally over GRPC. When a miner receives a transaction, it checks that the transaction is valid and that it hasn't already seen the transaction before (i.e., it's not already in the mempool, nor in the mesh as part of at least one block).
+Miners receive incoming, unprocessed transactions via the [gossip network](p2p_overview.md) and locally over GRPC. When a miner receives a transaction, it checks that the transaction is valid and that it hasn't already seen the transaction before (i.e., it's not already in the mempool, nor in the mesh as part of at least one block).
 
 The node next performs the following basic checks on the transaction:
 
@@ -65,13 +66,12 @@ The process of determining the current canonical state is simply the process of 
 
 Transactions are applied one by one, in the order in which they appear in blocks, to the global state. Valid transactions cause the state to be updated. Of course, since Spacemesh defines a canonical ledger, the order in which transactions are applied is very important.
 
-<a name="ordering"></a>
 ### Transaction ordering
 
 Transaction order in Spacemesh is defined in the following way:
 
 1. Blocks in layer _n_ come before those in layer _n+1_
-1. The IDs of all [contextually valid](../consensus/01-overview.md#validity) blocks in layer _n_ are listed in ascending order
+1. The IDs of all [contextually valid](consensus_overview.md#validity-rules) blocks in layer _n_ are listed in ascending order
 1. These block IDs are concatenated and hashed
 1. The hash sum is used as the seed for a [Mersenne Twister](https://en.wikipedia.org/wiki/Mersenne_Twister) (a type of pseudorandom number generator)
 1. A [Fisher-Yates shuffle](https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle) is performed on the list of block IDs using the output of the Mersenne Twister
@@ -81,14 +81,14 @@ Transaction order in Spacemesh is defined in the following way:
 
 A transaction is deemed contextually valid if, _at the moment when a transaction is applied to the global state,_ the following conditions apply:
 
-1. The transaction appears in a [contextually valid block](../consensus/01-overview.md#block-validity-in-spacemesh)
+1. The transaction appears in a [contextually valid block](consensus_overview.md#block-validity-in-spacemesh)
 1. The origin account (derived from the signature) exists
 1. The counter on the account matches the transaction counter
 1. The account balance is greater than or equal to the transaction amount + fee
 
 ### Global state
 
-The transactions in a given layer are applied to global state, [in order](#ordering), when that layer is finalized.
+The transactions in a given layer are applied to global state, [in order](#transaction-ordering), when that layer is finalized.
 
 #### Finality
 
@@ -96,7 +96,7 @@ There are two stages of finalization in Spacemesh: the Hare and the Tortoise. A 
 
 In the future, self healing will also possibly cause a rollback, but this is not implemented yet.
 
-For more information on the consensus process, see [Consensus](../consensus/01-overview.md).
+For more information on the consensus process, see [Consensus](consensus_overview.md).
 
 #### State transition function
 
@@ -116,7 +116,7 @@ As in Bitcoin and other blockchain platforms, a Spacemesh transaction pays a fee
 
 #### Mining rewards
 
-Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](../README.md#spacemesh-basics). An epoch consists of a fixed number of layers. Each layer is five minutes long and contains a set of blocks.
+Time in Spacemesh is divided into fixed-length units of time called [layers and epochs](README.md#spacemesh-basics). An epoch consists of a fixed number of layers. Each layer is five minutes long and contains a set of blocks.
 
 The Spacemesh protocol distributes 50 Smesh (SMH) (subject to the Smesh minting schedule) to the miners who contributed blocks to each layer. The amount of the reward paid to each miner depends on the number of blocks contributed by that miner, and on the total number of blocks contributed in that layer. A miner that contributes more blocks receives more reward.
 
@@ -130,6 +130,6 @@ Both mining rewards and fees are credited to miners as part of the same atomic d
 
 #### Block weights
 
-At present, both block rewards and fees are divided equally among all the published, [contextually valid](../consensus/01-overview.md) blocks in a layer: in other words, a miner that contributed four blocks (and was eligible to contribute at least four blocks) would receive precisely twice the reward and twice the fees for that layer as a miner who contributed (and was eligible to contribute) two.
+At present, both block rewards and fees are divided equally among all the published, [contextually valid](consensus_overview.md) blocks in a layer: in other words, a miner that contributed four blocks (and was eligible to contribute at least four blocks) would receive precisely twice the reward and twice the fees for that layer as a miner who contributed (and was eligible to contribute) two.
 
-However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](../mining/05-atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each contextually valid block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share. The rest will be distributed among all published blocks along with the rest of the pool.)
+However, this is subject to change as Spacemesh adds support for _block weights._ Under the system of block weights, each miner will instead receive a share (of rewards and fees) based on the product of storage x ticks they declared in their [activation transaction (ATX)](atx.md). This share is divided by the number of blocks they are _expected_ (i.e., eligible) to produce during the entire epoch. Each contextually valid block they ultimately produce will grant them a portion of this share. (E.g., if a miner is eligible to produce 50 blocks during a given epoch, and only produces 25, it will receive only half of the share. The rest will be distributed among all published blocks along with the rest of the pool.)

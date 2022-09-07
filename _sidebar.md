@@ -1,9 +1,13 @@
+# Spacemesh Protocol
+
 - [Overview](README.md)
 
-**P2P**
+## P2P
+
 - [P2P](p2p_overview.md)
 
-**Consensus**
+## Consensus
+
 - [Intro](consensus_overview.md)
 - [Tortoise](consensus_overview.md?id=tortoise)
 - [Hare](consensus_overview.md?id=hare)
@@ -11,15 +15,18 @@
 - [Hare Deep Dive](hare_README.md)
 - [In context](consensus_deepdive.md)
 
-**Mining**
+## Mining
+
 - [Overview](mining_overview.md)
 - [PoST](post.md)
 - [PoET](poet.md)
 - [NiPOST](nipost.md)
 - [ATX](atx.md)
 
-**Sync**
+## Sync
+
 - [Sync](sync_overview.md)
 
-**Transactions**
+## Transactions
+
 - [Overview](transactions_overview.md)
